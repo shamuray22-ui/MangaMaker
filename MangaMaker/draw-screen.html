@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>MangaMaker - Tela de Desenho</title>
+    <link rel="stylesheet" href="draw-style.css">
+    <link rel="stylesheet" href="configDraw-style.css">
+</head>
+<body>
+    <div id="toolbar">
+        <label>Cor: 
+            <input type="color" id="colorPicker" value="#000000">
+        </label>
+        <label>Tamanho:
+            <input type="range" id="sizePicker" min="1" max="30" value="1">
+        </label>
+        <button id="clearBtn" onclick="clearCanvas()">Limpar</button>
+        <button id="saveBtn" onclick="saveCanvas()">Salvar e sair </button>
+        <button onclick="callSetSizeDiv()"> Redimensionar Tela </button>
+    </div>
+    <div id="bottom-tools">
+        <!-- Adicione aqui os botões ou ferramentas extras -->
+        <button onclick="set_current_tool('select')"> Selecionar </button>
+        <button onclick="set_current_tool('pen')">Pen</button>
+        <button onclick="set_current_tool('eraser')"> eraser </button>
+        <button onclick="undo()">Undo</button>
+
+        <button onclick="redo()">Redo</button>
+        <button onclick="set_current_tool('rectangle')"> Quad </button>
+    </div>
+
+    <div id="draw-canvas" style="width:900px; height:600px;"></div>
+
+    <div id="setSizeDiv">
+        
+        <label for="canvasWidth">Largura:</label>
+        <input type="number" id="canvasWidth" value="800">
+        <label for="canvasHeight">Altura:</label>
+        <input type="number" id="canvasHeight" value="600">
+        <button onclick="applyCanvasSize()">Aplicar</button>
+        <button onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
+
+    </div>
+    
+    <script src="konva.min.js"></script>
+    <script src="draw-script.js"></script>
+    <script src="configDraw-script.js"></script>
+</body>
+</html>
