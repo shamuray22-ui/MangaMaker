@@ -1,0 +1,14 @@
+#setSizeDiv {
+    position: absolute;
+    top: 60px; /* Ajuste conforme a altura da sua barra de ferramentas superior */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
