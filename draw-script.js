@@ -28,7 +28,6 @@ let dragpos = null;
 
 let lastRect = null;
 
-let strokeSelectedList = [];
 
 let selectBox;
 let posing = false;
@@ -215,12 +214,13 @@ stage.on('mousedown touchstart', function() {
             height: 0,
             fill: 'rgba(0,0,255,0.1)',
             stroke: 'blue',
-            dash: [4, 4]
+            dash: [4, 4],
+            listening: false
         });
         dragpos = pos;
         group.add(selectBox); // Adiciona ao mesmo grupo dos desenhos
+        selectBox.moveToTop();
     }
-    layer.batchDraw();
 });
 
 stage.on('mousemove touchmove', function() {
@@ -244,7 +244,8 @@ stage.on('mousemove touchmove', function() {
         lastRect.height(h);
 
 
-    } else if (current_tool == 'select' && selectBox){
+    } 
+    else if (current_tool == 'select' && selectBox){
 
         if (posing == false) {
             const x = Math.min(startpos.x, pos.x);
@@ -255,30 +256,9 @@ stage.on('mousemove touchmove', function() {
             selectBox.y(y);
             selectBox.width(w);
             selectBox.height(h);
-
-            // Obter a posição e tamanho do retângulo de seleção
-            const boxpos = selectBox.getClientRect();
-            // lógica de seleção aqui
-            group.find('Line').forEach(element => {
-                if (Konva.Util.haveIntersection(boxpos, element.getClientRect())) {
-                    strokeSelectedList.push(element);
-                    strokeSelectedList[strokeSelectedList.length - 1].stroke('red');
-                    posing = true;
-                }
-            });
-        }else if (posing && dragpos){
-            strokeSelectedList.forEach(element => {
-                const dx = pos.x - dragpos.x;
-                const dy = pos.y - dragpos.y;
-                element.x(element.x() + dx);
-                element.y(element.y() + dy);
-
-                element.stroke('blue');
-            });
-            dragpos = pos;
         }
     }
-    layer.batchDraw();
+
 });
 stage.on('mouseup touchend', function() {
     isDrawing = false;
@@ -299,16 +279,7 @@ stage.on('mouseup touchend', function() {
         selectBox = null;
     }
 
-    if (strokeSelectedList.length > 0) {
-        posing = true
-        // terminou a seleção, não precisa manter o posing ativo
-        strokeSelectedList.forEach(element => {
-            element.stroke('black'); 
-            strokeSelectedList = [];
-            posing = false; // <- aqui você desliga
-        });
-        
-    }
+
 
     layer.batchDraw();
 });
@@ -322,14 +293,5 @@ stage.on('mouseleave touchcancel', function() {
         selectBox = null;
 
     }
-    if (strokeSelectedList.length > 0) {
-        posing = true
-        // terminou a seleção, não precisa manter o posing ativo
-        strokeSelectedList.forEach(element => {
-            element.stroke('black'); 
-            strokeSelectedList = [];
-            posing = false; // <- aqui você desliga
-        });
-        
-    }
+
 });
