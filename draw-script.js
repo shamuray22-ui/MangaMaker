@@ -27,9 +27,10 @@ let startpos = {x: 0,y:0};
 let dragpos = null;
 
 let lastRect = null;
+let lastCicle = null;
+let LastSelectBox = null;
 
 
-let selectBox;
 let posing = false;
 
 const layer = new Konva.Layer();
@@ -205,21 +206,32 @@ stage.on('mousedown touchstart', function() {
         });
         group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
+    } else if (current_tool == 'circle') {
+        lastCicle = new Konva.Ellipse({
+            x: startpos.x,
+            y: startpos.y,
+            radiusX: 0,
+            radiusY: 0,
+            fill: '#ffff',
+            stroke: 'black'
+        });
+        group.add(lastCicle);
+
     }
     else if (current_tool == 'select'){
-        selectBox = new Konva.Rect({
+        LastSelectBox = new Konva.Rect({
             x: startpos.x,
             y: startpos.y,
             width: 0,
             height: 0,
-            fill: 'rgba(0,0,255,0.1)',
+            fill: 'rgba(0, 0, 255, 0.5)',
             stroke: 'blue',
             dash: [4, 4],
             listening: false
         });
         dragpos = pos;
-        group.add(selectBox); // Adiciona ao mesmo grupo dos desenhos
-        selectBox.moveToTop();
+        group.add(LastSelectBox); // Adiciona ao mesmo grupo dos desenhos
+        LastSelectBox.moveToTop();
     }
 });
 
@@ -229,15 +241,24 @@ stage.on('mousemove touchmove', function() {
     }
     const pos = getGlobalMousePos();
 
+    const x = Math.min(startpos.x, pos.x);
+    const y = Math.min(startpos.y, pos.y);
+    const w = Math.abs(pos.x - startpos.x);
+    const h = Math.abs(pos.y - startpos.y);
+
     if (current_tool == 'pen' || current_tool == 'eraser' && lastLine){
         const newPoints = lastLine.points().concat([pos.x, pos.y]);
         lastLine.points(newPoints);
-    } else if (current_tool == 'rectangle' && lastRect){
+    } 
+    else if (current_tool == 'circle' && lastCicle){
+        lastCicle.x(x);
+        lastCicle.y(y);
+        lastCicle.radiusX(w);
+        lastCicle.radiusY(h);
+    }
+    else if (current_tool == 'rectangle' && lastRect){
         // atualizar posição e tamanho dinamicamente usando pos (não pos)
-        const x = Math.min(startpos.x, pos.x);
-        const y = Math.min(startpos.y, pos.y);
-        const w = Math.abs(pos.x - startpos.x);
-        const h = Math.abs(pos.y - startpos.y);
+
         lastRect.x(x);
         lastRect.y(y);
         lastRect.width(w);
@@ -245,18 +266,29 @@ stage.on('mousemove touchmove', function() {
 
 
     } 
-    else if (current_tool == 'select' && selectBox){
+    else if (current_tool == 'select' && LastSelectBox){
 
         if (posing == false) {
             const x = Math.min(startpos.x, pos.x);
             const y = Math.min(startpos.y, pos.y);
             const w = Math.abs(pos.x - startpos.x);
             const h = Math.abs(pos.y - startpos.y);
-            selectBox.x(x);
-            selectBox.y(y);
-            selectBox.width(w);
-            selectBox.height(h);
+            LastSelectBox.x(x);
+            LastSelectBox.y(y);
+            LastSelectBox.width(w);
+            LastSelectBox.height(h);
         }
+        group.children.forEach(element => {
+            if (element === LastSelectBox) return;
+            
+            if (element instanceof Konva.Line) {
+                if (Konva.Util.haveIntersection(LastSelectBox.getClientRect(), element.getClientRect())) {
+                    element.stroke('red');
+                } else {
+                    element.stroke('black');
+                }
+            }
+        });
     }
 
 });
@@ -273,10 +305,13 @@ stage.on('mouseup touchend', function() {
         undoHistory.push(lastRect);
         lastRect = null;
     }
-
-    if (selectBox) {
-        selectBox.destroy();
-        selectBox = null;
+    if (lastCicle) {
+        undoHistory.push(lastCicle);
+        lastCicle = null;
+    }
+    if (LastSelectBox) {
+        LastSelectBox.destroy();
+        LastSelectBox = null;
     }
 
 
@@ -288,9 +323,9 @@ stage.on('mouseleave touchcancel', function() {
     lastLine = null;
     isDrawing = false;
 
-    if (selectBox) {
-        selectBox.destroy();
-        selectBox = null;
+    if (LastSelectBox) {
+        LastSelectBox.destroy();
+        LastSelectBox = null;
 
     }
 
