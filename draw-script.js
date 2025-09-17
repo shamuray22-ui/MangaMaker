@@ -54,9 +54,6 @@ const groupBgRect = new Konva.Group({
 
 groupBgRect.add(bgRect); // Adicione o novo retângulo ao grupo
 
-
-
-
 stage.add(bgLayer);
 stage.add(layer);
 
@@ -124,8 +121,11 @@ function clearCanvas() {
 }
 
 function saveCanvas() {
+    ////// salvando as coordenadas da tela
     const laspos = stage.position();
     const lascale = stage.scaleX();
+
+    ////// resetando as coordenadas da tela pra pos inicial
     stage.position({x:0,y:0});
     stage.scale({x:1,y:1});
     layer.draw();
@@ -137,11 +137,19 @@ function saveCanvas() {
     link.download = 'drawing.png';
     link.href = dataURL;
     link.click();
+    //////// resturando as cordenadas da tela
     stage.position(laspos);
     stage.scale({x:lascale,y:lascale});
     layer.draw();
     bgLayer.draw();
     group.draw();
+
+    //////// salvando a tela de desenho no store
+    let getDrawsURL = JSON.parse(localStorage.getItem('draws-saveds')) || [];
+    getDrawsURL.push(dataURL);
+    /////////// passando a lista de url pro draws
+    localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
+
 
 }
 

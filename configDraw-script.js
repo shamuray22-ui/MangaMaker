@@ -79,6 +79,7 @@ function saveText(){
     layer.draw();
     textEditorDiv.style.visibility = 'hidden';
     editText.value = '';
+    lastText = null;
 
 
 }
@@ -89,4 +90,8 @@ function cancelEdit(){
     undo();
     editText.value = '';
 
+}
+
+function toGallery(){
+    window.location.href = "index.html";
 }

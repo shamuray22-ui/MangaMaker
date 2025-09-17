@@ -9,21 +9,48 @@
 <body>
 
     <header class="header">
-        <h1>Minha Galeria de Desenhos</h1>
     </header>
 
     <main>
         <div class="gallery-controls">
             <button class="add-button" onclick="add_draw()">Adicionar Desenho</button>
+            <button onclick="CallcreateMangaDiv()"> Criar Manga </button>
         </div>
 
-        <div id="drawing-gallery" class="gallery-container">
-            <div class="drawing-card">
-                <img alt="Draw 1">
-                <div class="caption">Draw 1</div>
+        <div id="drawlist">
+            
+
+        </div>
+
+        <div id="CreateMangaDiv">
+            <label>
+                nome do manga:
+                <input type="text">
+            </label>
+
+            <label>
+                numero de paginas:
+                <input type="number" id="numPages" value="1">
+            </label>
+
+            <label>
+                resolução de paginas:
+                X
+                <input type="number" id="resPagesX" value="800">
+                Y
+                <input type="number" id="resPagesY" value="600">
+
+            </label>
+
+            <div id="pageslist">
+                
+
             </div>
+
+            
         </div>
     </main>
+
     
     <footer class="footer">
         <p>&copy; 2025 Galeria de Desenhos. Todos os direitos reservados.</p>
