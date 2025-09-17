@@ -22,7 +22,6 @@
     <div id="draw-canvas"></div>
 
     <div id="bottom-tools">
-        <!-- Adicione aqui os botões ou ferramentas extras -->
         <button onclick="set_current_tool('select')"> Selecionar </button>
         <button onclick="set_current_tool('pen')">Pen</button>
         <button onclick="set_current_tool('eraser')"> eraser </button>
@@ -30,19 +29,43 @@
         <button onclick="redo()">Redo</button>
         <button onclick="set_current_tool('rectangle')"> Quad </button>
         <button onclick="set_current_tool('circle')"> Circle </button>
+        <button onclick="set_current_tool('line')"> Line </button>
+        <button onclick="set_current_tool('text')"> Text </button>
     </div>
 
     <div id="setSizeDiv">
-        
         <label for="canvasWidth">Largura:</label>
         <input type="number" id="canvasWidth" value="800">
         <label for="canvasHeight">Altura:</label>
         <input type="number" id="canvasHeight" value="600">
         <button onclick="applyCanvasSize()">Aplicar</button>
         <button onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
-
     </div>
-    
+
+    <div id="textEditorDiv">
+        <label for="editText">Digite seu texto:</label>
+        <textarea id="editText" rows="5" cols="40"></textarea>
+
+        <div>
+            <label for="textX">Posição X:</label>
+            <input type="range" id="textX" min="0" max="600">
+        </div>
+
+        <div>
+            <label for="textY">Posição Y:</label>
+            <input type="range" id="textY" min="0" max="800">
+        </div>
+
+        <div>
+            <label for="textScale">Escala:</label>
+            <input type="range" id="textScale" min="12" max="120" step="1" value="12">
+        </div>
+
+        <button onclick="saveText()">Salvar</button>
+        <button onclick="cancelEdit()">Cancelar</button>
+    </div>
+
+
     <script src="konva.min.js"></script>
     <script src="draw-script.js"></script>
     <script src="configDraw-script.js"></script>

@@ -28,8 +28,12 @@ let dragpos = null;
 
 let lastRect = null;
 let lastCicle = null;
-let LastSelectBox = null;
+let lastSelectBox = null;
+let lastLineTool = null;
+let lastText = null;
 
+let draggingText = false;
+let endline = 0;
 
 let posing = false;
 
@@ -50,11 +54,13 @@ const groupBgRect = new Konva.Group({
 
 groupBgRect.add(bgRect); // Adicione o novo retângulo ao grupo
 
-bgLayer.add(groupBgRect);
+
+
 
 stage.add(bgLayer);
 stage.add(layer);
 
+bgLayer.add(groupBgRect);
 layer.add(group);
 
 let isDrawing = false;
@@ -82,7 +88,7 @@ function getGlobalMousePos() {
 
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
-    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle','select'];
+    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle','select','text'];
     if (validTools.includes(tool)) {
         current_tool = tool;
         // Ajusta o modo de composição para a borracha
@@ -139,6 +145,28 @@ function saveCanvas() {
 
 }
 
+function AddactionToHistory() {
+    if (lastLine) {
+        undoHistory.push(lastLine);
+        lastLine = null;
+    }
+    if (lastRect) {
+        undoHistory.push(lastRect);
+        lastRect = null;
+    }
+    if (lastCicle) {
+        undoHistory.push(lastCicle);
+        lastCicle = null;
+    }
+    if (lastLineTool){
+        undoHistory.push(lastLineTool);
+        lastLineTool = null;
+    }
+    if (lastText){
+        undoHistory.push(lastText);
+    }
+}
+
 
 stage.container().addEventListener('wheel', function(e) {
     e.preventDefault();
@@ -176,7 +204,10 @@ window.addEventListener('resize', () => {
     }
 });
 
-stage.on('mousedown touchstart', function() {
+stage.on('mousedown touchstart', function(e) {
+    if (e.target.className === 'Text') {
+        return; // só deixa o Konva lidar com o drag
+    }
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
@@ -219,7 +250,7 @@ stage.on('mousedown touchstart', function() {
 
     }
     else if (current_tool == 'select'){
-        LastSelectBox = new Konva.Rect({
+        lastSelectBox = new Konva.Rect({
             x: startpos.x,
             y: startpos.y,
             width: 0,
@@ -230,8 +261,40 @@ stage.on('mousedown touchstart', function() {
             listening: false
         });
         dragpos = pos;
-        group.add(LastSelectBox); // Adiciona ao mesmo grupo dos desenhos
-        LastSelectBox.moveToTop();
+        group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
+        lastSelectBox.moveToTop();
+    }
+    else if (current_tool == 'line'){
+        lastLineTool = new Konva.Line({
+            stroke: colorPicker.value,
+            strokeWidth: sizePicker.value,
+            globalCompositeOperation: composite,
+            points: [startpos.x, startpos.y,startpos.x,startpos.y],
+            lineCap: 'round',
+            lineJoin: 'round'
+        });
+        group.add(lastLineTool);
+    }
+    else if (current_tool == 'text' && draggingText === false){
+        lastText = new Konva.Text({
+            x: startpos.x,
+            y: startpos.y,
+            text: 'New text',
+            fontSize: 12,
+            draggable: true
+        });
+        group.add(lastText);
+        lastText.moveToTop();
+        showDivText();
+
+        // Adiciona os eventos de drag aqui
+        lastText.on('dragstart', function() {
+            draggingText = true;
+        });
+        lastText.on('dragend', function() {
+            draggingText = false;
+        });
+
     }
 });
 
@@ -266,23 +329,19 @@ stage.on('mousemove touchmove', function() {
 
 
     } 
-    else if (current_tool == 'select' && LastSelectBox){
+    else if (current_tool == 'select' && lastSelectBox){
 
         if (posing == false) {
-            const x = Math.min(startpos.x, pos.x);
-            const y = Math.min(startpos.y, pos.y);
-            const w = Math.abs(pos.x - startpos.x);
-            const h = Math.abs(pos.y - startpos.y);
-            LastSelectBox.x(x);
-            LastSelectBox.y(y);
-            LastSelectBox.width(w);
-            LastSelectBox.height(h);
+            lastSelectBox.x(x);
+            lastSelectBox.y(y);
+            lastSelectBox.width(w);
+            lastSelectBox.height(h);
         }
         group.children.forEach(element => {
-            if (element === LastSelectBox) return;
+            if (element === lastSelectBox) return;
             
             if (element instanceof Konva.Line) {
-                if (Konva.Util.haveIntersection(LastSelectBox.getClientRect(), element.getClientRect())) {
+                if (Konva.Util.haveIntersection(lastSelectBox.getClientRect(), element.getClientRect())) {
                     element.stroke('red');
                 } else {
                     element.stroke('black');
@@ -290,28 +349,21 @@ stage.on('mousemove touchmove', function() {
             }
         });
     }
+    else if (current_tool == 'line' && lastLineTool){
+        lastLineTool.points([startpos.x, startpos.y,pos.x,pos.y]);
+
+    }
 
 });
 stage.on('mouseup touchend', function() {
     isDrawing = false;
-        dragpos = null;
-
-    if (lastLine) {
-        undoHistory.push(lastLine);
-        lastLine = null;
-    }
-
-    if (lastRect) {
-        undoHistory.push(lastRect);
-        lastRect = null;
-    }
-    if (lastCicle) {
-        undoHistory.push(lastCicle);
-        lastCicle = null;
-    }
-    if (LastSelectBox) {
-        LastSelectBox.destroy();
-        LastSelectBox = null;
+    dragpos = null;
+    
+    AddactionToHistory();
+    
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
     }
 
 
@@ -323,9 +375,11 @@ stage.on('mouseleave touchcancel', function() {
     lastLine = null;
     isDrawing = false;
 
-    if (LastSelectBox) {
-        LastSelectBox.destroy();
-        LastSelectBox = null;
+    AddactionToHistory();
+
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
 
     }
 

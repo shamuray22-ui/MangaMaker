@@ -4,6 +4,14 @@ CanvasSizeDiv.style.display = 'none';
 const widthInput = document.getElementById('canvasWidth');
 const heightInput = document.getElementById('canvasHeight');
 
+const textEditorDiv = document.getElementById('textEditorDiv');
+textEditorDiv.style.visibility = 'hidden';
+const editText = document.getElementById('editText');
+const textScale = document.getElementById('textScale');
+const textPosX = document.getElementById('textX');
+const textPosY = document.getElementById('textY');
+
+
 function callSetSizeDiv(){
     const setSizeDiv = document.getElementById('setSizeDiv');
     if (setSizeDiv.style.display === 'none' || setSizeDiv.style.display === '') {
@@ -25,4 +33,60 @@ function applyCanvasSize(){
     bgRect.height(DRAWSIZE.height);
 
     stage.batchDraw();
+}
+
+function showDivText(){
+    textEditorDiv.style.visibility = 'visible';
+    if (!lastText){
+        return;
+    }
+}
+
+textPosX.addEventListener('input', function() {
+    if (!lastText) return;
+    
+});
+
+textPosY.addEventListener('input', function() {
+    if (!lastText) return;
+    
+});
+
+textScale.addEventListener('input', function() {
+    if(lastText == null){
+        return;
+    }
+    lastText.fontSize(parseInt(textScale.value));
+    layer.draw();
+});
+
+editText.addEventListener('input', function() {
+    if(lastText == null){
+        return;
+    }
+    const text = editText.value;
+    lastText.text(text);
+    layer.draw();
+});
+
+
+function saveText(){
+    if(lastText == null){
+        return;
+    }
+    const text = editText.value;
+    lastText.text(text);
+    layer.draw();
+    textEditorDiv.style.visibility = 'hidden';
+    editText.value = '';
+
+
+}
+
+
+function cancelEdit(){
+    textEditorDiv.style.visibility = 'hidden';
+    undo();
+    editText.value = '';
+
 }
