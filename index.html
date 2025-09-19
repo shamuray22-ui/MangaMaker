@@ -14,7 +14,7 @@
     <main>
         <div class="gallery-controls">
             <button class="add-button" onclick="add_draw()">Adicionar Desenho</button>
-            <button onclick="CallcreateMangaDiv()"> Criar Manga </button>
+            <button onclick="ShowCreateMangaDiv()"> Criar Manga </button>
         </div>
 
         <div id="drawlist">
@@ -22,31 +22,49 @@
 
         </div>
 
-        <div id="CreateMangaDiv">
+        <div id="createMangaDiv">
             <label>
                 nome do manga:
-                <input type="text">
             </label>
+            <input type="text" id="nameManga" value="Nova Obra">
 
-            <label>
-                numero de paginas:
-                <input type="number" id="numPages" value="1">
-            </label>
-
-            <label>
-                resolução de paginas:
-                X
-                <input type="number" id="resPagesX" value="800">
-                Y
-                <input type="number" id="resPagesY" value="600">
-
-            </label>
-
-            <div id="pageslist">
-                
-
+            <table>
+                <tr>
+                    <thead>
+                        <label>
+                            resolução de paginas:
+                        </label>
+                    </thead>
+                    <td>
+                        <label>
+                            X
+                            <input type="number" id="resPagesX" value="800">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            Y
+                            <input type="number" id="resPagesY" value="600">
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <label>
+                    Pre-visualização de proporção:
+                    <img src="drawing.png" id="sizeDrawCanvaPREV">
+                </label>
             </div>
-
+            <table>
+                <tr>
+                    <td>
+                        <button onclick="createManga()"> Criar Manga </button>
+                    </td>
+                    <td>
+                        <button onclick="cancelCreateManga()"> Cancelar </button>
+                    </td>
+                </tr>
+            </table>
             
         </div>
     </main>

@@ -7,7 +7,6 @@ function get_draws(){
     const drawlist = document.getElementById('drawlist');
     const draws = JSON.parse(localStorage.getItem('draws-saveds')) || [];
     drawlist.innerHTML = '';
-    console.log(draws);
     
     draws.forEach((imageURL,index) => {
 
@@ -23,41 +22,65 @@ function get_draws(){
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
         drawlist.appendChild(DrawCard);
-
-        console.log(localStorage);
             
     });
 }
 
 function add_draw(){
     window.location.href = "draw-screen.html";
-
 }
-const numpages = document.getElementById('numPages');
-const pageslist = document.getElementById('pageslist');
-let lasnum = Number(numpages.value);
 
-numpages.addEventListener('input', function() {
-    let newnum = Number(numpages.value);
-    
-    if (newnum > lasnum){
+const createMangaDiv = document.getElementById('createMangaDiv');
 
-        const newimage = document.createElement('img');
-        
-        newimage.src = new Image();
+function ShowCreateMangaDiv(){
+    createMangaDiv.style.visibility = 'visible';
+}
+const sizeDrawCanvaPREV = document.getElementById('sizeDrawCanvaPREV');
+const ABSOLUTE = {x: 100, y: 100};
 
-        pageslist.appendChild(newimage);
+sizeDrawCanvaPREV.width = ABSOLUTE.x;
+sizeDrawCanvaPREV.height = ABSOLUTE.y;
 
-        return;
+const resPagesX = document.getElementById('resPagesX');
+const resPagesY = document.getElementById('resPagesY');
 
-    }else if (newnum < lasnum){
-        pageslist.removeChild(pageslist.lastChild);
 
-    }
-    
 
+
+resPagesX.addEventListener('input', function() {
+    sizeDrawCanvaPREV.width = ABSOLUTE.x + Number(resPagesX.value);
 });
 
-function CallcreateMangaDiv(){
+resPagesY.addEventListener('input', function() {
+    sizeDrawCanvaPREV.height = ABSOLUTE.y + Number(resPagesY.value);
+});
 
+
+const nameManga = document.getElementById('nameManga');
+
+function createManga(){
+
+    const MangaCard = document.createElement('div');
+    const newPicture = document.createElement('img');
+    const nameDraw = document.createElement('h1');
+
+    MangaCard.className = 'MangaCard';
+    
+    newPicture.src = 'HQIcon.png';
+    nameDraw.textContent = 'Nova HQ';
+
+    MangaCard.appendChild(newPicture);
+    MangaCard.appendChild(nameDraw);
+    drawlist.appendChild(MangaCard);
+
+    MangaCard.addEventListener('click', function(){
+        window.location.href = "manga-screen.html";
+    });
+
+    createMangaDiv.style.visibility = 'hidden';
 }
+
+function cancelCreateManga(){
+    createMangaDiv.style.visibility = 'hidden';
+}
+

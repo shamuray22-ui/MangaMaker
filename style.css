@@ -24,16 +24,15 @@ footer{
     background-color: rgb(255, 255, 255);
     
 }
-#CreateMangaDiv {
+#createMangaDiv {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
-    width: 80vw;   /* ou outro valor que você queira */
-    height: 80vh;
-
-    background-color: rgb(0, 0, 0);
+    background-color: black;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6;
 
     display: flex;
     flex-direction: column;
@@ -41,13 +40,15 @@ footer{
     justify-content: center; /* centraliza verticalmente os itens */
 }
 
-#CreateMangaDiv label {
+#createMangaDiv label {
     color: white;
 }
 
-#pageslist{
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-gap: 10px;
-    padding: 10px;
+#sizeDrawCanvaPREV{
+}
+
+
+#MangaCard{
+    background-color: blue;
+
 }
