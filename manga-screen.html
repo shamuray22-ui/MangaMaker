@@ -3,33 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Lista de capitulos </title>
-    <link rel="stylesheet" href="css/manga-style.css">
-
+    <title>Lista de capítulos</title>
+    <link rel="stylesheet" href="css/manga-chapters-style.css">
 </head>
 <body>
-    <button> adicionar capitulo </button>
 
-    <div id="chaper-list">
-        <div>
-            <h1>
-                capitulo 1
-            </h1>
+    <!-- Botão de adicionar capítulo -->
+    <button onclick="toggleCreateChapter()">Adicionar capítulo</button>
 
-            <img src="assets/drawing.png" id="previwer">
-
-            <button>
-                editar
-            </button>
-
-            <button>
-                deletar
-            </button>
-
-        </div>
-
+    <!-- Div de criação de capítulo -->
+    <div id="create-chapter">
+        <h2>Criar novo capítulo</h2>
+        <label for="chapter-number">Número do capítulo:</label>
+        <input type="number" id="chapter-number" min="1" placeholder="1">
+        
+        <label for="pages-number">Número de páginas:</label>
+        <input type="number" id="pages-number" min="1" placeholder="10">
+        
+        <button type="button" onclick="addChaper()"">Criar capítulo</button>
     </div>
 
-    
+    <!-- Lista de capítulos -->
+    <h1 id="emptyH1" style="color: aliceblue;"> Não se tem nada </h1>
+    <div id="chaper-list">
+        
+
+    </div>
+        
+
+    <script src="js/manga-chapters.js"></script>
+
 </body>
 </html>

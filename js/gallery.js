@@ -13,8 +13,6 @@ function get_draws(){
         const DrawCard = document.createElement('div');
         const newPicture = document.createElement('img');
         const nameDraw = document.createElement('h1');
-
-        DrawCard.className = 'drawcard';
         
         newPicture.src = imageURL;
         nameDraw.textContent = 'novo desenho > ' + index;
@@ -63,10 +61,8 @@ function createManga(){
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
-
-    MangaCard.className = 'MangaCard';
     
-    newPicture.src = 'HQIcon.png';
+    newPicture.src = 'assets/HQIcon.png'
     nameDraw.textContent = 'Nova HQ';
 
     MangaCard.appendChild(newPicture);
@@ -84,3 +80,12 @@ function cancelCreateManga(){
     createMangaDiv.style.visibility = 'hidden';
 }
 
+function clearStorage(){
+    let confim = window.confirm('isso vai apagar todas as suas obra e desenhos ');
+    if (confim == true){
+        localStorage.clear();
+        window.location.reload();
+    }else{
+        return;
+    }
+}
