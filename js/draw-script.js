@@ -3,6 +3,7 @@ let DRAWSIZE = {
     height: 800
 }
 
+
 const drawContainer = document.getElementById('draw-canvas');
 
 const stage = new Konva.Stage({
@@ -23,19 +24,7 @@ const bgRect = new Konva.Rect({
     fill: '#ffff'
 });
 
-let startpos = {x: 0,y:0};
-let dragpos = null;
-
-let lastRect = null;
-let lastCicle = null;
-let lastSelectBox = null;
-let lastLineTool = null;
-let lastText = null;
-
-let draggingText = false;
-let endline = 0;
-
-let posing = false;
+const paginas = [];
 
 const layer = new Konva.Layer();
 
@@ -60,6 +49,9 @@ stage.add(layer);
 bgLayer.add(groupBgRect);
 layer.add(group);
 
+////////////////// Variaveis
+const currentpage = 0;
+
 let isDrawing = false;
 let lastLine;
 
@@ -69,6 +61,20 @@ let composite = 'source-over';
 
 let undoHistory = [];
 let redoHistory = [];
+
+let startpos = {x: 0,y:0};
+let dragpos = null;
+
+let lastRect = null;
+let lastCicle = null;
+let lastSelectBox = null;
+let lastLineTool = null;
+let lastText = null;
+
+let draggingText = false;
+let endline = 0;
+
+let posing = false;
 
 const colorPicker = document.getElementById('colorPicker');
 const sizePicker = document.getElementById('sizePicker');

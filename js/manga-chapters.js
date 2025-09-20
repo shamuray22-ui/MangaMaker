@@ -77,3 +77,8 @@ function addChaper() {
     // Adiciona na lista
     chaper_list.appendChild(newChaper);
 }
+
+
+function enterPreview(){
+    document.location = 'mangaPreviwe.html'
+}
