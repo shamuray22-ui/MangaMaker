@@ -1,3 +1,7 @@
+//////////////
+////////// talve ainda não ficou perceptvel que erros de digitção e gramatica são comuns por aqui.
+////////////////////////
+
 let DRAWSIZE = {
     width: 600,
     height: 800
@@ -5,6 +9,7 @@ let DRAWSIZE = {
 
 
 const drawContainer = document.getElementById('draw-canvas');
+const pagesDiv = document.getElementById('pagesDiv');
 
 const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
@@ -24,11 +29,27 @@ const bgRect = new Konva.Rect({
     fill: '#ffff'
 });
 
-const paginas = [];
+
+const pages = {
+};
+
+
+////////// criando os elementos
+for (let i = 0; i < 10; i++){
+    pages['page' + i] = {
+        background : null,
+        draw : null
+    }
+}
+console.log(pages);
+
+
+/////////////
+
 
 const layer = new Konva.Layer();
 
-const group = new Konva.Group({
+pages.page0.draw = new Konva.Group({
     clipFunc: function(ctx) {
         ctx.beginPath(); // Inicia um novo caminho
         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
@@ -38,10 +59,14 @@ const group = new Konva.Group({
 });
 
 // Crie um novo bgRect para o grupo de bg rect
-const groupBgRect = new Konva.Group({
+pages.page0.background = new Konva.Group({
 });
 
-groupBgRect.add(bgRect); // Adicione o novo retângulo ao grupo
+////////// adiciona os grupos a page atual
+let groupBgRect = pages.page0.background;
+let group = pages.page0.draw;
+
+pages.page0.background.add(bgRect); // Adicione o novo retângulo ao grupo
 
 stage.add(bgLayer);
 stage.add(layer);
@@ -54,6 +79,8 @@ const currentpage = 0;
 
 let isDrawing = false;
 let lastLine;
+let autosize = true;
+let autoSizeSensi = 3;
 
 let current_tool = 'pen';
 
@@ -181,15 +208,17 @@ function AddactionToHistory() {
     }
 }
 
-
 stage.container().addEventListener('wheel', function(e) {
     e.preventDefault();
     const oldScale = stage.scaleX();
     const pointer = stage.getPointerPosition();
 
-    // Calcula o novo scale
-    let scaleBy = 1.1;
+    // Fator de zoom
+    const scaleBy = 1.1;
     let newScale = e.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    // Limita o zoom entre 0.1 e 60
+    newScale = Math.max(0.1, Math.min(21, newScale));
 
     // Posição do ponteiro relativa ao stage antes do zoom
     const mousePointTo = {
@@ -208,6 +237,60 @@ stage.container().addEventListener('wheel', function(e) {
     stage.position(newPos);
 
     stage.batchDraw();
+
+}, { passive: false });
+
+
+
+// --- ZOOM COM PINCH (TOUCH) ---
+let lastDist = 0;
+
+stage.container().addEventListener('touchmove', function(e) {
+    if (e.touches.length === 2) {
+        e.preventDefault();
+
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+
+        // distância atual entre os dois dedos
+        const dist = Math.sqrt(
+            Math.pow(touch1.clientX - touch2.clientX, 2) +
+            Math.pow(touch1.clientY - touch2.clientY, 2)
+        );
+
+        if (!lastDist) {
+            lastDist = dist;
+            return;
+        }
+
+        const oldScale = stage.scaleX();
+        const pointer = stage.getPointerPosition();
+
+        // fator relativo ao movimento dos dedos
+        let scaleBy = dist / lastDist;
+        let newScale = oldScale * scaleBy;
+
+        // Limita entre 0.1 e 60
+        newScale = Math.max(0.1, Math.min(60, newScale));
+
+        const mousePointTo = {
+            x: (pointer.x - stage.x()) / oldScale,
+            y: (pointer.y - stage.y()) / oldScale,
+        };
+
+        stage.scale({ x: newScale, y: newScale });
+
+        const newPos = {
+            x: pointer.x - mousePointTo.x * newScale,
+            y: pointer.y - mousePointTo.y * newScale,
+        };
+        stage.position(newPos);
+
+        stage.batchDraw();
+        console.log("Zoom pinch:", newScale);
+
+        lastDist = dist;
+    }
 }, { passive: false });
 
 window.addEventListener('resize', () => {
@@ -229,7 +312,7 @@ stage.on('mousedown touchstart', function(e) {
     if (current_tool == 'pen' || current_tool == 'eraser'){
         lastLine = new Konva.Line({
             stroke: colorPicker.value,
-            strokeWidth: sizePicker.value,
+            strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             points: [pos.x, pos.y],
             lineCap: 'round',
@@ -281,7 +364,7 @@ stage.on('mousedown touchstart', function(e) {
     else if (current_tool == 'line'){
         lastLineTool = new Konva.Line({
             stroke: colorPicker.value,
-            strokeWidth: sizePicker.value,
+            strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             points: [startpos.x, startpos.y,startpos.x,startpos.y],
             lineCap: 'round',
@@ -379,8 +462,7 @@ stage.on('mouseup touchend', function() {
         lastSelectBox.destroy();
         lastSelectBox = null;
     }
-
-
+    lastDist = 0; // reseta quando os dedos soltam
 
     layer.batchDraw();
 });
@@ -396,5 +478,5 @@ stage.on('mouseleave touchcancel', function() {
         lastSelectBox = null;
 
     }
-
+    lastDist = 0; // reseta quando os dedos soltam
 });

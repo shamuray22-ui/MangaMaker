@@ -1,10 +1,13 @@
 
+const drawlist = document.getElementById('drawlist');
+
 window.onload = function() {
+    //this.localStorage.clear();
     get_draws();
 }
-
+ 
 function get_draws(){
-    const drawlist = document.getElementById('drawlist');
+    
     const draws = JSON.parse(localStorage.getItem('draws-saveds')) || [];
     drawlist.innerHTML = '';
     
@@ -22,6 +25,30 @@ function get_draws(){
         drawlist.appendChild(DrawCard);
             
     });
+
+    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+
+    getMangaList.forEach((manga) => {
+
+        const MangaCard = document.createElement('div');
+        const newPicture = document.createElement('img');
+        const nameDraw = document.createElement('h1');
+        newPicture.src = 'assets/HQIcon.png';
+        nameDraw.textContent = manga.name;
+
+        MangaCard.appendChild(newPicture);
+        MangaCard.appendChild(nameDraw);
+        drawlist.appendChild(MangaCard);
+
+        MangaCard.addEventListener('click', function(){
+            window.location.href = "manga-screen.html?id=" + manga.id;
+        });
+        createMangaDiv.style.visibility = 'hidden';
+
+    });
+
+
+
 }
 
 function add_draw(){
@@ -29,6 +56,8 @@ function add_draw(){
 }
 
 const createMangaDiv = document.getElementById('createMangaDiv');
+createMangaDiv.style.visibility = 'hidden';
+
 
 function ShowCreateMangaDiv(){
     createMangaDiv.style.visibility = 'visible';
@@ -63,17 +92,29 @@ function createManga(){
     const nameDraw = document.createElement('h1');
     
     newPicture.src = 'assets/HQIcon.png'
-    nameDraw.textContent = 'Nova HQ';
+    nameDraw.textContent = nameManga.value;
 
     MangaCard.appendChild(newPicture);
     MangaCard.appendChild(nameDraw);
     drawlist.appendChild(MangaCard);
 
-    MangaCard.addEventListener('click', function(){
-        window.location.href = "manga-screen.html";
-    });
-
     createMangaDiv.style.visibility = 'hidden';
+
+    ////////// hora de criar um pacote de hq no local storage
+    const newManga = {
+        id: drawlist.children.length,
+        name: nameManga.value,
+        chapters: []
+    }
+    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    getMangaList.push(newManga);
+    localStorage.setItem('mangas', JSON.stringify(getMangaList));
+
+    MangaCard.addEventListener('click', function(){
+        window.location.href = "manga-screen.html?id=" + newManga.id;;
+    });
+    console.log(localStorage);
+    
 }
 
 function cancelCreateManga(){

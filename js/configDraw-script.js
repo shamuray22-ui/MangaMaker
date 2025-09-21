@@ -10,6 +10,8 @@ const editText = document.getElementById('editText');
 const textScale = document.getElementById('textScale');
 const textPosX = document.getElementById('textX');
 const textPosY = document.getElementById('textY');
+const autosizeBtn = document.getElementById('autoSizeBtn');
+
 
 
 function callSetSizeDiv(){
@@ -94,4 +96,20 @@ function cancelEdit(){
 
 function toGallery(){
     window.location.href = "index.html";
+}
+
+
+function setAutoSize(){
+    if (autosizeBtn.textContent == 'AUTO') {
+        autosizeBtn.textContent = 'MANUAL';
+        autosize = false;
+    }else if (autosizeBtn.textContent == 'MANUAL') {
+        autosizeBtn.textContent = 'AUTO';
+        autosize = true;
+    }
+    else {
+        autosizeBtn.textContent = 'MANUAL';
+        autosize = false;
+    }
+
 }

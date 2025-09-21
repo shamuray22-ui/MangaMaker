@@ -19,7 +19,7 @@
         <button id="sairBtn" onclick="toGallery()"> Sair </button>
         <button onclick="callSetSizeDiv()"> Redimensionar Tela </button>
         <button> paginas </button>
-        <div id=""> </div>
+        <div id="pagesDiv"> </div>
     </div>
 
     <div id="draw-canvas"></div>
@@ -34,6 +34,7 @@
         <button onclick="set_current_tool('circle')"> Circle </button>
         <button onclick="set_current_tool('line')"> Line </button>
         <button onclick="set_current_tool('text')"> Text </button>
+        <button onclick="setAutoSize()" id="autoSizeBtn"> AUTO </button>
     </div>
 
     <div id="setSizeDiv">
@@ -69,7 +70,7 @@
     </div>
 
 
-    <script src="js/konva.min.js"></script>
+    <script src="globals/konva.min.js"></script>
     <script src="js/draw-script.js"></script>
     <script src="js/configDraw-script.js"></script>
 </body>
