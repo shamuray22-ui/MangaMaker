@@ -95,7 +95,16 @@ function cancelEdit(){
 }
 
 function toGallery(){
-    window.location.href = "manga-screen.html?id=" + id;
+    let gettype = localStorage.getItem('type');
+
+    console.log(gettype);
+    
+    if(gettype == 'manga'){
+        window.location.href = "manga-screen.html?id=" + id;
+    } else{
+        window.location.href = "index.html";
+    }
+    
 }
 
 

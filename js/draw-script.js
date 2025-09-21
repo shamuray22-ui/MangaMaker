@@ -7,6 +7,8 @@ let DRAWSIZE = {
     height: 800
 }
 
+let Gettype = localStorage.getItem('type');
+
 
 const drawContainer = document.getElementById('draw-canvas');
 const pagesDiv = document.getElementById('pagesDiv');
@@ -30,29 +32,55 @@ const bgRect = new Konva.Rect({
 });
 
 
-const search = new URLSearchParams(window.location.search);
-const id = search.get('id');
-const pagID = search.get('chapID');
-
-let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
-
 //////// agora a gente pega as paginas
 const pages = {
+    
 };
 
+let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+const search = new URLSearchParams(window.location.search);
+const id = search.get('id');
+const chapID = search.get('chapID');
 
-////////// criando os elementos
-for (let i = 0; i < 10; i++){
-    pages['page' + i] = {
-        background : null,
-        draw : null
+const getManga = getMangaList.find(manga => manga.id === Number(id));
+function StartInitWithType(){
+    if(Gettype == 'manga'){
+
+
+        let forgeratePageButton = 0;
+
+        //////////////////////////////
+        if(getManga && getManga.chapters){
+
+            getManga.chapters.forEach((page) => {
+                pages['page' + page.number] = {
+                    background : null,
+                    draw : null
+                }
+
+                forgeratePageButton = page.pagesCount;
+
+
+                
+            });
+            for(let i = 0; i < forgeratePageButton; i++){
+                const buttonPage = document.createElement('button');
+                buttonPage.textContent = 'page ' + getManga.chapters.length;
+                buttonPage.onclick = function() {
+                    
+                };
+                pagesDiv.appendChild(buttonPage);
+            }
+        }        
+    } else if (Gettype == 'draw'){
+        pages['page0'] = {
+            background : null,
+            draw : null
+        }
     }
 }
-console.log(pages);
 
-
-/////////////
-
+StartInitWithType();
 
 const layer = new Konva.Layer();
 

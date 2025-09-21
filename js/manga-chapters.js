@@ -53,7 +53,7 @@ function addChapter() {
     if (selectedManga && selectedManga.chapters){
         const newChapterData = {
             title: chapterName,
-            number: chapter_list.children.length,
+            number: chapter_list.children.length - 1,
             pagesCount: pagesNumber,
             pages: []
         };
@@ -94,7 +94,7 @@ function createChapterUX(title,number,numpages,imgPage){
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar';
     editBtn.onclick = () => {
-        window.location.href = "draw-screen.html?id=" + id + "&chapID=" + number;
+        window.location.href = "draw-screen.html?id=" + id + "&chapID=" + number + "&isManga=true";
     };
 
     const deleteBtn = document.createElement('button');

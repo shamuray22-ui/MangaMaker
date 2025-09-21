@@ -2,7 +2,7 @@
 const drawlist = document.getElementById('drawlist');
 
 window.onload = function() {
-    //this.localStorage.clear();
+    localStorage.setItem('type', 'draw');
     get_draws();
 }
  
@@ -41,6 +41,7 @@ function get_draws(){
         drawlist.appendChild(MangaCard);
 
         MangaCard.addEventListener('click', function(){
+            localStorage.setItem('type', 'manga');
             window.location.href = "manga-screen.html?id=" + manga.id;
         });
         createMangaDiv.style.visibility = 'hidden';
@@ -111,7 +112,7 @@ function createManga(){
     localStorage.setItem('mangas', JSON.stringify(getMangaList));
 
     MangaCard.addEventListener('click', function(){
-        window.location.href = "manga-screen.html?id=" + newManga.id;;
+        window.location.href = "manga-screen.html?id=" + newManga.id;
     });
     console.log(localStorage);
     
