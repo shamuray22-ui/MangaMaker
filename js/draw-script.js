@@ -276,57 +276,64 @@ stage.container().addEventListener('wheel', function(e) {
 }, { passive: false });
 
 
-
-// --- ZOOM COM PINCH (TOUCH) ---
 let lastDist = 0;
+let lastMidPoint = null;
 
 stage.container().addEventListener('touchmove', function(e) {
     if (e.touches.length === 2) {
+        isDrawing = false;
         e.preventDefault();
 
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
 
         // distância atual entre os dois dedos
-        const dist = Math.sqrt(
-            Math.pow(touch1.clientX - touch2.clientX, 2) +
-            Math.pow(touch1.clientY - touch2.clientY, 2)
+        const dist = Math.hypot(
+            touch1.clientX - touch2.clientX,
+            touch1.clientY - touch2.clientY
         );
+
+        // ponto médio entre os dedos
+        const midPoint = {
+            x: (touch1.clientX + touch2.clientX) / 2,
+            y: (touch1.clientY + touch2.clientY) / 2
+        };
 
         if (!lastDist) {
             lastDist = dist;
+            lastMidPoint = midPoint;
             return;
         }
 
         const oldScale = stage.scaleX();
-        const pointer = stage.getPointerPosition();
+        const scaleBy = dist / lastDist;
 
-        // fator relativo ao movimento dos dedos
-        let scaleBy = dist / lastDist;
-        let newScale = oldScale * scaleBy;
+        // Interpolação suave do zoom
+        const newScale = Math.max(0.1, Math.min(60, oldScale * scaleBy));
 
-        // Limita entre 0.1 e 60
-        newScale = Math.max(0.1, Math.min(60, newScale));
-
-        const mousePointTo = {
-            x: (pointer.x - stage.x()) / oldScale,
-            y: (pointer.y - stage.y()) / oldScale,
+        // Converte o ponto médio para coordenadas relativas da stage
+        const stagePoint = {
+            x: (midPoint.x - stage.x()) / oldScale,
+            y: (midPoint.y - stage.y()) / oldScale
         };
 
         stage.scale({ x: newScale, y: newScale });
 
-        const newPos = {
-            x: pointer.x - mousePointTo.x * newScale,
-            y: pointer.y - mousePointTo.y * newScale,
-        };
-        stage.position(newPos);
+        // Ajusta a posição da stage para manter o zoom centrado no ponto médio
+        stage.position({
+            x: midPoint.x - stagePoint.x * newScale,
+            y: midPoint.y - stagePoint.y * newScale
+        });
 
         stage.batchDraw();
-        console.log("Zoom pinch:", newScale);
 
         lastDist = dist;
+        lastMidPoint = midPoint;
+
+        console.log("Zoom pinch:", newScale);
     }
 }, { passive: false });
+
 
 window.addEventListener('resize', () => {
     if (drawContainer) {

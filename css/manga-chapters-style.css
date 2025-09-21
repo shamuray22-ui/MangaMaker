@@ -14,7 +14,8 @@ body {
     position: fixed;
     background-color: rgb(83, 83, 83);
     border-radius: 20px;
-    width: 600px;
+    width: 90vw; /* Usar largura relativa */
+    max-width: 600px; /* Manter um máximo em telas grandes */
     padding: 20px 30px;
     display: flex;
     flex-direction: column;
@@ -71,7 +72,8 @@ body {
 #chapter-list div {
     border-radius: 20px;
     background-color: rgb(83, 83, 83);
-    width: 600px;
+    width: 90vw; /* Usar largura relativa */
+    max-width: 600px; /* Manter um máximo em telas grandes */
     height: 100px;
     scale: 0.9;
     display: flex;
@@ -79,9 +81,7 @@ body {
     justify-content: flex-start;
     gap: 20px;
     padding: 10px;
-    margin-left: 32px;
-    margin-top: 32px;
-    margin-bottom: 32px;
+    margin: 32px auto; /* Centraliza o card e aplica margem vertical */
     transition: 0.2s;
 }
 

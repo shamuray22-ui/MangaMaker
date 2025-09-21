@@ -1,43 +1,119 @@
 body {
-    background: #f4f4f4;
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden; /* Evita barras de rolagem indesejadas */
+    overflow: hidden; /* Evita scroll desnecessário */
 }
+
+/* TOOLBAR SUPERIOR */
 #toolbar {
     background: #222;
     color: #fff;
-    padding: 10px;
     display: flex;
+    flex-wrap: wrap;           /* Quebra itens em linha quando necessário */
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 1.5vw;
+    padding: 1vh 2vw;
     flex-shrink: 0;
 }
 #toolbar input[type="color"],
 #toolbar input[type="range"] {
-    margin-left: 5px;
+    margin-left: 0.5vw;
 }
+
+/* CANVAS DE DESENHO */
 #draw-canvas {
+    flex-grow: 1;
+    width: 100%;
+    /* altura ajustada para toolbar superior + bottom-tools fixa */
+    height: calc(100vh - 6vh - 6vh); /* 6vh estimativa toolbar superior e inferior */
+    max-height: 100%;
     display: block;
-    border: 2px solid #222;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 0.15rem solid #222;
+    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.1);
     cursor: crosshair;
-    flex-grow: 1; /* Faz o canvas ocupar o espaço restante */
-    position: relative; /* Necessário para o Konva */
+    position: relative;
 }
+
+/* BARRA INFERIOR FIXA */
 #bottom-tools {
+    position: fixed;       /* sempre visível */
+    bottom: 0;
+    left: 0;
     width: 100%;
     background: #222;
     color: #fff;
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
-    padding: 12px 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    flex-shrink: 0;
+    align-items: center;
+    gap: 2vw;
+    padding: 1.2vh 0;
+    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.08);
+    z-index: 999;          /* acima do canvas */
+}
+
+/* POPUP AJUSTE DE TAMANHO */
+#setSizeDiv {
+    position: absolute;
+    top: 8vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f0f0f0;
+    padding: 1.5vh 2vw;
+    border-radius: 0.8rem;
+    box-shadow: 0 0.2rem 0.5rem rgba(0,0,0,0.2);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* EDITOR DE TEXTO */
+#textEditorDiv {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.34);
+    padding: 2vh 2vw;
+    border: 1px solid #000;
+    border-radius: 2rem;
+    z-index: 1000;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* TEXT AREA */
+#editText {
+    min-height: 10vh;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================
+   MEDIA QUERIES PARA CELULARES
+   ============================ */
+@media (max-width: 480px) {
+    #toolbar, #bottom-tools {
+        gap: 1vw;
+        padding: 1vh 1vw;
+    }
+    #setSizeDiv {
+        padding: 1.5vh 1.5vw;
+    }
+    #textEditorDiv {
+        padding: 1.5vh 2vw;
+    }
+    #draw-canvas {
+        height: calc(100vh - 12vh); /* canvas menor em telas pequenas */
+    }
 }
