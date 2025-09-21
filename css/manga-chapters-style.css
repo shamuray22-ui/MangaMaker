@@ -56,19 +56,19 @@ body {
 }
 
 /* Lista de capítulos */
-#chaper-list h1 {
+#chapter-list h1 {
     color: white;
     margin: 0;
 }
 
-#chaper-list img {
+#chapter-list img {
     width: 100px;
     height: 100px;
     object-fit: cover;
     border-radius: 16px;
 }
 
-#chaper-list div {
+#chapter-list div {
     border-radius: 20px;
     background-color: rgb(83, 83, 83);
     width: 600px;
@@ -85,12 +85,12 @@ body {
     transition: 0.2s;
 }
 
-#chaper-list div:hover {
+#chapter-list div:hover {
     scale: 0.95;
 }
 
 /* Botões dentro do capítulo */
-#chaper-list button {
+#chapter-list button {
     padding: 6px 10px;
     border-radius: 10px;
     border: none;
@@ -101,7 +101,7 @@ body {
     transition: 0.2s;
 }
 
-#chaper-list button:hover {
+#chapter-list button:hover {
     background-color: rgb(120, 120, 120);
     scale: 0.95;
 }

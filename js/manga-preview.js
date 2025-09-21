@@ -9,6 +9,10 @@ let currentPage = 0; // índice da página atual
 const container = document.getElementById("manga-preview-container");
 const pageInfo = document.getElementById("page-info");
 
+const search = new URLSearchParams(window.location.search);
+const id = search.get('id');
+
+
 // Renderiza a página atual
 function renderPage() {
     container.innerHTML = ""; // limpa
@@ -40,7 +44,7 @@ function nextPage() {
 
 // Voltar para a galeria (pode ser um link ou só voltar no histórico)
 function backToGallery() {
-    window.location.href = "manga-screen.html";
+    window.location.href = "manga-screen.html?id=" + id;
 }
 
 

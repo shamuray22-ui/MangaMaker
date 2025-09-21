@@ -22,11 +22,11 @@ function loadChapterList(){
     if (selectedManga && selectedManga.chapters) {
         // Itera sobre os capítulos do mangá selecionado e os cria na tela
         selectedManga.chapters.forEach((chapter) => {
-            createChapterUX(chapter.title, chapter.number, 'assets/drawing.png');
+            createChapterUX(chapter.title, chapter.number,chapter.pagesCount, 'assets/drawing.png');
         });
     }
 
-    if(chaper_list.children.length === 0){
+    if(chapter_list.children.length === 0){
         emptyH1.style.visibility = 'visible';
         return;
     } else {
@@ -46,15 +46,14 @@ function toggleCreateChapter() {
 // Adiciona um capítulo novo
 function addChapter() {
     const chapterName = document.getElementById('chapter-name').value || 'Novo Capítulo';
-    const chapterNumber = document.getElementById('chapter-number').value || 1;
     const pagesNumber = document.getElementById('pages-number').value || 10;
     
-    createChapterUX(chapterName,chapterNumber,'assets/drawing.png');
+    createChapterUX(chapterName,chapter_list.children.length,pagesNumber,'assets/drawing.png');
 
     if (selectedManga && selectedManga.chapters){
         const newChapterData = {
             title: chapterName,
-            number: chapterNumber,
+            number: chapter_list.children.length,
             pagesCount: pagesNumber,
             pages: []
         };
@@ -65,7 +64,7 @@ function addChapter() {
     }
 }
 
-function createChapterUX(title,number,imgPage){
+function createChapterUX(title,number,numpages,imgPage){
     // Oculta o form
     create_chapter.style.visibility = 'hidden';
     emptyH1.style.visibility = 'hidden';
@@ -73,6 +72,10 @@ function createChapterUX(title,number,imgPage){
     // Cria a div do capítulo
     const newChaper = document.createElement('div');
     newChaper.className = 'chapter';
+    ///// cria o texto pra saber quantas paginas tem la dentro
+    const newTextPages = document.createElement('h1');
+    newTextPages.textContent = 'paginas > ' + numpages;
+
 
     // Cria a imagem
     const img = document.createElement('img');
@@ -81,7 +84,7 @@ function createChapterUX(title,number,imgPage){
 
     // Cria o título
     const h1 = document.createElement('h1');
-    h1.textContent = title;
+    h1.textContent = number + ' - ' + title;
 
     // Cria os botões
     const table = document.createElement('table');
@@ -90,7 +93,9 @@ function createChapterUX(title,number,imgPage){
 
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar';
-    editBtn.onclick = () => alert(`Editar Capítulo ${number}`);
+    editBtn.onclick = () => {
+        window.location.href = "draw-screen.html?id=" + id + "&chapID=" + number;
+    };
 
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Deletar';
@@ -107,6 +112,7 @@ function createChapterUX(title,number,imgPage){
     // Monta o card
     newChaper.appendChild(img);
     newChaper.appendChild(h1);
+    newChaper.appendChild(newTextPages);
     newChaper.appendChild(table);
 
     // Adiciona na lista
@@ -119,5 +125,5 @@ function returnToGallery(){
 }
 
 function enterPreview(){
-    document.location = 'mangaPreviwe.html'
+    document.location = 'mangaPreviwe.html?id=' + id;
 }

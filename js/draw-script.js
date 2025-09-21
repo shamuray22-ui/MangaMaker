@@ -30,6 +30,13 @@ const bgRect = new Konva.Rect({
 });
 
 
+const search = new URLSearchParams(window.location.search);
+const id = search.get('id');
+const pagID = search.get('chapID');
+
+let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+
+//////// agora a gente pega as paginas
 const pages = {
 };
 

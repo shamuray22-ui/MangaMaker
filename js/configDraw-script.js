@@ -95,7 +95,7 @@ function cancelEdit(){
 }
 
 function toGallery(){
-    window.location.href = "index.html";
+    window.location.href = "manga-screen.html?id=" + id;
 }
 
 
