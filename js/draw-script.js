@@ -37,42 +37,40 @@ const pages = {
     
 };
 
+
 let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
 const search = new URLSearchParams(window.location.search);
 const id = search.get('id');
 const chapID = search.get('chapID');
 
 const getManga = getMangaList.find(manga => manga.id === Number(id));
+
+let forgeratePageButton = null;
 function StartInitWithType(){
-    if(Gettype == 'manga'){
-
-
-        let forgeratePageButton = 0;
-
-        //////////////////////////////
-        if(getManga && getManga.chapters){
-
-            getManga.chapters.forEach((page) => {
-                pages['page' + page.number] = {
-                    background : null,
-                    draw : null
-                }
-
-                forgeratePageButton = page.pagesCount;
-
-
-                
-            });
-            for(let i = 0; i < forgeratePageButton; i++){
-                const buttonPage = document.createElement('button');
-                buttonPage.textContent = 'page ' + getManga.chapters.length;
-                buttonPage.onclick = function() {
-                    
-                };
-                pagesDiv.appendChild(buttonPage);
+    if(Gettype === 'manga'){
+        getManga.chapters.forEach((page) => {
+            pages['page' + page.number] = {
+                background : null,
+                draw : null
             }
-        }        
-    } else if (Gettype == 'draw'){
+
+            forgeratePageButton = page.pagesCount;
+            
+        });     
+        for(let i = 0; i < forgeratePageButton; i++){
+            const buttonPage = document.createElement('button');
+            buttonPage.textContent = 'page ' + getManga.chapters.length;
+            pagesDiv.appendChild(buttonPage);
+            buttonPage.onclick = function() {
+                if (buttonPage != getManga.chapters.length){
+                    console.log(pagesDiv);
+                }
+                
+            }
+        }
+
+
+    } else if (Gettype === 'draw'){
         pages['page0'] = {
             background : null,
             draw : null
@@ -164,6 +162,11 @@ function set_current_tool(tool) {
             composite = 'source-over';
         }
     }
+}
+
+function set_current_page(index){
+
+
 }
 
 function undo(){

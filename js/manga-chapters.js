@@ -11,6 +11,7 @@ let mangaList = JSON.parse(localStorage.getItem('mangas')) || [];
 const selectedManga = mangaList.find(manga => manga.id === Number(id));
 
 window.onload = function() {
+    localStorage.setItem('type', 'manga');
     loadChapterList();
 }
 
