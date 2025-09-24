@@ -96,8 +96,6 @@ function cancelEdit(){
 
 function toGallery(){
     let gettype = localStorage.getItem('type');
-
-    console.log(gettype);
     
     if(gettype == 'manga'){
         window.location.href = "manga-screen.html?id=" + id;

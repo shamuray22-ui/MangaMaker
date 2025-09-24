@@ -48,8 +48,6 @@ function get_draws(){
 
     });
 
-
-
 }
 
 function add_draw(){
@@ -71,9 +69,6 @@ sizeDrawCanvaPREV.height = ABSOLUTE.y;
 
 const resPagesX = document.getElementById('resPagesX');
 const resPagesY = document.getElementById('resPagesY');
-
-
-
 
 resPagesX.addEventListener('input', function() {
     sizeDrawCanvaPREV.width = ABSOLUTE.x + Number(resPagesX.value);
@@ -114,7 +109,6 @@ function createManga(){
     MangaCard.addEventListener('click', function(){
         window.location.href = "manga-screen.html?id=" + newManga.id;
     });
-    console.log(localStorage);
     
 }
 

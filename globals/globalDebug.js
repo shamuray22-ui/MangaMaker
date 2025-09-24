@@ -1,4 +1,4 @@
 
 window.onload = function() {
-    console.log(this.localStorage);
+    console.log(localStorage);
 }

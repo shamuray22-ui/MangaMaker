@@ -9,7 +9,6 @@ let DRAWSIZE = {
 
 let Gettype = localStorage.getItem('type');
 
-
 const drawContainer = document.getElementById('draw-canvas');
 const pagesDiv = document.getElementById('pagesDiv');
 
@@ -46,29 +45,33 @@ const chapID = search.get('chapID');
 const getManga = getMangaList.find(manga => manga.id === Number(id));
 
 let forgeratePageButton = null;
+
 function StartInitWithType(){
     if(Gettype === 'manga'){
         getManga.chapters.forEach((page) => {
+            console.log(page);
+            
             pages['page' + page.number] = {
                 background : null,
                 draw : null
             }
-
-            forgeratePageButton = page.pagesCount;
+            if (chapID == page.number){
+                forgeratePageButton = page.pagesCount;
+            }
             
         });     
         for(let i = 0; i < forgeratePageButton; i++){
             const buttonPage = document.createElement('button');
-            buttonPage.textContent = 'page ' + getManga.chapters.length;
+            buttonPage.textContent = 'page ' + i;
             pagesDiv.appendChild(buttonPage);
             buttonPage.onclick = function() {
-                if (buttonPage != getManga.chapters.length){
-                    console.log(pagesDiv);
+                if (i === 1){
+                    
                 }
                 
             }
         }
-
+        
 
     } else if (Gettype === 'draw'){
         pages['page0'] = {
@@ -106,6 +109,7 @@ stage.add(layer);
 
 bgLayer.add(groupBgRect);
 layer.add(group);
+
 
 ////////////////// Variaveis
 const currentpage = 0;

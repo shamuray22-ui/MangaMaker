@@ -62,6 +62,7 @@ function addChapter() {
         selectedManga.chapters.push(newChapterData); // Adiciona o novo capítulo ao mangá correto
         // Salva a lista de mangás COMPLETA (que foi modificada) de volta no localStorage
         localStorage.setItem('mangas', JSON.stringify(mangaList));
+        
     }
 }
 
