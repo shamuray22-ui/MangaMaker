@@ -12,6 +12,8 @@ let Gettype = localStorage.getItem('type');
 const drawContainer = document.getElementById('draw-canvas');
 const pagesDiv = document.getElementById('pagesDiv');
 
+let currentpage = 0;
+
 const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
     width: drawContainer.offsetWidth,
@@ -45,74 +47,101 @@ const chapID = search.get('chapID');
 const getManga = getMangaList.find(manga => manga.id === Number(id));
 
 let forgeratePageButton = null;
-
-function StartInitWithType(){
+let pagenumbers = -1;
+function StartInitWithType(layer,bgLayer){
     if(Gettype === 'manga'){
+
         getManga.chapters.forEach((page) => {
-            console.log(page);
-            
-            pages['page' + page.number] = {
-                background : null,
-                draw : null
-            }
             if (chapID == page.number){
                 forgeratePageButton = page.pagesCount;
             }
             
-        });     
+        });
         for(let i = 0; i < forgeratePageButton; i++){
+            pagenumbers += 1;
+            pages['page' + pagenumbers] = {
+                    background : null,
+                    draw : null
+            }
             const buttonPage = document.createElement('button');
             buttonPage.textContent = 'page ' + i;
             pagesDiv.appendChild(buttonPage);
             buttonPage.onclick = function() {
-                if (i === 1){
-                    
-                }
+                set_current_page(i);
+                
                 
             }
+
+            //////////////populando as paginas ///////////////// 
+            pages['page' + i].draw = new Konva.Group({
+                clipFunc: function(ctx) {
+                    ctx.beginPath(); // Inicia um novo caminho
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                    ctx.closePath(); // Fecha o caminho
+                    ctx.clip(); // Aplica o recorte
+                }
+            });
+
+            // Crie um novo bgRect para o grupo de bg rect
+            pages['page' + i].background = new Konva.Group({
+            });
+
+            ////////// adiciona os grupos a page atual
+            let groupBgRect = bgRect.clone();
+            pages['page' + i].background.add(groupBgRect);
+            let group = pages['page' + i].draw;
+
+
+            bgLayer.add(pages['page'+ i].background);
+            layer.add(group);
+            
+            
         }
-        
 
     } else if (Gettype === 'draw'){
         pages['page0'] = {
             background : null,
             draw : null
         }
-    }
-}
 
-StartInitWithType();
+        pages['page' + currentpage].draw = new Konva.Group({
+            clipFunc: function(ctx) {
+                ctx.beginPath(); // Inicia um novo caminho
+                ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                ctx.closePath(); // Fecha o caminho
+                ctx.clip(); // Aplica o recorte
+            }
+        });
+
+        // Crie um novo bgRect para o grupo de bg rect
+        pages['page' + currentpage].background = new Konva.Group({
+        });
+
+        ////////// adiciona os grupos a page atual
+        let groupBgRect = pages['page' + currentpage].background;
+        let group = pages['page' + currentpage].draw;
+
+        pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
+
+        bgLayer.add(groupBgRect);
+        layer.add(group);
+
+    }
+    
+}
 
 const layer = new Konva.Layer();
 
-pages.page0.draw = new Konva.Group({
-    clipFunc: function(ctx) {
-        ctx.beginPath(); // Inicia um novo caminho
-        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-        ctx.closePath(); // Fecha o caminho
-        ctx.clip(); // Aplica o recorte
-    }
-});
-
-// Crie um novo bgRect para o grupo de bg rect
-pages.page0.background = new Konva.Group({
-});
-
-////////// adiciona os grupos a page atual
-let groupBgRect = pages.page0.background;
-let group = pages.page0.draw;
-
-pages.page0.background.add(bgRect); // Adicione o novo retângulo ao grupo
 
 stage.add(bgLayer);
 stage.add(layer);
 
-bgLayer.add(groupBgRect);
-layer.add(group);
+StartInitWithType(layer,bgLayer);
 
+let group = pages['page' + currentpage].draw;
 
 ////////////////// Variaveis
-const currentpage = 0;
+
 
 let isDrawing = false;
 let lastLine;
@@ -169,7 +198,24 @@ function set_current_tool(tool) {
 }
 
 function set_current_page(index){
+    currentpage = index;
 
+    for (let i = 0; i < pagesDiv.children.length; i++){
+        pagesDiv.children[i].style.color = 'black';
+        if (i != currentpage){
+            pagesDiv.children[i].style.color = 'blue';
+            pages['page' + i].draw.hide();
+            pages['page' + i].background.hide();
+            console.log(pages);
+            
+        }else{
+            pagesDiv.children[i].style.color = 'green';
+            pages['page' + i].draw.show();
+            pages['page' + i].background.show();
+            group = pages['page' + i].draw;
+        }
+        
+    }
 
 }
 
@@ -201,17 +247,30 @@ function saveCanvas() {
     const lascale = stage.scaleX();
 
     ////// resetando as coordenadas da tela pra pos inicial
+
     stage.position({x:0,y:0});
     stage.scale({x:1,y:1});
     layer.draw();
     bgLayer.draw();
     group.draw();
-    // Obtém a URL dos dados da imagem com alta resolução
-    const dataURL = stage.toDataURL({pixelRatio: 3,height:DRAWSIZE.height,width:DRAWSIZE.width});
-    const link = document.createElement('a');
-    link.download = 'drawing.png';
-    link.href = dataURL;
-    link.click();
+    
+    if(Gettype == 'draw'){
+        // Obtém a URL dos dados da imagem com alta resolução
+        const dataURL = stage.toDataURL({pixelRatio: 3,height:DRAWSIZE.height,width:DRAWSIZE.width});
+        const link = document.createElement('a');
+        link.download = 'drawing.png';
+        link.href = dataURL;
+        link.click();
+        //////// salvando a tela de desenho no store
+        let getDrawsURL = JSON.parse(localStorage.getItem('draws-saveds')) || [];
+        getDrawsURL.push(dataURL);
+        /////////// passando a lista de url pro draws
+        localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
+
+    } else if (Gettype == 'manga'){
+        
+
+    }
     //////// resturando as cordenadas da tela
     stage.position(laspos);
     stage.scale({x:lascale,y:lascale});
@@ -219,11 +278,7 @@ function saveCanvas() {
     bgLayer.draw();
     group.draw();
 
-    //////// salvando a tela de desenho no store
-    let getDrawsURL = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-    getDrawsURL.push(dataURL);
-    /////////// passando a lista de url pro draws
-    localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
+
 
 
 }
