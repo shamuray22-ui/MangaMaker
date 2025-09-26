@@ -50,7 +50,7 @@ let forgeratePageButton = null;
 let pagenumbers = -1;
 function StartInitWithType(layer,bgLayer){
     if(Gettype === 'manga'){
-
+        let PagesJson
         getManga.chapters.forEach((page) => {
             if (chapID == page.number){
                 forgeratePageButton = page.pagesCount;
@@ -59,6 +59,35 @@ function StartInitWithType(layer,bgLayer){
         });
         for(let i = 0; i < forgeratePageButton; i++){
             pagenumbers += 1;
+
+            const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
+            PagesJson = getPages[pagenumbers]
+            if (PagesJson != undefined){
+                PagesJson = Konva.Node.create(PagesJson);
+                const clip = new Konva.Group({
+                    clipFunc: function(ctx) {
+                        ctx.beginPath(); // Inicia um novo caminho
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                        ctx.closePath(); // Fecha o caminho
+                        ctx.clip(); // Aplica o recorte
+                    }
+                })
+                clip.add(PagesJson);
+                PagesJson = clip;
+
+            }else{
+                PagesJson = new Konva.Group({
+                    clipFunc: function(ctx) {
+                        ctx.beginPath(); // Inicia um novo caminho
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                        ctx.closePath(); // Fecha o caminho
+                        ctx.clip(); // Aplica o recorte
+                    }
+                });
+            }
+
+            console.log(PagesJson);
+            
             pages['page' + pagenumbers] = {
                     background : null,
                     draw : null
@@ -73,15 +102,22 @@ function StartInitWithType(layer,bgLayer){
             }
 
             //////////////populando as paginas ///////////////// 
-            pages['page' + i].draw = new Konva.Group({
-                clipFunc: function(ctx) {
-                    ctx.beginPath(); // Inicia um novo caminho
-                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                    ctx.closePath(); // Fecha o caminho
-                    ctx.clip(); // Aplica o recorte
-                }
-            });
 
+            if (PagesJson){
+                pages['page' + i].draw = PagesJson;
+
+            }else{
+                console.log('criando nova pagina vazia');
+                
+                pages['page' + i].draw = new Konva.Group({
+                    clipFunc: function(ctx) {
+                        ctx.beginPath(); // Inicia um novo caminho
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                        ctx.closePath(); // Fecha o caminho
+                        ctx.clip(); // Aplica o recorte
+                    }
+                });
+            }
             // Crie um novo bgRect para o grupo de bg rect
             pages['page' + i].background = new Konva.Group({
             });
@@ -268,7 +304,19 @@ function saveCanvas() {
         localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
 
     } else if (Gettype == 'manga'){
-        
+
+        for (let i = 0; i <= pagenumbers; i++){
+            const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
+
+            if (getPages[i]){
+                getPages[i] = pages['page' + i].draw.toJSON();
+            }else{
+                getPages.push(pages['page' + i].draw.toJSON());
+            }
+            
+            localStorage.setItem('mangas', JSON.stringify(getMangaList));
+            
+        }
 
     }
     //////// resturando as cordenadas da tela
