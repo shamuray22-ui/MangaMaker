@@ -48,6 +48,7 @@ const getManga = getMangaList.find(manga => manga.id === Number(id));
 
 let forgeratePageButton = null;
 let pagenumbers = -1;
+
 function StartInitWithType(layer,bgLayer){
     if(Gettype === 'manga'){
         let PagesJson
@@ -62,19 +63,17 @@ function StartInitWithType(layer,bgLayer){
 
             const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
             PagesJson = getPages[pagenumbers]
+            
+            
             if (PagesJson != undefined){
                 PagesJson = Konva.Node.create(PagesJson);
-                const clip = new Konva.Group({
-                    clipFunc: function(ctx) {
-                        ctx.beginPath(); // Inicia um novo caminho
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                        ctx.closePath(); // Fecha o caminho
-                        ctx.clip(); // Aplica o recorte
-                    }
-                })
-                clip.add(PagesJson);
-                PagesJson = clip;
-
+                // Adiciona clipFunc direto no node do grupo
+                PagesJson.clipFunc(function(ctx) {
+                    ctx.beginPath();
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                    ctx.closePath();
+                    ctx.clip();
+                });
             }else{
                 PagesJson = new Konva.Group({
                     clipFunc: function(ctx) {
@@ -85,8 +84,6 @@ function StartInitWithType(layer,bgLayer){
                     }
                 });
             }
-
-            console.log(PagesJson);
             
             pages['page' + pagenumbers] = {
                     background : null,
@@ -234,15 +231,14 @@ function set_current_tool(tool) {
 }
 
 function set_current_page(index){
-    currentpage = index;
 
     for (let i = 0; i < pagesDiv.children.length; i++){
+        currentpage = index;
         pagesDiv.children[i].style.color = 'black';
         if (i != currentpage){
             pagesDiv.children[i].style.color = 'blue';
             pages['page' + i].draw.hide();
             pages['page' + i].background.hide();
-            console.log(pages);
             
         }else{
             pagesDiv.children[i].style.color = 'green';
@@ -303,21 +299,16 @@ function saveCanvas() {
         /////////// passando a lista de url pro draws
         localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
 
-    } else if (Gettype == 'manga'){
+    } else if (Gettype == 'manga') {
+        const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
 
-        for (let i = 0; i <= pagenumbers; i++){
-            const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
-
-            if (getPages[i]){
-                getPages[i] = pages['page' + i].draw.toJSON();
-            }else{
-                getPages.push(pages['page' + i].draw.toJSON());
-            }
-            
-            localStorage.setItem('mangas', JSON.stringify(getMangaList));
-            
+        for (let i = 0; i <= pagenumbers; i++) {
+            getPages[i] = pages['page' + i].draw.toJSON(); 
         }
+        
+        getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
 
+        localStorage.setItem('mangas', JSON.stringify(getMangaList));
     }
     //////// resturando as cordenadas da tela
     stage.position(laspos);

@@ -1,4 +1,4 @@
 
 window.onload = function() {
-    console.log(localStorage);
+    //console.log(localStorage.getItem('mangas'));
 }
