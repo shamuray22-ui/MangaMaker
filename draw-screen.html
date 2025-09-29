@@ -8,6 +8,8 @@
 </head>
 <body>
     <div id="toolbar">
+        <button onclick="undo()">Undo</button>
+        <button onclick="redo()">Redo</button>
         <label>Cor: 
             <input type="color" id="colorPicker" value="#000000">
         </label>
@@ -18,6 +20,7 @@
         <button id="saveBtn" onclick="saveCanvas()">Salvar</button>
         <button id="sairBtn" onclick="toGallery()"> Sair </button>
         <button onclick="callSetSizeDiv()"> Redimensionar Tela </button>
+
         <button> paginas </button>
         <div id="pagesDiv"> </div>
     </div>
@@ -28,8 +31,6 @@
         <button onclick="set_current_tool('select')"> Selecionar </button>
         <button onclick="set_current_tool('pen')">Pen</button>
         <button onclick="set_current_tool('eraser')"> eraser </button>
-        <button onclick="undo()">Undo</button>
-        <button onclick="redo()">Redo</button>
         <button onclick="set_current_tool('rectangle')"> Quad </button>
         <button onclick="set_current_tool('circle')"> Circle </button>
         <button onclick="set_current_tool('line')"> Line </button>

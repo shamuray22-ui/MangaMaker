@@ -1,41 +1,60 @@
-body{
-    background-color: rgb(40, 40, 40);
+body {
+    background-color: #282828; /* tom escuro neutro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-
-#drawlist{
+#drawlist {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid responsivo */
-    grid-gap: 10px;
-    padding: 10px;
-    background-color: rgb(140, 141, 141);
-
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    background-color: #8c8d8d;
+    justify-items: center; /* centraliza os itens no grid */
 }
+
+#drawlist div {
+    border: 5px solid #757575;
+    background-color: #001c35;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px; /* menor que antes para ficar proporcional à imagem */
+}
+
+#drawlist div:hover {
+    background-color: #002848;
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.6);
+}
+
 #drawlist img {
-    align-self: center;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 20px;
-    width: 220px;   /* 800px * 0.2 = 160px */
-    height: 220px;  /* mantém quadrado */
-    object-fit: cover; /* se quiser cortar ou ajustar */
-}#drawlist h1 {
-    font-size: 32px;
-    margin-bottom: 10;
-    text-align: center;
-    color: rgb(255, 255, 255);
-}#drawlist div{
-    border: 10px solid rgb(117, 117, 117);    
-    background-color: rgb(0, 28, 53);
-    scale: 0.9;
-
-}#drawlist div:hover{
-    background-color: rgb(0, 40, 72);
-    scale: 0.94;
+    width: 150px;   /* menor que antes */
+    height: 150px;  /* mantém quadrado */
+    object-fit: cover;
+    margin-top: 15px;
+    border-radius: 8px;
 }
-footer{
-    background-color: rgb(255, 255, 255);
-    
+
+#drawlist h1 {
+    font-size: 28px;
+    margin: 10px 0;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+footer {
+    background-color: #ffffff;
+    text-align: center;
+    padding: 15px 0;
+    font-weight: bold;
+    margin-top: 300px;
 }
 
 #createMangaDiv {
@@ -43,20 +62,19 @@ footer{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: black;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6;
-
+    background-color: #000;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* centraliza verticalmente os itens */
+    justify-content: center;
+    z-index: 10;
 }
 
 #createMangaDiv label {
-    color: white;
+    color: #fff;
+    margin-bottom: 5px;
 }
 
-#sizeDrawCanvaPREV{
-}

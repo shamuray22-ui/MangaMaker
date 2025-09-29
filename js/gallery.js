@@ -10,8 +10,10 @@ function get_draws(){
     
     const draws = JSON.parse(localStorage.getItem('draws-saveds')) || [];
     drawlist.innerHTML = '';
+    console.log('     > ',draws);
     
-    draws.forEach((imageURL,index) => {
+    draws[draws.length - 1].urlLIST.forEach((imageURL,index) => {
+        
 
         const DrawCard = document.createElement('div');
         const newPicture = document.createElement('img');
@@ -23,6 +25,10 @@ function get_draws(){
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
         drawlist.appendChild(DrawCard);
+
+        DrawCard.addEventListener('click', () =>{
+            add_draw(drawlist.children.length);
+        });
             
     });
 
@@ -50,9 +56,14 @@ function get_draws(){
 
 }
 
-function add_draw(){
-    window.location.href = "draw-screen.html";
+function add_draw(id){
+    if (id === 'undefined'){
+        id = 0;
+    }
+
+    window.location.href = "draw-screen.html?id=" + id;
 }
+
 
 const createMangaDiv = document.getElementById('createMangaDiv');
 createMangaDiv.style.visibility = 'hidden';

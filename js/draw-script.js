@@ -287,19 +287,10 @@ function saveCanvas() {
     group.draw();
     
     if(Gettype == 'draw'){
-        // Obtém a URL dos dados da imagem com alta resolução
-        const dataURL = stage.toDataURL({pixelRatio: 3,height:DRAWSIZE.height,width:DRAWSIZE.width});
-        const link = document.createElement('a');
-        link.download = 'drawing.png';
-        link.href = dataURL;
-        link.click();
-        //////// salvando a tela de desenho no store
-        let getDrawsURL = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-        getDrawsURL.push(dataURL);
-        /////////// passando a lista de url pro draws
-        localStorage.setItem('draws-saveds', JSON.stringify(getDrawsURL));
+        
 
     } else if (Gettype == 'manga') {
+        alert('manga salvo com exito');
         const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
 
         for (let i = 0; i <= pagenumbers; i++) {
