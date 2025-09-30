@@ -5,32 +5,45 @@ window.onload = function() {
     localStorage.setItem('type', 'draw');
     get_draws();
 }
- 
-function get_draws(){
-    
-    const draws = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-    drawlist.innerHTML = '';
-    console.log('     > ',draws);
-    
-    draws[draws.length - 1].urlLIST.forEach((imageURL,index) => {
-        
 
+function get_draws(){
+
+    drawlist.innerHTML = '';
+
+    //////////////////////// aqui começa o load de draw
+
+    let getDrawList = JSON.parse(localStorage.getItem('draws-saveds')) || [];
+
+    getDrawList.forEach((draw) => {
         const DrawCard = document.createElement('div');
         const newPicture = document.createElement('img');
         const nameDraw = document.createElement('h1');
         
-        newPicture.src = imageURL;
-        nameDraw.textContent = 'novo desenho > ' + index;
+        if (draw.drawURL != null){
+            newPicture.src = draw.drawURL;
+        }else{
+            newPicture.src = 'assets/drawing.png';
+        }
+        
+        nameDraw.textContent = draw.nameDraw;
+        
+        
 
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
         drawlist.appendChild(DrawCard);
 
         DrawCard.addEventListener('click', () =>{
-            add_draw(drawlist.children.length);
+            localStorage.setItem('type', 'draw');
+            window.location.href = "draw-screen.html?id=" + draw.id;
         });
-            
+
     });
+
+
+
+
+    //////////////////////// aqui começa o load de manga
 
     let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
 
@@ -56,12 +69,42 @@ function get_draws(){
 
 }
 
-function add_draw(id){
-    if (id === 'undefined'){
-        id = 0;
+function add_draw(){
+
+    const DrawCard = document.createElement('div');
+    const newPicture = document.createElement('img');
+    const nameDraw = document.createElement('h1');
+
+    let getDrawList = JSON.parse(localStorage.getItem('draws-saveds')) || [];
+    
+    newPicture.src = 'assets/drawing.png';
+    nameDraw.textContent = 'novo desenho > ' + getDrawList.length;
+
+
+    DrawCard.appendChild(newPicture);
+    DrawCard.appendChild(nameDraw);
+    drawlist.appendChild(DrawCard);
+
+    const newDraw = {
+        id: getDrawList.length,
+        nameDraw: 'novo desenho ' + getDrawList.length,
+        drawURL: null,
+        drawGroup: null
     }
 
-    window.location.href = "draw-screen.html?id=" + id;
+    getDrawList.push(newDraw);
+    
+    
+    localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
+
+    
+    
+
+    DrawCard.addEventListener('click', () =>{
+        localStorage.setItem('type', 'draw');
+        window.location.href = "draw-screen.html?id=" + newDraw.id;
+    });
+    
 }
 
 
@@ -97,7 +140,8 @@ function createManga(){
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
-    
+    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+
     newPicture.src = 'assets/HQIcon.png'
     nameDraw.textContent = nameManga.value;
 
@@ -109,11 +153,11 @@ function createManga(){
 
     ////////// hora de criar um pacote de hq no local storage
     const newManga = {
-        id: drawlist.children.length,
+        id: getMangaList.length,
         name: nameManga.value,
         chapters: []
     }
-    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    
     getMangaList.push(newManga);
     localStorage.setItem('mangas', JSON.stringify(getMangaList));
 

@@ -49,6 +49,9 @@ const getManga = getMangaList.find(manga => manga.id === Number(id));
 let forgeratePageButton = null;
 let pagenumbers = -1;
 
+let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
+const foundDraw = getDrawList.find(draw => draw.id === Number(id));
+
 function StartInitWithType(layer,bgLayer){
     if(Gettype === 'manga'){
         let PagesJson
@@ -136,15 +139,30 @@ function StartInitWithType(layer,bgLayer){
             background : null,
             draw : null
         }
+        
 
-        pages['page' + currentpage].draw = new Konva.Group({
-            clipFunc: function(ctx) {
-                ctx.beginPath(); // Inicia um novo caminho
-                ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                ctx.closePath(); // Fecha o caminho
-                ctx.clip(); // Aplica o recorte
-            }
-        });
+        if(foundDraw && foundDraw.drawGroup != null){
+            pages['page' + currentpage].draw = Konva.Node.create(foundDraw.drawGroup);
+
+            
+            pages['page' + currentpage].draw.clipFunc(function(ctx) {
+                    ctx.beginPath();
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                    ctx.closePath();
+                    ctx.clip();
+                });
+        }
+        else{
+            pages['page' + currentpage].draw = new Konva.Group({
+                clipFunc: function(ctx) {
+                    ctx.beginPath(); // Inicia um novo caminho
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                    ctx.closePath(); // Fecha o caminho
+                    ctx.clip(); // Aplica o recorte
+                }
+            });
+        }
+        
 
         // Crie um novo bgRect para o grupo de bg rect
         pages['page' + currentpage].background = new Konva.Group({
@@ -287,7 +305,22 @@ function saveCanvas() {
     group.draw();
     
     if(Gettype == 'draw'){
+
+        if (foundDraw){
+            //// guardamos a url pra mera vizualização na galeria
+            foundDraw.drawURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio: 3,   // 3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
+
+            //// aqui que guardamos grupos
+            foundDraw.drawGroup = pages['page0'].draw.toJSON();
+        }
         
+        
+        localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
 
     } else if (Gettype == 'manga') {
         alert('manga salvo com exito');
