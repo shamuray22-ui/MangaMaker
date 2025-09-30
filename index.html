@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de Desenhos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="header">
+        <button class="add-button" onclick="add_draw()">Adicionar Desenho</button>
+        <button onclick="ShowCreateMangaDiv()"> Criar Manga </button>
+        <button onclick="clearStorage()"> Limpar Galeria </button>
+    </header>
+
+    <main>
+        <div class="gallery-controls">
+       
+        </div>
+
+        <div id="drawlist">
+            
+        </div>
+
+        <div id="createMangaDiv">
+            <label>
+                nome do manga:
+            </label>
+            <input type="text" id="nameManga" value="Nova Obra">
+
+            <table>
+                <tr>
+                    <thead>
+                        <label>
+                            resolução de paginas:
+                        </label>
+                    </thead>
+                    <td>
+                        <label>
+                            X
+                            <input type="number" id="resPagesX" value="800">
+                        </label>
+                    </td>
+                    <td>
+                        <label>
+                            Y
+                            <input type="number" id="resPagesY" value="600">
+                        </label>
+                    </td>
+                </tr>
+            </table>
+            <div>
+                <label>
+                    Pre-visualização de proporção:
+                    <img src="assets/drawing.png" id="sizeDrawCanvaPREV">
+                </label>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <button onclick="createManga()"> Criar Manga </button>
+                    </td>
+                    <td>
+                        <button onclick="cancelCreateManga()"> Cancelar </button>
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <p> </p>
+    </footer>
+
+    <script src="globals/globalDebug.js"></script>
+    <script src="js/gallery.js"></script>
+
+</body>
+</html>

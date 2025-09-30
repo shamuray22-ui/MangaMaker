@@ -1,0 +1,107 @@
+body {
+    background-color: rgb(129, 129, 129);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: Arial, sans-serif;
+    padding-top: 40px;
+}
+
+/* Form de criação de capítulo */
+#create-chapter {
+    z-index: 1;
+    position: fixed;
+    background-color: rgb(83, 83, 83);
+    border-radius: 20px;
+    width: 90vw; /* Usar largura relativa */
+    max-width: 600px; /* Manter um máximo em telas grandes */
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+    color: white;
+}
+
+#create-chapter h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+#create-chapter label {
+    font-size: 0.95rem;
+}
+
+#create-chapter input {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#create-chapter button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgb(100, 100, 100);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#create-chapter button:hover {
+    background-color: rgb(120, 120, 120);
+    scale: 0.95;
+}
+
+/* Lista de capítulos */
+#chapter-list h1 {
+    color: white;
+    margin: 0;
+}
+
+#chapter-list img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+#chapter-list div {
+    border-radius: 20px;
+    background-color: rgb(83, 83, 83);
+    width: 90vw; /* Usar largura relativa */
+    max-width: 600px; /* Manter um máximo em telas grandes */
+    height: 100px;
+    scale: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 10px;
+    margin: 32px auto; /* Centraliza o card e aplica margem vertical */
+    transition: 0.2s;
+}
+
+#chapter-list div:hover {
+    scale: 0.95;
+}
+
+/* Botões dentro do capítulo */
+#chapter-list button {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(100, 100, 100);
+    color: white;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: 0.2s;
+}
+
+#chapter-list button:hover {
+    background-color: rgb(120, 120, 120);
+    scale: 0.95;
+}

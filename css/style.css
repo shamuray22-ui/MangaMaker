@@ -1,0 +1,101 @@
+body {
+    background-color: #282828; /* fundo neutro */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- GRID --- */
+#drawlist {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    background-color: #8c8d8d;
+    justify-items: center;
+}
+
+/* --- CARDS --- */
+#drawlist div {
+    border: 3px solid #5e5e5e;
+    background: linear-gradient(160deg, #001c35, #002848);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    max-width: 260px;
+    width: 100%;
+}
+
+#drawlist div:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.6);
+}
+
+/* --- IMAGENS --- */
+#drawlist img {
+    width: 100%;
+    max-width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 12px 0;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+#drawlist img:hover {
+    transform: scale(1.07);
+}
+
+/* --- TÍTULOS --- */
+#drawlist h1 {
+    font-size: 20px;
+    margin: 8px 0 5px 0;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+}
+
+/* --- FOOTER --- */
+footer {
+    background-color: #ffffff;
+    text-align: center;
+    padding: 15px 0;
+    font-weight: bold;
+    margin-top: 100px;
+    box-shadow: 0 -3px 8px rgba(0,0,0,0.2);
+}
+
+/* --- POPUP --- */
+#createMangaDiv {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #000;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    animation: fadeIn 0.3s ease-out;
+}
+
+#createMangaDiv label {
+    color: #fff;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* animação suave ao abrir popup */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}

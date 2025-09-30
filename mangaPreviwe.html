@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré-visualização do Mangá</title>
+    <link rel="stylesheet" href="css/manga-preview-style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Pré-visualização do Mangá</h1>
+    </header>
+
+    <main>
+        <div id="manga-preview-container">
+            <!-- As páginas do mangá serão carregadas aqui -->
+        </div>
+        <div class="manga-navigation">
+            <button onclick="prevPage()">Anterior</button>
+            <span id="page-info">Página 1 de 1</span>
+            <button onclick="nextPage()">Próxima</button>
+        </div>
+        <button onclick="backToGallery()">Voltar para a Galeria</button>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; essa é uma demontração de como ficara sua hq </p>
+    </footer>
+
+    <script src="globals/globalDebug.js"></script>
+    <script src="js/manga-preview.js"></script>
+</body>
+</html>
