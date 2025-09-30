@@ -1,78 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MangaMaker - Tela de Desenho</title>
-    <link rel="stylesheet" href="css/draw-style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MangaMaker - Tela de Desenho</title>
+  <link rel="stylesheet" href="css/draw-style.css">
 </head>
 <body>
-    <div id="toolbar">
-        <button onclick="undo()">Undo</button>
-        <button onclick="redo()">Redo</button>
-        <label>Cor: 
-            <input type="color" id="colorPicker" value="#000000">
-        </label>
-        <label>Tamanho:
-            <input type="range" id="sizePicker" min="1" max="30" value="1">
-        </label>
-        <button id="clearBtn" onclick="clearCanvas()">Limpar</button>
-        <button id="saveBtn" onclick="saveCanvas()">Salvar</button>
-        <button id="sairBtn" onclick="toGallery()"> Sair </button>
-        <button onclick="callSetSizeDiv()"> Redimensionar Tela </button>
 
-        <button> paginas </button>
-        <div id="pagesDiv"> </div>
+  <!-- Barra principal -->
+  <header id="toolbar">
+    <button onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"> Undo</button>
+    <button onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"> Redo</button>
+    <button id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"> Limpar</button>
+    <button id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"> Sair</button>
+    <button onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"> Tela</button>
+    <button id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"> Salvar</button>
+    <div id="pagesDiv"></div>
+  </header>
+
+  <!-- Área do canvas -->
+  <main id="draw-canvas"></main>
+
+  <!-- Ferramentas adicionais -->
+  <div id="toolsdiv">
+    <button onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"> Quad</button>
+    <button onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"> Circle</button>
+    <button onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"> Line</button>
+    <button onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"> Text</button>
+    <button onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"> Laço</button>
+  
+  </div>
+
+  <!-- Barra inferior -->
+  <footer id="bottom-tools">
+    <button onclick="toggleToolsDiv()"><img src="assets/icons/tools.png" alt="Formas"> Formas</button>
+    <button onclick="set_current_tool('pen')"><img src="assets/icons/pen.png" alt="Caneta"> Pen</button>
+    <button onclick="set_current_tool('eraser')"><img src="assets/icons/eraser.png" alt="Borracha"> Eraser</button>
+    
+    <label>
+      Cor: <input type="color" id="colorPicker" value="#000000">
+    </label>
+    <label>
+      Tamanho: <input type="range" id="sizePicker" min="1" max="30" value="1">
+    </label>
+
+    <button>Paginas list</button>
+    <button onclick="setAutoSize()" id="autoSizeBtn"><img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO</button>
+  </footer>
+
+  <!-- Popup de redimensionamento -->
+  <section id="setSizeDiv">
+    <label for="canvasWidth">Largura:</label>
+    <input type="number" id="canvasWidth" value="800">
+    
+    <label for="canvasHeight">Altura:</label>
+    <input type="number" id="canvasHeight" value="600">
+    
+    <button onclick="applyCanvasSize()">Aplicar</button>
+    <button onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
+  </section>
+
+  <!-- Editor de texto -->
+  <section id="textEditorDiv">
+    <label for="editText">Digite seu texto:</label>
+    <textarea id="editText" rows="5" cols="40"></textarea>
+    <div>
+      <label for="textScale">Escala:</label>
+      <input type="range" id="textScale" min="12" max="120" step="1" value="12">
     </div>
 
-    <div id="draw-canvas"></div>
+    <button onclick="saveText()">Salvar</button>
+    <button onclick="cancelEdit()">Cancelar</button>
+  </section>
 
-    <div id="bottom-tools">
-        <button onclick="set_current_tool('select')"> Selecionar </button>
-        <button onclick="set_current_tool('pen')">Pen</button>
-        <button onclick="set_current_tool('eraser')"> eraser </button>
-        <button onclick="set_current_tool('rectangle')"> Quad </button>
-        <button onclick="set_current_tool('circle')"> Circle </button>
-        <button onclick="set_current_tool('line')"> Line </button>
-        <button onclick="set_current_tool('text')"> Text </button>
-        <button onclick="setAutoSize()" id="autoSizeBtn"> AUTO </button>
-    </div>
-
-    <div id="setSizeDiv">
-        <label for="canvasWidth">Largura:</label>
-        <input type="number" id="canvasWidth" value="800">
-        <label for="canvasHeight">Altura:</label>
-        <input type="number" id="canvasHeight" value="600">
-        <button onclick="applyCanvasSize()">Aplicar</button>
-        <button onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
-    </div>
-
-    <div id="textEditorDiv">
-        <label for="editText">Digite seu texto:</label>
-        <textarea id="editText" rows="5" cols="40"></textarea>
-
-        <div>
-            <label for="textX">Posição X:</label>
-            <input type="range" id="textX" min="0" max="600">
-        </div>
-
-        <div>
-            <label for="textY">Posição Y:</label>
-            <input type="range" id="textY" min="0" max="800">
-        </div>
-
-        <div>
-            <label for="textScale">Escala:</label>
-            <input type="range" id="textScale" min="12" max="120" step="1" value="12">
-        </div>
-
-        <button onclick="saveText()">Salvar</button>
-        <button onclick="cancelEdit()">Cancelar</button>
-    </div>
-
-    <script src="globals/globalDebug.js"></script>
-    <script src="globals/konva.min.js"></script>
-    <script src="js/draw-script.js"></script>
-    <script src="js/configDraw-script.js"></script>
+  <!-- Scripts -->
+  <script src="globals/globalDebug.js"></script>
+  <script src="globals/konva.min.js"></script>
+  <script src="js/draw-script.js"></script>
+  <script src="js/configDraw-script.js"></script>
 </body>
 </html>

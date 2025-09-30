@@ -8,8 +8,6 @@ const textEditorDiv = document.getElementById('textEditorDiv');
 textEditorDiv.style.visibility = 'hidden';
 const editText = document.getElementById('editText');
 const textScale = document.getElementById('textScale');
-const textPosX = document.getElementById('textX');
-const textPosY = document.getElementById('textY');
 const autosizeBtn = document.getElementById('autoSizeBtn');
 
 
@@ -44,15 +42,6 @@ function showDivText(){
     }
 }
 
-textPosX.addEventListener('input', function() {
-    if (!lastText) return;
-    
-});
-
-textPosY.addEventListener('input', function() {
-    if (!lastText) return;
-    
-});
 
 textScale.addEventListener('input', function() {
     if(lastText == null){
@@ -119,4 +108,18 @@ function setAutoSize(){
         autosize = false;
     }
 
+}
+
+const toolsdiv = document.getElementById('toolsdiv');
+toolsdiv.style.display = 'none';
+
+function toggleToolsDiv() {
+  if (toolsdiv.style.display === 'none') {
+    toolsdiv.style.display = 'grid';
+  } else if(toolsdiv.style.display === 'grid'){
+    toolsdiv.style.display = 'none';
+  }
+  else {
+    toolsdiv.style.display = 'none';
+  }
 }

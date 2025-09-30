@@ -1,119 +1,193 @@
+/* ======== BASE ======== */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden; /* Evita scroll desnecessário */
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden; /* evita scroll desnecessário */
 }
 
-/* TOOLBAR SUPERIOR */
-#toolbar {
-    background: #222;
-    color: #fff;
-    display: flex;
-    flex-wrap: wrap;           /* Quebra itens em linha quando necessário */
-    justify-content: center;
-    align-items: center;
-    gap: 1.5vw;
-    padding: 1vh 2vw;
-    flex-shrink: 0;
+/* ======== BOTÕES ======== */
+button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
+  width: 60px;
+  height: 60px;
+
+  background-color: #000;
+  border: 1px solid #404040;
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 3px 2px rgba(255, 255, 255, 0.8);
+
+  cursor: pointer;
+  transform: scale(0.97);
+  transition: all 0.2s ease;
 }
+
+button:hover {
+  transform: scale(1);
+  background-color: #232323;
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.8);
+}
+
+button img {
+  max-width: 24px;
+  max-height: 24px;
+}
+
+/* ======== TOOLS LATERAL ======== */
+#toolsdiv {
+  position: fixed;
+  bottom: 120px;
+  left: 0;
+  padding-top: 30px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+  width: auto;
+  height: auto;
+  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* ======== TOOLBAR SUPERIOR ======== */
+#toolbar {
+  background: #222;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: center;
+  align-items: center;
+  gap: 1.5vw;
+
+  padding: 1vh 2vw;
+  flex-shrink: 0;
+}
+
 #toolbar input[type="color"],
 #toolbar input[type="range"] {
-    margin-left: 0.5vw;
+  margin-left: 0.5vw;
 }
 
-/* CANVAS DE DESENHO */
+/* ======== CANVAS ======== */
 #draw-canvas {
-    flex-grow: 1;
-    width: 100%;
-    /* altura ajustada para toolbar superior + bottom-tools fixa */
-    height: calc(100vh - 6vh - 6vh); /* 6vh estimativa toolbar superior e inferior */
-    max-height: 100%;
-    display: block;
-    border: 0.15rem solid #222;
-    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.1);
-    cursor: crosshair;
-    position: relative;
+  flex-grow: 1;
+  width: 100%;
+  height: calc(100vh - 12vh); /* compensação para barras */
+  max-height: 100%;
+
+  display: block;
+  border: 2px solid #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  position: relative;
+  background: #fff;
 }
 
-/* BARRA INFERIOR FIXA */
+/* ======== BARRA INFERIOR ======== */
 #bottom-tools {
-    position: fixed;       /* sempre visível */
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #222;
-    color: #fff;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 2vw;
-    padding: 1.2vh 0;
-    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.08);
-    z-index: 999;          /* acima do canvas */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  background: #222;
+  color: #fff;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw;
+
+  padding: 1vh 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+
+  z-index: 999;
 }
 
-/* POPUP AJUSTE DE TAMANHO */
+/* ======== POPUP AJUSTE DE TAMANHO ======== */
 #setSizeDiv {
-    position: absolute;
-    top: 8vh;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f0f0f0;
-    padding: 1.5vh 2vw;
-    border-radius: 0.8rem;
-    box-shadow: 0 0.2rem 0.5rem rgba(0,0,0,0.2);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 1vw;
-    max-height: 70vh;
-    overflow-y: auto;
+  position: absolute;
+  top: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #f0f0f0;
+  padding: 1.5vh 2vw;
+  border-radius: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
-/* EDITOR DE TEXTO */
+/* ======== EDITOR DE TEXTO ======== */
 #textEditorDiv {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.34);
-    padding: 2vh 2vw;
-    border: 1px solid #000;
-    border-radius: 2rem;
-    z-index: 1000;
-    max-width: 90vw;
-    max-height: 80vh;
-    overflow-y: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: rgba(0,0,0,0.6);
+  padding: 2vh 2vw;
+  border-radius: 1rem;
+
+  z-index: 1000;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  color: #fff;
 }
 
 /* TEXT AREA */
 #editText {
-    min-height: 10vh;
-    width: 100%;
-    box-sizing: border-box;
+  min-height: 10vh;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  resize: vertical;
 }
 
-/* ============================
-   MEDIA QUERIES PARA CELULARES
-   ============================ */
+/* ======== RESPONSIVIDADE ======== */
 @media (max-width: 480px) {
-    #toolbar, #bottom-tools {
-        gap: 1vw;
-        padding: 1vh 1vw;
-    }
-    #setSizeDiv {
-        padding: 1.5vh 1.5vw;
-    }
-    #textEditorDiv {
-        padding: 1.5vh 2vw;
-    }
-    #draw-canvas {
-        height: calc(100vh - 12vh); /* canvas menor em telas pequenas */
-    }
+  #toolbar, #bottom-tools {
+    gap: 1vw;
+    padding: 1vh 1vw;
+  }
+
+  #setSizeDiv {
+    padding: 1vh 1vw;
+  }
+
+  #textEditorDiv {
+    padding: 1.5vh 2vw;
+  }
+
+  #draw-canvas {
+    height: calc(100vh - 14vh);
+  }
+
+  button {
+    width: 50px;
+    height: 50px;
+    gap: 6px;
+  }
 }
