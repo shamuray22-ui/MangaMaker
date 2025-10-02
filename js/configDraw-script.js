@@ -9,8 +9,8 @@ textEditorDiv.style.visibility = 'hidden';
 const editText = document.getElementById('editText');
 const textScale = document.getElementById('textScale');
 const autosizeBtn = document.getElementById('autoSizeBtn');
-
-
+const selectBrushDiv = document.getElementById('selectBrushDiv');
+selectBrushDiv.style.display = 'none';
 
 function callSetSizeDiv(){
     const setSizeDiv = document.getElementById('setSizeDiv');
@@ -121,5 +121,17 @@ function toggleToolsDiv() {
   }
   else {
     toolsdiv.style.display = 'none';
+  }
+}
+
+
+function showSelectBrushDiv(){
+  if (selectBrushDiv.style.display === 'none') {
+    selectBrushDiv.style.display = 'flex';
+  } else if(selectBrushDiv.style.display === 'flex'){
+    selectBrushDiv.style.display = 'none';
+  }
+  else {
+    selectBrushDiv.style.display = 'none';
   }
 }

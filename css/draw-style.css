@@ -11,7 +11,7 @@ body {
 }
 
 /* ======== BOTÕES ======== */
-button {
+.Generalbutton {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -32,18 +32,19 @@ button {
   transition: all 0.2s ease;
 }
 
-button:hover {
+.Generalbutton:hover {
   transform: scale(1);
   background-color: #232323;
   box-shadow: 0 3px 10px rgba(255, 255, 255, 0.8);
 }
 
-button img {
+.Generalbutton img {
   max-width: 24px;
   max-height: 24px;
 }
 
-/* ======== TOOLS LATERAL ======== */
+/* ======== TOOLS ENGAVETADO*/
+
 #toolsdiv {
   position: fixed;
   bottom: 120px;
@@ -53,7 +54,6 @@ button img {
   padding-bottom: 30px;
   width: auto;
   height: auto;
-  
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 5px;
@@ -72,8 +72,11 @@ button img {
 
   padding: 1vh 2vw;
   flex-shrink: 0;
+  position: relative;
+  padding: 1vh 0;
+  box-shadow: 0 15px 8px rgba(0, 0, 0, 0.2);
+  z-index: 999;
 }
-
 #toolbar input[type="color"],
 #toolbar input[type="range"] {
   margin-left: 0.5vw;
@@ -85,15 +88,9 @@ button img {
   width: 100%;
   height: calc(100vh - 12vh); /* compensação para barras */
   max-height: 100%;
-
   display: block;
-  border: 2px solid #222;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: crosshair;
-  position: relative;
-  background: #fff;
 }
-
 /* ======== BARRA INFERIOR ======== */
 #bottom-tools {
   position: fixed;
@@ -137,6 +134,27 @@ button img {
   overflow-y: auto;
 }
 
+#selectBrushDiv {
+  position: fixed;
+  display: flex;
+  flex-direction: column;   /* lista de brushes lado a lado */
+  overflow: scroll;
+  top: 302px;
+  background-color: #232323;
+  width: 50%;            /* ou algo proporcional */
+  max-width: 800px;      /* limite pra não virar monstro */
+  height: 600px;
+  padding: 20px;
+  border-radius: 10px;
+  gap: 15px;             /* espaçamento entre brushes */
+}#selectBrushDiv label {
+  color: rgb(255, 255, 255);            /* espaçamento entre brushes */
+} 
+
+#BrushBtn{
+  width: 200px;
+  align-items: flex-start;
+} 
 /* ======== EDITOR DE TEXTO ======== */
 #textEditorDiv {
   position: fixed;
@@ -158,7 +176,7 @@ button img {
 /* TEXT AREA */
 #editText {
   min-height: 10vh;
-  width: 100%;
+  width: 100%;;
   box-sizing: border-box;
   border-radius: 6px;
   border: 1px solid #444;
@@ -185,7 +203,7 @@ button img {
     height: calc(100vh - 14vh);
   }
 
-  button {
+  #brushbutton {
     width: 50px;
     height: 50px;
     gap: 6px;

@@ -10,12 +10,12 @@
 
   <!-- Barra principal -->
   <header id="toolbar">
-    <button onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"> Undo</button>
-    <button onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"> Redo</button>
-    <button id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"> Limpar</button>
-    <button id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"> Sair</button>
-    <button onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"> Tela</button>
-    <button id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"> Salvar</button>
+    <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"> Undo</button>
+    <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"> Redo</button>
+    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"> Limpar</button>
+    <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"> Sair</button>
+    <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"> Tela</button>
+    <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"> Salvar</button>
     <div id="pagesDiv"></div>
   </header>
 
@@ -24,19 +24,25 @@
 
   <!-- Ferramentas adicionais -->
   <div id="toolsdiv">
-    <button onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"> Quad</button>
-    <button onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"> Circle</button>
-    <button onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"> Line</button>
-    <button onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"> Text</button>
-    <button onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"> Laço</button>
-  
+    <button class="Generalbutton" onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"> Quad</button>
+    <button class="Generalbutton" onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"> Circle</button>
+    <button class="Generalbutton" onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"> Line</button>
+    <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"> Text</button>
+    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"> Laço</button>
+  </div>
+
+  <!-- Seleção de pincel -->
+  <div id="selectBrushDiv">
+    <label> Pinceis </label>
+    <button class="Generalbutton" id="BrushBtn"> brush default <img src='assets/brush/default.png'> </button>
   </div>
 
   <!-- Barra inferior -->
   <footer id="bottom-tools">
-    <button onclick="toggleToolsDiv()"><img src="assets/icons/tools.png" alt="Formas"> Formas</button>
-    <button onclick="set_current_tool('pen')"><img src="assets/icons/pen.png" alt="Caneta"> Pen</button>
-    <button onclick="set_current_tool('eraser')"><img src="assets/icons/eraser.png" alt="Borracha"> Eraser</button>
+    <button class="Generalbutton" onclick="toggleToolsDiv()"><img src="assets/icons/tools.png" alt="Formas"> Formas</button>
+    <button class="Generalbutton" onclick="set_current_tool('pen')"><img src="assets/icons/pen.png" alt="Caneta"> Pen</button>
+    <button class="Generalbutton" onclick="showSelectBrushDiv()"> <img src='assets/brush/default.png'> Texure </button>
+    <button class="Generalbutton" onclick="set_current_tool('eraser')"><img src="assets/icons/eraser.png" alt="Borracha"> Eraser</button>
     
     <label>
       Cor: <input type="color" id="colorPicker" value="#000000">
@@ -45,8 +51,8 @@
       Tamanho: <input type="range" id="sizePicker" min="1" max="30" value="1">
     </label>
 
-    <button>Paginas list</button>
-    <button onclick="setAutoSize()" id="autoSizeBtn"><img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO</button>
+    <button class="Generalbutton">Paginas list</button>
+    <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn"><img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO</button>
   </footer>
 
   <!-- Popup de redimensionamento -->
@@ -57,8 +63,8 @@
     <label for="canvasHeight">Altura:</label>
     <input type="number" id="canvasHeight" value="600">
     
-    <button onclick="applyCanvasSize()">Aplicar</button>
-    <button onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
+    <button class="Generalbutton" onclick="applyCanvasSize()">Aplicar</button>
+    <button class="Generalbutton" onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
   </section>
 
   <!-- Editor de texto -->
@@ -70,8 +76,8 @@
       <input type="range" id="textScale" min="12" max="120" step="1" value="12">
     </div>
 
-    <button onclick="saveText()">Salvar</button>
-    <button onclick="cancelEdit()">Cancelar</button>
+    <button class="Generalbutton" onclick="saveText()">Salvar</button>
+    <button class="Generalbutton" onclick="cancelEdit()">Cancelar</button>
   </section>
 
   <!-- Scripts -->
