@@ -270,6 +270,7 @@ function set_current_page(index){
 }
 
 function undo(){
+
     const lastAction = undoHistory.pop();
     if (lastAction) {
         lastAction.remove(); // Remove a última linha do grupo
@@ -350,21 +351,18 @@ function AddactionToHistory() {
     if (lastLine) {
         undoHistory.push(lastLine);
         lastLine = null;
-    }
-    if (lastRect) {
+    } else if (lastRect) {
         undoHistory.push(lastRect);
         lastRect = null;
-    }
-    if (lastCicle) {
+    } else if (lastCicle) {
         undoHistory.push(lastCicle);
         lastCicle = null;
-    }
-    if (lastLineTool){
+    } else if (lastLineTool) {
         undoHistory.push(lastLineTool);
         lastLineTool = null;
-    }
-    if (lastText){
+    } else if (lastText) {
         undoHistory.push(lastText);
+        // lastText não é resetado aqui, pois o editor pode continuar ativo
     }
 }
 
@@ -472,6 +470,12 @@ stage.on('mousedown touchstart', function(e) {
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
     }
+
+    // Verifica se é um evento de toque e se há mais de um dedo na tela
+    if (e.evt.touches && e.evt.touches.length > 1) {
+        return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
+    }
+
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
@@ -562,7 +566,7 @@ stage.on('mousedown touchstart', function(e) {
     }
 });
 
-stage.on('mousemove touchmove', function() {
+stage.on('mousemove touchmove', function(e) {
     if (!isDrawing) {
         return;
     }
@@ -574,6 +578,11 @@ stage.on('mousemove touchmove', function() {
     const h = Math.abs(pos.y - startpos.y);
 
     if (current_tool == 'pen' || current_tool == 'eraser' && lastLine){
+        // Verifica se é um evento de toque e se há mais de um dedo na tela
+        if (e.evt.touches && e.evt.touches.length > 1) {
+            return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
+        }
+
         const newPoints = lastLine.points().concat([pos.x, pos.y]);
         lastLine.points(newPoints);
     } 
@@ -601,17 +610,6 @@ stage.on('mousemove touchmove', function() {
             lastSelectBox.width(w);
             lastSelectBox.height(h);
         }
-        group.children.forEach(element => {
-            if (element === lastSelectBox) return;
-            
-            if (element instanceof Konva.Line) {
-                if (Konva.Util.haveIntersection(lastSelectBox.getClientRect(), element.getClientRect())) {
-                    element.stroke('red');
-                } else {
-                    element.stroke('black');
-                }
-            }
-        });
     }
     else if (current_tool == 'line' && lastLineTool){
         lastLineTool.points([startpos.x, startpos.y,pos.x,pos.y]);
@@ -622,16 +620,64 @@ stage.on('mousemove touchmove', function() {
 stage.on('mouseup touchend', function() {
     isDrawing = false;
     dragpos = null;
-    
-    AddactionToHistory();
-    
     if (lastSelectBox) {
+        const selectionRect = lastSelectBox.getClientRect();
+        const selectedNodes = [];
+
+        group.children.forEach(element => {
+            if (element === lastSelectBox) return;
+
+            // Verifica se o elemento está dentro da área de seleção
+            if (Konva.Util.haveIntersection(selectionRect, element.getClientRect())) {
+                selectedNodes.push(element);
+            }
+        });
+
+        // Agora você tem os 'selectedNodes' para fazer o que precisar (ex: mover, deletar, etc)
+        // Por enquanto, vamos apenas pintá-los de vermelho para confirmar
+        selectedNodes.forEach(node => {
+            node.stroke('red');
+        });
+
+        console.log('Itens selecionados:', selectedNodes.length);
+
         lastSelectBox.destroy();
         lastSelectBox = null;
     }
+
+    AddactionToHistory();
+
     lastDist = 0; // reseta quando os dedos soltam
 
     layer.batchDraw();
+});
+
+stage.on('mouseleave touchcancel', function() {
+    lastLine = null;
+    isDrawing = false;
+
+    AddactionToHistory();
+
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
+
+    }
+    lastDist = 0; // reseta quando os dedos soltam
+});
+
+stage.on('mouseleave touchcancel', function() {
+    lastLine = null;
+    isDrawing = false;
+
+    AddactionToHistory();
+
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
+
+    }
+    lastDist = 0; // reseta quando os dedos soltam
 });
 
 stage.on('mouseleave touchcancel', function() {

@@ -1,4 +1,4 @@
-
+//#region INITIALIZATION
 const drawlist = document.getElementById('drawlist');
 
 window.onload = function() {
@@ -68,7 +68,9 @@ function get_draws(){
     });
 
 }
+//#endregion
 
+//#region DRAW MANAGEMENT
 function add_draw(){
 
     const DrawCard = document.createElement('div');
@@ -106,8 +108,9 @@ function add_draw(){
     });
     
 }
+//#endregion
 
-
+//#region MANGA MANAGEMENT
 const createMangaDiv = document.getElementById('createMangaDiv');
 createMangaDiv.style.visibility = 'hidden';
 
@@ -170,7 +173,9 @@ function createManga(){
 function cancelCreateManga(){
     createMangaDiv.style.visibility = 'hidden';
 }
+//#endregion
 
+//#region STORAGE MANAGEMENT
 function clearStorage(){
     let confim = window.confirm('isso vai apagar todas as suas obra e desenhos ');
     if (confim == true){
@@ -180,3 +185,4 @@ function clearStorage(){
         return;
     }
 }
+//#endregion

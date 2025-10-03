@@ -1,3 +1,4 @@
+//#region ELEMENT INITIALIZATION
 const CanvasSizeDiv = document.getElementById('setSizeDiv');
 CanvasSizeDiv.style.display = 'none';
 
@@ -12,6 +13,11 @@ const autosizeBtn = document.getElementById('autoSizeBtn');
 const selectBrushDiv = document.getElementById('selectBrushDiv');
 selectBrushDiv.style.display = 'none';
 
+const toolsdiv = document.getElementById('toolsdiv');
+toolsdiv.style.display = 'none';
+//#endregion
+
+//#region CANVAS CONFIGURATION
 function callSetSizeDiv(){
     const setSizeDiv = document.getElementById('setSizeDiv');
     if (setSizeDiv.style.display === 'none' || setSizeDiv.style.display === '') {
@@ -34,7 +40,9 @@ function applyCanvasSize(){
 
     stage.batchDraw();
 }
+//#endregion
 
+//#region TEXT EDITOR
 function showDivText(){
     textEditorDiv.style.visibility = 'visible';
     if (!lastText){
@@ -82,37 +90,9 @@ function cancelEdit(){
     editText.value = '';
 
 }
+//#endregion
 
-function toGallery(){
-    let gettype = localStorage.getItem('type');
-    
-    if(gettype == 'manga'){
-        window.location.href = "manga-screen.html?id=" + id;
-    } else{
-        window.location.href = "index.html";
-    }
-    
-}
-
-
-function setAutoSize(){
-    if (autosizeBtn.textContent == 'AUTO') {
-        autosizeBtn.textContent = 'MANUAL';
-        autosize = false;
-    }else if (autosizeBtn.textContent == 'MANUAL') {
-        autosizeBtn.textContent = 'AUTO';
-        autosize = true;
-    }
-    else {
-        autosizeBtn.textContent = 'MANUAL';
-        autosize = false;
-    }
-
-}
-
-const toolsdiv = document.getElementById('toolsdiv');
-toolsdiv.style.display = 'none';
-
+//#region UI TOGGLES
 function toggleToolsDiv() {
   if (toolsdiv.style.display === 'none') {
     toolsdiv.style.display = 'grid';
@@ -135,3 +115,34 @@ function showSelectBrushDiv(){
     selectBrushDiv.style.display = 'none';
   }
 }
+//#endregion
+
+//#region TOOL CONFIGURATION
+function setAutoSize(){
+    if (autosizeBtn.textContent == 'AUTO') {
+        autosizeBtn.textContent = 'MANUAL';
+        autosize = false;
+    }else if (autosizeBtn.textContent == 'MANUAL') {
+        autosizeBtn.textContent = 'AUTO';
+        autosize = true;
+    }
+    else {
+        autosizeBtn.textContent = 'MANUAL';
+        autosize = false;
+    }
+
+}
+//#endregion
+
+//#region NAVIGATION
+function toGallery(){
+    let gettype = localStorage.getItem('type');
+    
+    if(gettype == 'manga'){
+        window.location.href = "manga-screen.html?id=" + id;
+    } else{
+        window.location.href = "index.html";
+    }
+    
+}
+//#endregion

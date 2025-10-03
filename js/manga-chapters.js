@@ -1,3 +1,4 @@
+//#region INITIALIZATION
 const chapter_list = document.getElementById('chapter-list');
 const create_chapter = document.getElementById('create-chapter');
 const emptyH1 = document.getElementById('emptyH1');
@@ -34,7 +35,9 @@ function loadChapterList(){
         emptyH1.style.visibility = 'hidden';
     }
 }
+//#endregion
 
+//#region CHAPTER MANAGEMENT
 // Mostrar/ocultar o card de criação
 function toggleCreateChapter() {
     if(create_chapter.style.visibility === 'hidden') {
@@ -122,6 +125,9 @@ function createChapterUX(title,number,numpages,imgPage){
 
 
 }
+//#endregion
+
+//#region NAVIGATION
 function returnToGallery(){
     window.location.href = "index.html";
 }
@@ -129,3 +135,4 @@ function returnToGallery(){
 function enterPreview(){
     document.location = 'mangaPreviwe.html?id=' + id;
 }
+//#endregion
