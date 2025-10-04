@@ -6,6 +6,11 @@ let DRAWSIZE = {
     width: 600,
     height: 800
 }
+const getwidthInput = document.getElementById('canvasWidth');
+const getheightInput = document.getElementById('canvasHeight');
+
+
+
 
 let Gettype = localStorage.getItem('type');
 
@@ -52,7 +57,9 @@ let pagenumbers = -1;
 let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
 const foundDraw = getDrawList.find(draw => draw.id === Number(id));
 
+//#region START
 function StartInitWithType(layer,bgLayer){
+    
     if(Gettype === 'manga'){
         let PagesJson
         getManga.chapters.forEach((page) => {
@@ -143,8 +150,13 @@ function StartInitWithType(layer,bgLayer){
 
         if(foundDraw && foundDraw.drawGroup != null){
             pages['page' + currentpage].draw = Konva.Node.create(foundDraw.drawGroup);
-
-            
+            DRAWSIZE.width = foundDraw.DRAWSIZE.width;
+            DRAWSIZE.height = foundDraw.DRAWSIZE.height
+            bgRect.width(DRAWSIZE.width);
+            bgRect.height(DRAWSIZE.height);
+            /// atualizando os numeros de resize da UX
+            getwidthInput.value = DRAWSIZE.width;
+            getheightInput.value = DRAWSIZE.height;
             pages['page' + currentpage].draw.clipFunc(function(ctx) {
                     ctx.beginPath();
                     ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
@@ -173,6 +185,7 @@ function StartInitWithType(layer,bgLayer){
         let group = pages['page' + currentpage].draw;
 
         pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
+
 
         bgLayer.add(groupBgRect);
         layer.add(group);
@@ -270,7 +283,6 @@ function set_current_page(index){
 }
 
 function undo(){
-
     const lastAction = undoHistory.pop();
     if (lastAction) {
         lastAction.remove(); // Remove a última linha do grupo
@@ -292,6 +304,8 @@ function clearCanvas() {
     group.destroyChildren(); // Remove todas as linhas do grupo
 }
 
+
+//#region SAVE
 function saveCanvas() {
     ////// salvando as coordenadas da tela
     const laspos = stage.position();
@@ -318,6 +332,9 @@ function saveCanvas() {
 
             //// aqui que guardamos grupos
             foundDraw.drawGroup = pages['page0'].draw.toJSON();
+            foundDraw.DRAWSIZE.width = DRAWSIZE.width;
+            foundDraw.DRAWSIZE.height = DRAWSIZE.height;
+        
         }
         
         
@@ -341,10 +358,6 @@ function saveCanvas() {
     layer.draw();
     bgLayer.draw();
     group.draw();
-
-
-
-
 }
 
 function AddactionToHistory() {
