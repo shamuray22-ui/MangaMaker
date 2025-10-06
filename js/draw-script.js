@@ -84,6 +84,32 @@ function StartInitWithType(layer,bgLayer){
                     ctx.closePath();
                     ctx.clip();
                 });
+                PagesJson.children.forEach(child => {
+                    if (child.nodeType === 'Shape'){
+                        child.sceneFunc(function(ctx) {
+                            ctx.beginPath();
+                            
+                            const points = child.attrs.points;
+                            
+                            if (points.length >= 2){
+                                ctx.moveTo(points[0], points[1]);
+                                for(let i = 2; i < points.length; i += 2){
+                                    ctx.lineTo(points[i], points[i + 1]);
+                                }
+                            }
+                            ctx.strokeStyle = child.attrs.strokeColor;
+                            ctx.lineWidth = child.attrs.lineWidth;
+                            ctx.lineCap = child.attrs.lineCap;
+                            ctx.lineJoin = child.attrs.lineJoin;
+                            ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                            
+                            ctx.fillStrokeShape(child);
+                            ctx.stroke();
+                        });
+                        
+                    }
+
+                });
             }else{
                 PagesJson = new Konva.Group({
                     clipFunc: function(ctx) {
@@ -150,10 +176,12 @@ function StartInitWithType(layer,bgLayer){
 
         if(foundDraw && foundDraw.drawGroup != null){
             pages['page' + currentpage].draw = Konva.Node.create(foundDraw.drawGroup);
+            
             DRAWSIZE.width = foundDraw.DRAWSIZE.width;
             DRAWSIZE.height = foundDraw.DRAWSIZE.height
             bgRect.width(DRAWSIZE.width);
             bgRect.height(DRAWSIZE.height);
+
             /// atualizando os numeros de resize da UX
             getwidthInput.value = DRAWSIZE.width;
             getheightInput.value = DRAWSIZE.height;
@@ -162,7 +190,36 @@ function StartInitWithType(layer,bgLayer){
                     ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
                     ctx.closePath();
                     ctx.clip();
-                });
+            });
+            
+            pages['page' + currentpage].draw.children.forEach(child => {
+                if (child.nodeType === 'Shape'){
+                    child.sceneFunc(function(ctx) {
+                        ctx.beginPath();
+                        
+                        const points = child.attrs.points;
+                        
+                        if (points.length >= 2){
+                            ctx.moveTo(points[0], points[1]);
+                            for(let i = 2; i < points.length; i += 2){
+                                ctx.lineTo(points[i], points[i + 1]);
+                            }
+                        }
+                        ctx.strokeStyle = child.attrs.strokeColor;
+                        ctx.lineWidth = child.attrs.lineWidth;
+                        ctx.lineCap = child.attrs.lineCap;
+                        ctx.lineJoin = child.attrs.lineJoin;
+                        ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                        
+                        ctx.fillStrokeShape(child);
+                        ctx.stroke();
+                    });
+                    
+                }
+
+            });
+            
+            
         }
         else{
             pages['page' + currentpage].draw = new Konva.Group({
@@ -204,32 +261,17 @@ StartInitWithType(layer,bgLayer);
 
 let group = pages['page' + currentpage].draw;
 
+//#region CLASS DE STROKES
+let currentStrokePoints = [];
+
 //#region  VARIAVEIS
 
 let isDrawing = false;
-let lastLine;
+let TexturedLine;
 
 let autosize = true;
 let autoSizeSensi = 3;
 
-let TexturedLine;
-
-class StrokeTexturedClass {
-    static LastStrokesposition = [];
-
-    constructor(){
-        const newStroke = {strokePos: []};
-        this.stroke = newStroke;
-        StrokeTexturedClass.LastStrokesposition.push(newStroke);
-    }
-    CriarNovoStroke(stroke){
-        const newStroke = {strokePos:[]}
-        this.stroke  = newStroke;
-        StrokeTexturedClass.LastStrokesposition.push(newStroke);
-    }
-}
-const stroke1 = new StrokeTexturedClass();
-console.log(stroke1);
 
 let current_tool = 'pen';
 
@@ -300,104 +342,7 @@ function set_current_page(index){
     }
 
 }
-
-function undo(){
-    const lastAction = undoHistory.pop();
-    if (lastAction) {
-        lastAction.remove(); // Remove a última linha do grupo
-        redoHistory.push(lastAction); // Adiciona a ação removida ao histórico de refazer
-        layer.draw();
-    }
-}
-
-function redo(){
-    const actionToRedo = redoHistory.pop();
-    if (actionToRedo) {
-        group.add(actionToRedo); // Adiciona a ação de volta ao grupo
-        undoHistory.push(actionToRedo); // Adiciona a ação de volta ao histórico de desfazer
-        layer.draw();
-    }
-}
-
-function clearCanvas() {
-    group.destroyChildren(); // Remove todas as linhas do grupo
-}
-
-
-//#region SAVE
-function saveCanvas() {
-    ////// salvando as coordenadas da tela
-    const laspos = stage.position();
-    const lascale = stage.scaleX();
-
-    ////// resetando as coordenadas da tela pra pos inicial
-
-    stage.position({x:0,y:0});
-    stage.scale({x:1,y:1});
-    layer.draw();
-    bgLayer.draw();
-    group.draw();
-    
-    if(Gettype == 'draw'){
-
-        if (foundDraw){
-            //// guardamos a url pra mera vizualização na galeria
-            foundDraw.drawURL = stage.toDataURL({
-                mimeType: "image/png",
-                pixelRatio: 3,   // 3x mais nítido
-                width: DRAWSIZE.width,
-                height: DRAWSIZE.height
-            });
-
-            //// aqui que guardamos grupos
-            foundDraw.drawGroup = pages['page0'].draw.toJSON();
-            foundDraw.DRAWSIZE.width = DRAWSIZE.width;
-            foundDraw.DRAWSIZE.height = DRAWSIZE.height;
-        
-        }
-        
-        
-        localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
-
-    } else if (Gettype == 'manga') {
-        alert('manga salvo com exito');
-        const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
-
-        for (let i = 0; i <= pagenumbers; i++) {
-            getPages[i] = pages['page' + i].draw.toJSON(); 
-        }
-        
-        getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-
-        localStorage.setItem('mangas', JSON.stringify(getMangaList));
-    }
-    //////// resturando as cordenadas da tela
-    stage.position(laspos);
-    stage.scale({x:lascale,y:lascale});
-    layer.draw();
-    bgLayer.draw();
-    group.draw();
-}
-//#region ADD TO HISTORY
-function AddactionToHistory() {
-    if (lastLine) {
-        undoHistory.push(lastLine);
-        lastLine = null;
-    } else if (lastRect) {
-        undoHistory.push(lastRect);
-        lastRect = null;
-    } else if (lastCicle) {
-        undoHistory.push(lastCicle);
-        lastCicle = null;
-    } else if (lastLineTool) {
-        undoHistory.push(lastLineTool);
-        lastLineTool = null;
-    } else if (lastText) {
-        undoHistory.push(lastText);
-        // lastText não é resetado aqui, pois o editor pode continuar ativo
-    }
-}
-
+//#region ZOOM
 stage.container().addEventListener('wheel', function(e) {
     e.preventDefault();
     const oldScale = stage.scaleX();
@@ -503,7 +448,6 @@ stage.on('mousedown touchstart', function(e) {
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
     }
-
     // Verifica se é um evento de toque e se há mais de um dedo na tela
     if (e.evt.touches && e.evt.touches.length > 1) {
         return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
@@ -514,45 +458,43 @@ stage.on('mousedown touchstart', function(e) {
     startpos = pos;
 
     if (current_tool == 'pen' || current_tool == 'eraser'){
-        LastStrokesposition = [];
+
         const myImageObj = new Image();
         myImageObj.src = 'assets/brush/Xbrush.png';
         
-        lastLine = new Konva.Line({
-            //stroke: colorPicker.value,
-            strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
-            globalCompositeOperation: composite,
-            points: [pos.x, pos.y],
-            lineCap: 'round',
-            lineJoin: 'round'
-            
-        });
         TexturedLine = new Konva.Shape({
+            strokeColor: colorPicker.value,
+            lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
+            globalCompositeOperation: composite,
+            lineCap: 'round',
+            lineJoin: 'round',
+            points: [],
             sceneFunc: function(ctx, shape){
                 ctx.beginPath();
-                if (LastStrokesposition.length > 0){
-                    ctx.moveTo(LastStrokesposition[0].x,LastStrokesposition[0].y);
-                    for (let i = 0; i < LastStrokesposition.length; i++){
-                        ctx.lineTo(LastStrokesposition[i].x,LastStrokesposition[i].y);
+                
+                const points = shape.attrs.points;
+
+                if (points.length >= 2){ // precisa de pelo menos x,y
+                    ctx.moveTo(points[0], points[1]); // primeiro ponto
+                    for (let i = 2; i < points.length; i += 2){ // pula de 2 em 2
+                        ctx.lineTo(points[i], points[i + 1]);
                     }
                 }
-                
-                ctx.lineWidth = 1;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.globalCompositeOperation = composite;
+
+                ctx.strokeStyle = shape.attrs.strokeColor;
+                ctx.lineWidth = shape.attrs.lineWidth;
+                ctx.lineCap = shape.attrs.lineCap;
+                ctx.lineJoin = shape.attrs.lineJoin;
+                ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
+
                 
                 ctx.fillStrokeShape(shape);
                 ctx.stroke();
-                
-
             }
             
-        })
+        });
         group.add(TexturedLine);
-        
-        group.add(lastLine);
-        
+
     }
     else if (current_tool == 'rectangle'){
         // iniciar com x/y no ponto de início e tamanho 0
@@ -562,7 +504,8 @@ stage.on('mousedown touchstart', function(e) {
             width: 0,
             height: 0,
             fill: '#ffff', // transparente por padrão
-            stroke: 'black'
+            stroke: 'black',
+            draggable: true
         });
         group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
@@ -573,9 +516,11 @@ stage.on('mousedown touchstart', function(e) {
             radiusX: 0,
             radiusY: 0,
             fill: '#ffff',
-            stroke: 'black'
+            stroke: 'black',
+            draggable: true
         });
         group.add(lastCicle);
+        
 
     }
     else if (current_tool == 'select'){
@@ -637,16 +582,13 @@ stage.on('mousemove touchmove', function(e) {
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
 
-    if (current_tool == 'pen' || current_tool == 'eraser' && lastLine){
+    if (current_tool == 'pen' || current_tool == 'eraser' && TexturedLine){
         // Verifica se é um evento de toque e se há mais de um dedo na tela
         if (e.evt.touches && e.evt.touches.length > 1) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
-        LastStrokesposition.push(pos);
-        console.log(LastStrokesposition);
-        
-        const newPoints = lastLine.points().concat([pos.x, pos.y]);
-        lastLine.points(newPoints);
+        TexturedLine.attrs.points.push(pos.x, pos.y);
+        layer.batchDraw()
     } 
     else if (current_tool == 'circle' && lastCicle){
         lastCicle.x(x);
@@ -714,37 +656,116 @@ stage.on('mouseup touchend', function() {
     layer.batchDraw();
 });
 
+
+function clearCanvas() {
+    group.destroyChildren(); // Remove todas as linhas do grupo
+}
+
+
+//#region SAVE
+function saveCanvas() {
+    ////// salvando as coordenadas da tela
+    const laspos = stage.position();
+    const lascale = stage.scaleX();
+
+    ////// resetando as coordenadas da tela pra pos inicial
+
+    stage.position({x:0,y:0});
+    stage.scale({x:1,y:1});
+    layer.draw();
+    bgLayer.draw();
+    group.draw();
+    
+    if(Gettype == 'draw'){
+
+        if (foundDraw){
+            //// guardamos a url pra mera vizualização na galeria
+            foundDraw.drawURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio: 3,   // 3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
+
+            //// aqui que guardamos grupos
+            
+            foundDraw.drawGroup = pages['page0'].draw.toJSON();
+            
+            foundDraw.DRAWSIZE.width = DRAWSIZE.width;
+            foundDraw.DRAWSIZE.height = DRAWSIZE.height;
+        
+        }
+        
+        
+        localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
+
+    } else if (Gettype == 'manga') {
+        alert('manga salvo com exito');
+        const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
+
+        for (let i = 0; i <= pagenumbers; i++) {
+            getPages[i] = pages['page' + i].draw.toJSON(); 
+        }
+        
+        getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
+
+        localStorage.setItem('mangas', JSON.stringify(getMangaList));
+    }
+    //////// resturando as cordenadas da tela
+    stage.position(laspos);
+    stage.scale({x:lascale,y:lascale});
+    layer.draw();
+    bgLayer.draw();
+    group.draw();
+}
+//#region ADD TO HISTORY
+function AddactionToHistory() {
+    if (TexturedLine){
+        undoHistory.push(TexturedLine);
+        TexturedLine = null;
+    } else if (lastRect) {
+        undoHistory.push(lastRect);
+        lastRect = null;
+    } else if (lastCicle) {
+        undoHistory.push(lastCicle);
+        lastCicle = null;
+    } else if (lastLineTool) {
+        undoHistory.push(lastLineTool);
+        lastLineTool = null;
+    } else if (lastText) {
+        undoHistory.push(lastText);
+        // lastText não é resetado aqui, pois o editor pode continuar ativo
+    }
+}
+
+//#region UNDO
+function undo(){
+    const lastAction = undoHistory.pop();
+    
+
+    if (lastAction) {
+        lastAction.remove(); // Remove a última linha do grupo
+        redoHistory.push(lastAction); // Adiciona a ação removida ao histórico de refazer
+        layer.draw();
+
+        
+    }
+    
+}
+
+//#region REDO
+function redo(){
+    const actionToRedo = redoHistory.pop();
+    if (actionToRedo) {
+        group.add(actionToRedo); // Adiciona a ação de volta ao grupo
+        undoHistory.push(actionToRedo); // Adiciona a ação de volta ao histórico de desfazer
+        layer.draw();
+    }
+}
+
+
 //#region MOUSE LEAVE
 stage.on('mouseleave touchcancel', function(e) {
-    lastLine = null;
-    isDrawing = false;
-
-
-    AddactionToHistory();
-
-    if (lastSelectBox) {
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-
-    }
-    lastDist = 0; // reseta quando os dedos soltam
-});
-
-stage.on('mouseleave touchcancel', function() {
-    lastLine = null;
-    isDrawing = false;
-
-    AddactionToHistory();
-
-    if (lastSelectBox) {
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-
-    }
-    lastDist = 0; // reseta quando os dedos soltam
-});
-
-stage.on('mouseleave touchcancel', function() {
     lastLine = null;
     isDrawing = false;
 
