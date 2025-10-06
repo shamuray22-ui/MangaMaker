@@ -6,9 +6,9 @@ let DRAWSIZE = {
     width: 600,
     height: 800
 }
+
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
-
 
 
 
@@ -204,13 +204,32 @@ StartInitWithType(layer,bgLayer);
 
 let group = pages['page' + currentpage].draw;
 
-////////////////// Variaveis
-
+//#region  VARIAVEIS
 
 let isDrawing = false;
 let lastLine;
+
 let autosize = true;
 let autoSizeSensi = 3;
+
+let TexturedLine;
+
+class StrokeTexturedClass {
+    static LastStrokesposition = [];
+
+    constructor(){
+        const newStroke = {strokePos: []};
+        this.stroke = newStroke;
+        StrokeTexturedClass.LastStrokesposition.push(newStroke);
+    }
+    CriarNovoStroke(stroke){
+        const newStroke = {strokePos:[]}
+        this.stroke  = newStroke;
+        StrokeTexturedClass.LastStrokesposition.push(newStroke);
+    }
+}
+const stroke1 = new StrokeTexturedClass();
+console.log(stroke1);
 
 let current_tool = 'pen';
 
@@ -359,7 +378,7 @@ function saveCanvas() {
     bgLayer.draw();
     group.draw();
 }
-
+//#region ADD TO HISTORY
 function AddactionToHistory() {
     if (lastLine) {
         undoHistory.push(lastLine);
@@ -415,6 +434,7 @@ stage.container().addEventListener('wheel', function(e) {
 let lastDist = 0;
 let lastMidPoint = null;
 
+//#region TOUCH MOVE
 stage.container().addEventListener('touchmove', function(e) {
     if (e.touches.length === 2) {
         isDrawing = false;
@@ -478,7 +498,7 @@ window.addEventListener('resize', () => {
         stage.batchDraw();
     }
 });
-
+//#region START TOUCH OR MOUSE
 stage.on('mousedown touchstart', function(e) {
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
@@ -494,14 +514,42 @@ stage.on('mousedown touchstart', function(e) {
     startpos = pos;
 
     if (current_tool == 'pen' || current_tool == 'eraser'){
+        LastStrokesposition = [];
+        const myImageObj = new Image();
+        myImageObj.src = 'assets/brush/Xbrush.png';
+        
         lastLine = new Konva.Line({
-            stroke: colorPicker.value,
+            //stroke: colorPicker.value,
             strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             points: [pos.x, pos.y],
             lineCap: 'round',
             lineJoin: 'round'
+            
         });
+        TexturedLine = new Konva.Shape({
+            sceneFunc: function(ctx, shape){
+                ctx.beginPath();
+                if (LastStrokesposition.length > 0){
+                    ctx.moveTo(LastStrokesposition[0].x,LastStrokesposition[0].y);
+                    for (let i = 0; i < LastStrokesposition.length; i++){
+                        ctx.lineTo(LastStrokesposition[i].x,LastStrokesposition[i].y);
+                    }
+                }
+                
+                ctx.lineWidth = 1;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalCompositeOperation = composite;
+                
+                ctx.fillStrokeShape(shape);
+                ctx.stroke();
+                
+
+            }
+            
+        })
+        group.add(TexturedLine);
         
         group.add(lastLine);
         
@@ -575,10 +623,9 @@ stage.on('mousedown touchstart', function(e) {
         lastText.on('dragend', function() {
             draggingText = false;
         });
-
     }
 });
-
+//#region MOUSE TOUCH MOVE AGAIN
 stage.on('mousemove touchmove', function(e) {
     if (!isDrawing) {
         return;
@@ -595,7 +642,9 @@ stage.on('mousemove touchmove', function(e) {
         if (e.evt.touches && e.evt.touches.length > 1) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
-
+        LastStrokesposition.push(pos);
+        console.log(LastStrokesposition);
+        
         const newPoints = lastLine.points().concat([pos.x, pos.y]);
         lastLine.points(newPoints);
     } 
@@ -665,9 +714,11 @@ stage.on('mouseup touchend', function() {
     layer.batchDraw();
 });
 
-stage.on('mouseleave touchcancel', function() {
+//#region MOUSE LEAVE
+stage.on('mouseleave touchcancel', function(e) {
     lastLine = null;
     isDrawing = false;
+
 
     AddactionToHistory();
 
