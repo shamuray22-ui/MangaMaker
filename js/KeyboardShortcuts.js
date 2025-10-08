@@ -1,12 +1,16 @@
 document.addEventListener('keydown', function(event) {
-    event.preventDefault();
+    
     if(event.key === 'z' && (event.ctrlKey || event.metaKey)){
+        event.preventDefault();
         undo();
     } else if(event.key === 'y' && (event.ctrlKey || event.metaKey)){
+        event.preventDefault();
         redo();
     }else if (event.key === 's' && (event.ctrlKey || event.metaKey)){
+        event.preventDefault();
         saveCanvas();
     }else if (event.key === 'c' && (event.ctrlKey || event.metaKey)){
+        event.preventDefault();
         clearCanvas();
     }else if (event.key === 'e'){
         set_current_tool('eraser');

@@ -43,7 +43,6 @@ const pages = {
     
 };
 
-
 let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
 const search = new URLSearchParams(window.location.search);
 const id = search.get('id');
@@ -55,7 +54,7 @@ let forgeratePageButton = null;
 let pagenumbers = -1;
 
 let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
-const foundDraw = getDrawList.find(draw => draw.id === Number(id));
+const foundDraw = getDrawList ? getDrawList.find(draw => draw.id === Number(id)) : null;
 
 //#region START
 function StartInitWithType(layer,bgLayer){
@@ -85,13 +84,13 @@ function StartInitWithType(layer,bgLayer){
                     ctx.clip();
                 });
                 PagesJson.children.forEach(child => {
-                    if (child.nodeType === 'Shape'){
+                    if (child.attrs.customClassName === 'ShapeLine'){
                         child.sceneFunc(function(ctx) {
                             ctx.beginPath();
                             
                             const points = child.attrs.points;
                             
-                            if (points.length >= 2){
+                            if (points != null && points.length >= 2){
                                 ctx.moveTo(points[0], points[1]);
                                 for(let i = 2; i < points.length; i += 2){
                                     ctx.lineTo(points[i], points[i + 1]);
@@ -193,13 +192,15 @@ function StartInitWithType(layer,bgLayer){
             });
             
             pages['page' + currentpage].draw.children.forEach(child => {
-                if (child.nodeType === 'Shape'){
+                
+                if (child.attrs.customClassName === 'ShapeLine'){
+                    
                     child.sceneFunc(function(ctx) {
                         ctx.beginPath();
                         
                         const points = child.attrs.points;
                         
-                        if (points.length >= 2){
+                        if (points != null && points.length >= 2){
                             ctx.moveTo(points[0], points[1]);
                             for(let i = 2; i < points.length; i += 2){
                                 ctx.lineTo(points[i], points[i + 1]);
@@ -218,8 +219,6 @@ function StartInitWithType(layer,bgLayer){
                 }
 
             });
-            
-            
         }
         else{
             pages['page' + currentpage].draw = new Konva.Group({
@@ -469,6 +468,7 @@ stage.on('mousedown touchstart', function(e) {
             lineCap: 'round',
             lineJoin: 'round',
             points: [],
+            customClassName: 'ShapeLine',
             sceneFunc: function(ctx, shape){
                 ctx.beginPath();
                 
@@ -480,7 +480,7 @@ stage.on('mousedown touchstart', function(e) {
                         ctx.lineTo(points[i], points[i + 1]);
                     }
                 }
-
+                
                 ctx.strokeStyle = shape.attrs.strokeColor;
                 ctx.lineWidth = shape.attrs.lineWidth;
                 ctx.lineCap = shape.attrs.lineCap;
@@ -504,8 +504,7 @@ stage.on('mousedown touchstart', function(e) {
             width: 0,
             height: 0,
             fill: '#ffff', // transparente por padrão
-            stroke: 'black',
-            draggable: true
+            stroke: 'black'
         });
         group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
@@ -516,8 +515,7 @@ stage.on('mousedown touchstart', function(e) {
             radiusX: 0,
             radiusY: 0,
             fill: '#ffff',
-            stroke: 'black',
-            draggable: true
+            stroke: 'black'
         });
         group.add(lastCicle);
         
