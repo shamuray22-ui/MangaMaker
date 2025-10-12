@@ -298,14 +298,23 @@ const sizePicker = document.getElementById('sizePicker');
 
 function getGlobalMousePos() {
     const mousePos = stage.getPointerPosition();
-    const scale = stage.scaleX(); // Assuming uniform scaling
+    const scale = stage.scaleX(); // assumindo escala uniforme
+    const rotation = stage.rotation() * Math.PI / 180; // converte pra radianos
     const pos = stage.position();
+
+    // coordenadas relativas ao stage
+    const x = (mousePos.x - pos.x) / scale;
+    const y = (mousePos.y - pos.y) / scale;
+
+    // aplica rotação inversa
+    const cos = Math.cos(-rotation);
+    const sin = Math.sin(-rotation);
+
     return {
-        x: (mousePos.x - pos.x) / scale,
-        y: (mousePos.y - pos.y) / scale
+        x: x * cos - y * sin,
+        y: x * sin + y * cos
     };
 }
-
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
     const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle','select','text'];
@@ -375,10 +384,11 @@ stage.container().addEventListener('wheel', function(e) {
 }, { passive: false });
 
 
+//#region TOUCHZOOM
 let lastDist = 0;
 let lastMidPoint = null;
+let lastAngle = 0;
 
-//#region TOUCH MOVE
 stage.container().addEventListener('touchmove', function(e) {
     if (e.touches.length === 2) {
         isDrawing = false;
@@ -387,50 +397,55 @@ stage.container().addEventListener('touchmove', function(e) {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
 
-        // distância atual entre os dois dedos
-        const dist = Math.hypot(
-            touch1.clientX - touch2.clientX,
-            touch1.clientY - touch2.clientY
-        );
+        const dx = touch2.clientX - touch1.clientX;
+        const dy = touch2.clientY - touch1.clientY;
+        const dist = Math.hypot(dx, dy);
 
-        // ponto médio entre os dedos
         const midPoint = {
             x: (touch1.clientX + touch2.clientX) / 2,
             y: (touch1.clientY + touch2.clientY) / 2
         };
 
+        const angle = Math.atan2(dy, dx);
+
         if (!lastDist) {
             lastDist = dist;
             lastMidPoint = midPoint;
+            lastAngle = angle;
             return;
         }
 
         const oldScale = stage.scaleX();
         const scaleBy = dist / lastDist;
-
-        // Interpolação suave do zoom
         const newScale = Math.max(0.1, Math.min(60, oldScale * scaleBy));
 
-        // Converte o ponto médio para coordenadas relativas da stage
+        const angleDiff = angle - lastAngle;
+        const newRotation = stage.rotation() + (angleDiff * 180 / Math.PI);
+
+        // movimento do ponto médio (pan)
+        const dxMid = midPoint.x - lastMidPoint.x;
+        const dyMid = midPoint.y - lastMidPoint.y;
+
+        // aplica zoom e rotação mantendo o centro
         const stagePoint = {
             x: (midPoint.x - stage.x()) / oldScale,
             y: (midPoint.y - stage.y()) / oldScale
         };
 
         stage.scale({ x: newScale, y: newScale });
+        stage.rotation(newRotation);
 
-        // Ajusta a posição da stage para manter o zoom centrado no ponto médio
+        // move o stage conforme o pan
         stage.position({
-            x: midPoint.x - stagePoint.x * newScale,
-            y: midPoint.y - stagePoint.y * newScale
+            x: midPoint.x - stagePoint.x * newScale + dxMid,
+            y: midPoint.y - stagePoint.y * newScale + dyMid
         });
 
         stage.batchDraw();
 
         lastDist = dist;
         lastMidPoint = midPoint;
-
-        console.log("Zoom pinch:", newScale);
+        lastAngle = angle;
     }
 }, { passive: false });
 
@@ -649,7 +664,11 @@ stage.on('mouseup touchend', function() {
 
     AddactionToHistory();
 
-    lastDist = 0; // reseta quando os dedos soltam
+    if (e.touches.length < 2) {
+        lastMidPoint = null;
+        lastAngle = 0;
+    }
+    lastDist = 0;
 
     layer.batchDraw();
 });
