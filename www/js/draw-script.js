@@ -426,19 +426,27 @@ stage.container().addEventListener('touchmove', function(e) {
         const dxMid = midPoint.x - lastMidPoint.x;
         const dyMid = midPoint.y - lastMidPoint.y;
 
-        // aplica zoom e rotação mantendo o centro
+        // CORREÇÃO: Calcula o ponto no espaço do stage ANTES das transformações
         const stagePoint = {
             x: (midPoint.x - stage.x()) / oldScale,
             y: (midPoint.y - stage.y()) / oldScale
         };
 
+        // Aplica escala e rotação
         stage.scale({ x: newScale, y: newScale });
         stage.rotation(newRotation);
 
-        // move o stage conforme o pan
+        // CORREÇÃO: Rotaciona o ponto de referência pelo ângulo aplicado
+        const rad = angleDiff;
+        const rotatedPoint = {
+            x: stagePoint.x * Math.cos(rad) - stagePoint.y * Math.sin(rad),
+            y: stagePoint.x * Math.sin(rad) + stagePoint.y * Math.cos(rad)
+        };
+
+        // Calcula a nova posição considerando a rotação do ponto de referência
         stage.position({
-            x: midPoint.x - stagePoint.x * newScale + dxMid,
-            y: midPoint.y - stagePoint.y * newScale + dyMid
+            x: midPoint.x - rotatedPoint.x * newScale + dxMid,
+            y: midPoint.y - rotatedPoint.y * newScale + dyMid
         });
 
         stage.batchDraw();
@@ -634,7 +642,18 @@ stage.on('mousemove touchmove', function(e) {
     }
 
 });
-stage.on('mouseup touchend', function() {
+
+//#region MOUSE UP
+stage.on('touchend', function(e){
+    console.log(e.evt.touches);
+    
+    if (e.evt.touches.length < 2) {
+        lastDist = 0;
+        lastMidPoint = null;
+    }
+    
+});
+stage.on('mouseup', function(e) {
     isDrawing = false;
     dragpos = null;
     if (lastSelectBox) {
@@ -664,12 +683,6 @@ stage.on('mouseup touchend', function() {
 
     AddactionToHistory();
 
-    if (e.touches.length < 2) {
-        lastMidPoint = null;
-        lastAngle = 0;
-    }
-    lastDist = 0;
-
     layer.batchDraw();
 });
 
@@ -684,12 +697,15 @@ function saveCanvas() {
     ////// salvando as coordenadas da tela
     const laspos = stage.position();
     const lascale = stage.scaleX();
+    const lasrotation = stage.rotation();
+
 
     ////// resetando as coordenadas da tela pra pos inicial
 
     stage.position({x:0,y:0});
     stage.scale({x:1,y:1});
     layer.draw();
+    stage.rotation(0);
     bgLayer.draw();
     group.draw();
     
@@ -732,6 +748,7 @@ function saveCanvas() {
     stage.position(laspos);
     stage.scale({x:lascale,y:lascale});
     layer.draw();
+    stage.rotation(lasrotation);
     bgLayer.draw();
     group.draw();
 }
@@ -782,7 +799,13 @@ function redo(){
 
 
 //#region MOUSE LEAVE
-stage.on('mouseleave touchcancel', function(e) {
+stage.on('touchcancel', function(e) {
+    if (e.evt.touches.length < 2) {
+        lastDist = 0;
+        lastMidPoint = null;
+    }
+});
+stage.on('mouseleave ', function(e) {
     lastLine = null;
     isDrawing = false;
 
@@ -793,5 +816,4 @@ stage.on('mouseleave touchcancel', function(e) {
         lastSelectBox = null;
 
     }
-    lastDist = 0; // reseta quando os dedos soltam
 });
