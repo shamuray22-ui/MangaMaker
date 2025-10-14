@@ -10,8 +10,6 @@ let DRAWSIZE = {
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
 
-
-
 let Gettype = localStorage.getItem('type');
 
 const drawContainer = document.getElementById('draw-canvas');
@@ -37,7 +35,6 @@ const bgRect = new Konva.Rect({
     fill: '#ffff'
 });
 
-
 //////// agora a gente pega as paginas
 const pages = {
     
@@ -56,7 +53,33 @@ let pagenumbers = -1;
 let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
 const foundDraw = getDrawList ? getDrawList.find(draw => draw.id === Number(id)) : null;
 
-//#region START
+//#region STARTBRUSH
+let currentBrush = null;
+let scaleTexture = 1;
+const tempCanvas = document.getElementById('canvasBrush');
+const tempCtx = tempCanvas.getContext('2d');
+
+function StartBrush() {
+
+    const myImageObj = new Image();
+    myImageObj.src = 'assets/brush/default.png';
+    myImageObj.onload = () => {
+        tempCanvas.width = myImageObj.width;
+        tempCanvas.height = myImageObj.height;
+        tempCtx.filter = 'blur(10px)';
+        tempCtx.drawImage(myImageObj,0,0,myImageObj.width * scaleTexture,myImageObj.height * scaleTexture);
+
+        tempCtx.fillStyle = colorPicker.value;
+        tempCtx.globalCompositeOperation = 'source-in';
+        tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
+
+        tempCanvas.style.background = 'yellow';
+        tempCtx.globalCompositeOperation = 'source-over';
+        currentBrush = tempCanvas;
+    };
+}
+
+//#region STARTYPE
 function StartInitWithType(layer,bgLayer){
     
     if(Gettype === 'manga'){
@@ -252,10 +275,10 @@ function StartInitWithType(layer,bgLayer){
 
 const layer = new Konva.Layer();
 
-
 stage.add(bgLayer);
 stage.add(layer);
 
+StartBrush();
 StartInitWithType(layer,bgLayer);
 
 let group = pages['page' + currentpage].draw;
@@ -479,46 +502,74 @@ stage.on('mousedown touchstart', function(e) {
     const pos = getGlobalMousePos();
     startpos = pos;
 
-    if (current_tool == 'pen' || current_tool == 'eraser'){
-
-        const myImageObj = new Image();
-        myImageObj.src = 'assets/brush/Xbrush.png';
-        
+ if (current_tool == 'pen' || current_tool == 'eraser'){
         TexturedLine = new Konva.Shape({
             strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             lineCap: 'round',
             lineJoin: 'round',
+            customTexture: currentBrush,
             points: [],
             customClassName: 'ShapeLine',
+            listening: false,
             sceneFunc: function(ctx, shape){
-                ctx.beginPath();
                 
+                ctx.beginPath();
                 const points = shape.attrs.points;
+                const space = 1;
+
 
                 if (points.length >= 2){ // precisa de pelo menos x,y
                     ctx.moveTo(points[0], points[1]); // primeiro ponto
                     for (let i = 2; i < points.length; i += 2){ // pula de 2 em 2
                         ctx.lineTo(points[i], points[i + 1]);
+                        
                     }
                 }
-                
-                ctx.strokeStyle = shape.attrs.strokeColor;
+                //ctx.strokeStyle = shape.attrs.strokeColor;
+                //ctx.strokeStyle = ctx.createPattern(shape.attrs.customTexture, 'repeat');
                 ctx.lineWidth = shape.attrs.lineWidth;
                 ctx.lineCap = shape.attrs.lineCap;
                 ctx.lineJoin = shape.attrs.lineJoin;
                 ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
+                ////// gerando a textura na linha
+                ctx.save();
+                for (let i = 2; i < points.length - 2; i+= 2){
+                    const x1 = points[i];
+                    const y1 = points[i + 1];
+                    const x2 = points[i + 2];
+                    const y2 = points[i + 3];
 
-                
+                    const dx = x2 - x1;
+                    const dy = y2 - y1;
+                    const distance = Math.hypot(dx,dy);
+                    const angle = Math.atan2(dy, dx);
+
+                    const steps = Math.floor(distance / space);
+
+                    for (let j = 0; j < steps; j++){
+                        const xlerp = x1 + (dx / steps) * j;
+                        const ylerp = y1 + (dy / steps) * j;
+                        ctx.drawImage(shape.attrs.customTexture, 
+                            xlerp - shape.attrs.lineWidth / 2, 
+                            ylerp - shape.attrs.lineWidth / 2,
+                            shape.attrs.lineWidth * 2,
+                            shape.attrs.lineWidth * 2
+                        );
+
+                    }
+
+                }
+                ctx.restore()
                 ctx.fillStrokeShape(shape);
-                ctx.stroke();
+                //ctx.stroke();
             }
-            
+
         });
         group.add(TexturedLine);
-
     }
+
     else if (current_tool == 'rectangle'){
         // iniciar com x/y no ponto de início e tamanho 0
         lastRect = new Konva.Rect({
