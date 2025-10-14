@@ -56,18 +56,30 @@ const foundDraw = getDrawList ? getDrawList.find(draw => draw.id === Number(id))
 //#region STARTBRUSH
 let currentBrush = null;
 let scaleTexture = 1;
-const tempCanvas = document.getElementById('canvasBrush');
-const tempCtx = tempCanvas.getContext('2d');
+// Cache de brushes - array de objetos {path, canvas}
+const brushCache = [];
 
-function StartBrush() {
-
+function StartBrush(path) {
+    // Procura se já existe um canvas para esse path
+    const cached = brushCache.find(item => item.path === path);
+    
+    if (cached) {
+        // Reutiliza o canvas existente
+        currentBrush = cached.canvas;
+        return;
+    }
+    
+    // Se não existe, cria um novo
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
     const myImageObj = new Image();
-    myImageObj.src = 'assets/brush/Xbrush.png';
+    myImageObj.src = path;
+    
     myImageObj.onload = () => {
         tempCanvas.width = myImageObj.width;
         tempCanvas.height = myImageObj.height;
-        tempCtx.filter = 'blur(10px)';
-        tempCtx.drawImage(myImageObj,0,0,myImageObj.width * scaleTexture,myImageObj.height * scaleTexture);
+        tempCtx.filter = 'blur(1px)';
+        tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
 
         tempCtx.fillStyle = colorPicker.value;
         tempCtx.globalCompositeOperation = 'source-in';
@@ -75,10 +87,12 @@ function StartBrush() {
 
         tempCanvas.style.background = 'yellow';
         tempCtx.globalCompositeOperation = 'source-over';
+        
+        // Salva no cache e define como brush atual
+        brushCache.push({ path: path, canvas: tempCanvas });
         currentBrush = tempCanvas;
     };
 }
-
 //#region STARTYPE
 function StartInitWithType(layer,bgLayer){
     
@@ -279,7 +293,7 @@ const layer = new Konva.Layer();
 stage.add(bgLayer);
 stage.add(layer);
 
-StartBrush();
+StartBrush('assets/brush/Xbrush.png');
 StartInitWithType(layer,bgLayer);
 
 let group = pages['page' + currentpage].draw;
@@ -769,18 +783,23 @@ function saveCanvas() {
     if(Gettype == 'draw'){
 
         if (foundDraw){
+            for(let i = 0; i < brushCache.length; i++){
+                const data = brushCache[i].canvas;
+                console.log(data);
+                
+            }
             //// guardamos a url pra mera vizualização na galeria
+            
             foundDraw.drawURL = stage.toDataURL({
                 mimeType: "image/png",
                 pixelRatio: 3,   // 3x mais nítido
                 width: DRAWSIZE.width,
                 height: DRAWSIZE.height
             });
-
             //// aqui que guardamos grupos
             
             foundDraw.drawGroup = pages['page0'].draw.toJSON();
-            
+
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
         
