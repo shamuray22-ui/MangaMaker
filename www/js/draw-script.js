@@ -62,7 +62,7 @@ const tempCtx = tempCanvas.getContext('2d');
 function StartBrush() {
 
     const myImageObj = new Image();
-    myImageObj.src = 'assets/brush/default.png';
+    myImageObj.src = 'assets/brush/Xbrush.png';
     myImageObj.onload = () => {
         tempCanvas.width = myImageObj.width;
         tempCanvas.height = myImageObj.height;
@@ -230,6 +230,7 @@ function StartInitWithType(layer,bgLayer){
                             }
                         }
                         ctx.strokeStyle = child.attrs.strokeColor;
+                        
                         ctx.lineWidth = child.attrs.lineWidth;
                         ctx.lineCap = child.attrs.lineCap;
                         ctx.lineJoin = child.attrs.lineJoin;
@@ -517,8 +518,9 @@ stage.on('mousedown touchstart', function(e) {
                 
                 ctx.beginPath();
                 const points = shape.attrs.points;
-                const space = 1;
 
+                ///////// math max compara o valor 0.1 (ou qualquer outro) e retorna o maior numero.
+                const space = Math.max(0.1, shape.attrs.lineWidth * 0.5);
 
                 if (points.length >= 2){ // precisa de pelo menos x,y
                     ctx.moveTo(points[0], points[1]); // primeiro ponto
@@ -527,14 +529,12 @@ stage.on('mousedown touchstart', function(e) {
                         
                     }
                 }
-                //ctx.strokeStyle = shape.attrs.strokeColor;
-                //ctx.strokeStyle = ctx.createPattern(shape.attrs.customTexture, 'repeat');
                 ctx.lineWidth = shape.attrs.lineWidth;
                 ctx.lineCap = shape.attrs.lineCap;
                 ctx.lineJoin = shape.attrs.lineJoin;
                 ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
+                
                 ////// gerando a textura na linha
-                ctx.save();
                 for (let i = 2; i < points.length - 2; i+= 2){
                     const x1 = points[i];
                     const y1 = points[i + 1];
@@ -545,25 +545,31 @@ stage.on('mousedown touchstart', function(e) {
                     const dy = y2 - y1;
                     const distance = Math.hypot(dx,dy);
                     const angle = Math.atan2(dy, dx);
-
-                    const steps = Math.floor(distance / space);
+                    //////// math cell e max > max compara o primeiro valor e retorna o maior
+                    // math cell arredonda pra cima 0.1 vira 1.
+                    const steps = Math.max(1, Math.ceil(distance / space));
 
                     for (let j = 0; j < steps; j++){
-                        const xlerp = x1 + (dx / steps) * j;
-                        const ylerp = y1 + (dy / steps) * j;
-                        ctx.drawImage(shape.attrs.customTexture, 
-                            xlerp - shape.attrs.lineWidth / 2, 
-                            ylerp - shape.attrs.lineWidth / 2,
-                            shape.attrs.lineWidth * 2,
-                            shape.attrs.lineWidth * 2
-                        );
+                        const t = j / steps;
+                        const xlerp = x1 + dx * t;
+                        const ylerp = y1 + dy * t;
 
+                        ctx.save();
+                        ctx.translate(xlerp, ylerp);
+                        ctx.rotate(angle);
+
+                        ctx.drawImage(shape.attrs.customTexture,
+                            -shape.attrs.lineWidth / 2,
+                            -shape.attrs.lineWidth / 2,
+                            shape.attrs.lineWidth,
+                            shape.attrs.lineWidth
+                        );
+                        ctx.restore();
+                    
                     }
 
                 }
-                ctx.restore()
                 ctx.fillStrokeShape(shape);
-                //ctx.stroke();
             }
 
         });
