@@ -53,48 +53,52 @@ let pagenumbers = -1;
 let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
 const foundDraw = getDrawList ? getDrawList.find(draw => draw.id === Number(id)) : null;
 
-//#region STARTBRUSH
+//#region StartAsyncBrush
 let currentBrush = null;
 let scaleTexture = 1;
 // Cache de brushes - array de objetos {path, canvas}
 const brushCache = [];
 
-function StartBrush(path) {
+async function StartAsyncBrush(path) {
     // Procura se já existe um canvas para esse path
-    const cached = brushCache.find(item => item.path === path);
-    
-    if (cached) {
-        // Reutiliza o canvas existente
-        currentBrush = cached.canvas;
-        return;
-    }
-    
-    // Se não existe, cria um novo
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
-    const myImageObj = new Image();
-    myImageObj.src = path;
-    
-    myImageObj.onload = () => {
-        tempCanvas.width = myImageObj.width;
-        tempCanvas.height = myImageObj.height;
-        tempCtx.filter = 'blur(1px)';
-        tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
-
-        tempCtx.fillStyle = colorPicker.value;
-        tempCtx.globalCompositeOperation = 'source-in';
-        tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
-
-        tempCanvas.style.background = 'yellow';
-        tempCtx.globalCompositeOperation = 'source-over';
+    return new Promise((resolve) => {
+        const cached = brushCache.find(item => item.path === path);
         
-        // Salva no cache e define como brush atual
-        brushCache.push({ path: path, canvas: tempCanvas });
-        currentBrush = tempCanvas;
-    };
+        if (cached) {
+            // Reutiliza o canvas existente
+            currentBrush = cached.canvas;
+            return resolve(currentBrush);
+        }
+        
+
+        
+        // Se não existe, cria um novo
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        const myImageObj = new Image();
+        myImageObj.src = path;
+        
+        myImageObj.onload = () => {
+            tempCanvas.width = myImageObj.width;
+            tempCanvas.height = myImageObj.height;
+            tempCtx.filter = 'blur(0px)';
+            tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
+
+            tempCtx.fillStyle = colorPicker.value;
+            tempCtx.globalCompositeOperation = 'source-in';
+            tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
+
+            tempCanvas.style.background = 'yellow';
+            tempCtx.globalCompositeOperation = 'source-over';
+            // Salva no cache e define como brush atual
+            brushCache.push({ path: path, canvas: tempCanvas });
+            currentBrush = tempCanvas;
+            resolve(currentBrush);
+        };
+    });
 }
 //#region STARTYPE
-function StartInitWithType(layer,bgLayer){
+async function StartInitWithType(layer,bgLayer){
     
     if(Gettype === 'manga'){
         let PagesJson
@@ -227,13 +231,16 @@ function StartInitWithType(layer,bgLayer){
                     ctx.closePath();
                     ctx.clip();
             });
+            await StartAsyncBrush('assets/brush/Xbrush.png');
             
             pages['page' + currentpage].draw.children.forEach(child => {
                 
                 if (child.attrs.customClassName === 'ShapeLine'){
+                    child.setAttr('customTexture', currentBrush);
                     
                     child.sceneFunc(function(ctx) {
                         ctx.beginPath();
+                        console.log(currentBrush);
                         
                         const points = child.attrs.points;
                         
@@ -243,15 +250,51 @@ function StartInitWithType(layer,bgLayer){
                                 ctx.lineTo(points[i], points[i + 1]);
                             }
                         }
-                        ctx.strokeStyle = child.attrs.strokeColor;
                         
+                        ctx.strokeStyle = child.attrs.strokeColor;
                         ctx.lineWidth = child.attrs.lineWidth;
                         ctx.lineCap = child.attrs.lineCap;
                         ctx.lineJoin = child.attrs.lineJoin;
                         ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                        const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
+                        console.log(child.attrs);
                         
+                        for (let i = 2; i < points.length - 2; i+= 2){
+                            const x1 = points[i];
+                            const y1 = points[i + 1];
+                            const x2 = points[i + 2];
+                            const y2 = points[i + 3];
+
+                            const dx = x2 - x1;
+                            const dy = y2 - y1;
+                            const distance = Math.hypot(dx,dy);
+                            const angle = Math.atan2(dy, dx);
+                            //////// math cell e max > max compara o primeiro valor e retorna o maior
+                            // math cell arredonda pra cima 0.1 vira 1.
+                            const steps = Math.max(1, Math.ceil(distance / space));
+
+                            for (let j = 0; j < steps; j++){
+                                const t = j / steps;
+                                const xlerp = x1 + dx * t;
+                                const ylerp = y1 + dy * t;
+
+                                ctx.save();
+                                ctx.translate(xlerp, ylerp);
+                                ctx.rotate(angle);
+
+                                ctx.drawImage(child.attrs.customTexture,
+                                    -child.attrs.lineWidth / 2,
+                                    -child.attrs.lineWidth / 2,
+                                    child.attrs.lineWidth,
+                                    child.attrs.lineWidth
+                                );
+                                ctx.restore();
+                            
+                            }
+                        }
+
                         ctx.fillStrokeShape(child);
-                        ctx.stroke();
+                        //ctx.stroke();
                     });
                     
                 }
@@ -293,13 +336,9 @@ const layer = new Konva.Layer();
 stage.add(bgLayer);
 stage.add(layer);
 
-StartBrush('assets/brush/Xbrush.png');
 StartInitWithType(layer,bgLayer);
 
 let group = pages['page' + currentpage].draw;
-
-//#region CLASS DE STROKES
-let currentStrokePoints = [];
 
 //#region  VARIAVEIS
 
@@ -308,7 +347,6 @@ let TexturedLine;
 
 let autosize = true;
 let autoSizeSensi = 3;
-
 
 let current_tool = 'pen';
 
@@ -517,7 +555,7 @@ stage.on('mousedown touchstart', function(e) {
     const pos = getGlobalMousePos();
     startpos = pos;
 
- if (current_tool == 'pen' || current_tool == 'eraser'){
+    if (current_tool == 'pen' || current_tool == 'eraser'){
         TexturedLine = new Konva.Shape({
             strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
@@ -783,13 +821,7 @@ function saveCanvas() {
     if(Gettype == 'draw'){
 
         if (foundDraw){
-            for(let i = 0; i < brushCache.length; i++){
-                const data = brushCache[i].canvas;
-                console.log(data);
-                
-            }
-            //// guardamos a url pra mera vizualização na galeria
-            
+            //// guardamos a url pra mera vizualização na galeria;
             foundDraw.drawURL = stage.toDataURL({
                 mimeType: "image/png",
                 pixelRatio: 3,   // 3x mais nítido

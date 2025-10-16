@@ -92,6 +92,7 @@ function add_draw(){
         nameDraw: 'novo desenho ' + getDrawList.length,
         drawURL: null,
         drawGroup: null,
+        drawBrushes:[],
         DRAWSIZE: {
             width: 600,
             height: 800
