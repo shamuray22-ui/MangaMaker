@@ -41,22 +41,43 @@
 
   <!-- Barra inferior -->
   <footer id="bottom-tools">
-    <button class="Generalbutton" onclick="toggleToolsDiv()"><img src="assets/icons/tools.png" alt="Formas"> Formas</button>
-    <button class="Generalbutton" onclick="set_current_tool('pen')"><img src="assets/icons/pen.png" alt="Caneta"> Pen</button>
-    <button class="Generalbutton" onclick="showSelectBrushDiv()"> <img src='assets/brush/default.png'> Texure </button>
-    <button class="Generalbutton" onclick="set_current_tool('eraser')"><img src="assets/icons/eraser.png" alt="Borracha"> Eraser</button>
-    
+    <table>
+      <tr>
+        <td>
+          <label>
+            Tamanho: <input type="range" id="sizePicker" min="1" max="30" value="1">
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>
+            Opacidade: <input type="range" id="opacityPicker" min="1" max="30" value="100">
+          </label>
+        </td>
+      </tr>
+    </table>
+
+    <button class="Generalbutton" onclick="toggleToolsDiv()">
+      <img src="assets/icons/tools.png" alt="Formas"> Formas
+    </button>
+    <button class="Generalbutton" onclick="set_current_tool('pen')">
+      <img src="assets/icons/pen.png" alt="Caneta"> Pen
+    </button>
+    <button class="Generalbutton" onclick="showSelectBrushDiv()">
+      <img src="assets/brush/default.png" alt="Textura"> Texure
+    </button>
+    <button class="Generalbutton" onclick="set_current_tool('eraser')">
+      <img src="assets/icons/eraser.png" alt="Borracha"> Eraser
+    </button>
     <label>
       Cor: <input type="color" id="colorPicker" value="#000000">
     </label>
-    <label>
-      Tamanho: <input type="range" id="sizePicker" min="1" max="30" value="1">
-    </label>
-
     <button class="Generalbutton">Paginas list</button>
-    <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn"><img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO</button>
+    <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn">
+      <img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO
+    </button>
   </footer>
-
   <!-- Popup de redimensionamento -->
   <section id="setSizeDiv">
     <label for="canvasWidth">Largura:</label>
