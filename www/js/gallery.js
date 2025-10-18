@@ -111,6 +111,8 @@ function add_draw(){
         window.location.href = "draw-screen.html?id=" + newDraw.id;
     });
     
+
+    window.location.href = "draw-screen.html?id=" + newDraw.id;
 }
 //#endregion
 
