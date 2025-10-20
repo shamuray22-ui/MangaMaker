@@ -147,5 +147,8 @@ function toGallery(){
 }
 //#endregion
 
-
-//#region 
+//#region reset rot
+function resetRot(){
+    stage.rotation(0);
+    stage.batchDraw();
+}

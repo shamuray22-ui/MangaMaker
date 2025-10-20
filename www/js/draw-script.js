@@ -24,8 +24,7 @@ const stage = new Konva.Stage({
 });
 
 stage.container().style.background = '#868686ff';
-
-const bgLayer = new Konva.Layer();
+const bgLayer = new Konva.Layer({listening:false});
 
 const bgRect = new Konva.Rect({
     height: DRAWSIZE.height,
@@ -60,7 +59,7 @@ let scaleTexture = 1;
 // Cache de brushes - array de objetos {path, canvas}
 const brushCache = [];
 
-function StartBrush(path) {
+function StartBrush(path,color) {
     brushpath = path;
     // Procura se já existe um canvas para esse path
     return new Promise((resolve) => {
@@ -84,7 +83,7 @@ function StartBrush(path) {
             tempCtx.filter = 'blur(0px)';
             tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
 
-            tempCtx.fillStyle = colorPicker.value;
+            tempCtx.fillStyle = color;
             tempCtx.globalCompositeOperation = 'source-in';
             tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
 
@@ -98,7 +97,7 @@ function StartBrush(path) {
     });
 }
 
-StartBrush('assets/brush/default.png');
+StartBrush('assets/brush/default.png','#000');
 
 //#region STARTYPE
 function StartInitWithType(layer,bgLayer){
@@ -128,8 +127,11 @@ function StartInitWithType(layer,bgLayer){
                 });
 
                 ////////////// pegando as linhas salvas e recriando
+                if (PagesJson.children.length < 1){
+                    StartBrush('assets/brush/default.png','#000');
+                }
                 PagesJson.children.forEach(child => {
-                    StartBrush(child.attrs.texturepath).then(response => {
+                    StartBrush(child.attrs.texturepath,child.attrs.strokeColor).then(response => {
                         currentBrush = response;
                         if (child.attrs.customClassName === 'ShapeLine'){
                             
@@ -151,7 +153,12 @@ function StartInitWithType(layer,bgLayer){
                                 ctx.lineCap = child.attrs.lineCap;
                                 ctx.lineJoin = child.attrs.lineJoin;
                                 ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-
+                                let brushct = child.attrs.customTexture.getContext('2d');
+                                
+                                brushct.globalCompositeOperation = 'source-in';
+                                brushct.fillStyle = child.attrs.strokeColor;
+                                brushct.fillRect(0,0,child.attrs.customTexture.width,child.attrs.customTexture.height);
+                                brushct.globalCompositeOperation = 'source-over';
                                 const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
                                 
                                 for (let i = 2; i < points.length - 2; i+= 2){
@@ -228,7 +235,7 @@ function StartInitWithType(layer,bgLayer){
 
             }else{
                 console.log('criando nova pagina vazia');
-                
+                StartBrush('assets/brush/default.png','#000');
                 pages['page' + i].draw = new Konva.Group({
                     clipFunc: function(ctx) {
                         ctx.beginPath(); // Inicia um novo caminho
@@ -279,7 +286,12 @@ function StartInitWithType(layer,bgLayer){
             });
             
             ////////////// pegando as linhas salvas e recriando
+            if (pages['page' + currentpage].draw.children.length < 1){
+                StartBrush('assets/brush/default.png','#000');
+            }
             pages['page' + currentpage].draw.children.forEach(child => {
+                
+                
                 StartBrush(child.attrs.texturepath).then(response => {
                     currentBrush = response
                     
@@ -303,7 +315,13 @@ function StartInitWithType(layer,bgLayer){
                             ctx.lineCap = child.attrs.lineCap;
                             ctx.lineJoin = child.attrs.lineJoin;
                             ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-
+                            let brushct = child.attrs.customTexture.getContext('2d');
+                            
+                            brushct.globalCompositeOperation = 'source-in';
+                            brushct.fillStyle = child.attrs.strokeColor;
+                            brushct.fillRect(0,0,child.attrs.customTexture.width,child.attrs.customTexture.height);
+                            brushct.globalCompositeOperation = 'source-over';
+                            
                             const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
                             
                             for (let i = 2; i < points.length - 2; i+= 2){
@@ -351,6 +369,8 @@ function StartInitWithType(layer,bgLayer){
             
         }
         else{
+            StartBrush('assets/brush/default.png','#000');
+            
             pages['page' + currentpage].draw = new Konva.Group({
                 clipFunc: function(ctx) {
                     ctx.beginPath(); // Inicia um novo caminho
@@ -603,19 +623,14 @@ stage.on('mousedown touchstart', function(e) {
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
-    const colorhexa = colorPicker.value;
-    const r = parseInt(colorhexa[2],16);
-    const g = parseInt(colorhexa[4],16);
-    const b = parseInt(colorhexa[6],16);
-    
-    const finalcolor = "rgba(" + r +"," + g +"," + b + "," + opacityPicker.value + ")"
-
-    
     
 
     if (current_tool == 'pen' || current_tool == 'eraser'){
+
+
+
         TexturedLine = new Konva.Shape({
-            strokeColor: finalcolor,
+            strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             lineCap: 'round',
@@ -626,13 +641,9 @@ stage.on('mousedown touchstart', function(e) {
             customClassName: 'ShapeLine',
             listening: false,
             sceneFunc: function(ctx, shape){
-                //if (!shape.attrs.customTexture) {return}
                 ctx.beginPath();
                 const points = shape.attrs.points;
-                /////// mudando a cor da textura 
-                const tempCtx = shape.attrs.customTexture;
-                tempCtx.fillStyle = finalcolor;
-
+                
                 ///////// math max compara o valor 0.1 (ou qualquer outro) e retorna o maior numero.
                 const space = Math.max(0.1, shape.attrs.lineWidth * 0.5);
 
@@ -647,7 +658,12 @@ stage.on('mousedown touchstart', function(e) {
                 ctx.lineCap = shape.attrs.lineCap;
                 ctx.lineJoin = shape.attrs.lineJoin;
                 ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
+                let brushct = shape.attrs.customTexture.getContext('2d');
                 
+                brushct.globalCompositeOperation = 'source-in';
+                brushct.fillStyle = shape.attrs.strokeColor;
+                brushct.fillRect(0,0,shape.attrs.customTexture.width,shape.attrs.customTexture.height);
+                brushct.globalCompositeOperation = 'source-over';
                 ////// gerando a textura na linha
                 for (let i = 2; i < points.length - 2; i+= 2){
                     const x1 = points[i];
@@ -683,6 +699,7 @@ stage.on('mousedown touchstart', function(e) {
 
                 }
                 ctx.fillStrokeShape(shape);
+                
             }
 
         });
@@ -779,7 +796,7 @@ stage.on('mousemove touchmove', function(e) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
         TexturedLine.attrs.points.push(pos.x, pos.y);
-        layer.batchDraw()
+        stage.batchDraw();
     } 
     else if (current_tool == 'circle' && lastCicle){
         lastCicle.x(x);
@@ -852,7 +869,7 @@ stage.on('mouseup', function(e) {
 
     AddactionToHistory();
 
-    layer.batchDraw();
+    stage.batchDraw();
 });
 
 
@@ -948,7 +965,7 @@ function undo(){
     if (lastAction) {
         lastAction.remove(); // Remove a última linha do grupo
         redoHistory.push(lastAction); // Adiciona a ação removida ao histórico de refazer
-        layer.draw();
+        stage.batchDraw();
 
         
     }
@@ -961,7 +978,7 @@ function redo(){
     if (actionToRedo) {
         group.add(actionToRedo); // Adiciona a ação de volta ao grupo
         undoHistory.push(actionToRedo); // Adiciona a ação de volta ao histórico de desfazer
-        layer.draw();
+        stage.batchDraw();
     }
 }
 
