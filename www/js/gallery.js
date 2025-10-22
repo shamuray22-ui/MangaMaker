@@ -18,7 +18,7 @@ function get_draws(){
         const DrawCard = document.createElement('div');
         const newPicture = document.createElement('img');
         const nameDraw = document.createElement('h1');
-        
+        const downloadbtn = document.createElement('button');
         if (draw.drawURL != null){
             newPicture.src = draw.drawURL;
         }else{
@@ -27,13 +27,21 @@ function get_draws(){
         
         nameDraw.textContent = draw.nameDraw;
         
-        
+        downloadbtn.textContent = 'baixar';
 
+        downloadbtn.onclick = () => {
+            const link = document.createElement('a');
+            link.href = draw.drawURL;
+            link.download = draw.nameDraw;
+            link.click();
+        }
+
+        DrawCard.appendChild(downloadbtn);
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
         drawlist.appendChild(DrawCard);
 
-        DrawCard.addEventListener('click', () =>{
+        newPicture.addEventListener('click', () =>{
             localStorage.setItem('type', 'draw');
             window.location.href = "draw-screen.html?id=" + draw.id;
         });
@@ -81,7 +89,6 @@ function add_draw(){
     
     newPicture.src = 'assets/drawing.png';
     nameDraw.textContent = 'novo desenho > ' + getDrawList.length;
-
 
     DrawCard.appendChild(newPicture);
     DrawCard.appendChild(nameDraw);

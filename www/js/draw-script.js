@@ -101,6 +101,7 @@ StartBrush('assets/brush/default.png','#000');
 
 //#region STARTYPE
 function StartInitWithType(layer,bgLayer){
+    //#region modo manga
     if(Gettype === 'manga'){
         let PagesJson
         getManga.chapters.forEach((page) => {
@@ -260,7 +261,7 @@ function StartInitWithType(layer,bgLayer){
             
             
         }
-
+        //#region modo draw
     } else if (Gettype === 'draw'){
         pages['page0'] = {
             background : null,
@@ -796,6 +797,7 @@ stage.on('mousemove touchmove', function(e) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
         TexturedLine.attrs.points.push(pos.x, pos.y);
+        
         stage.batchDraw();
     } 
     else if (current_tool == 'circle' && lastCicle){
