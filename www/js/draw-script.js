@@ -175,7 +175,7 @@ function StartInitWithType(layer,bgLayer){
                                     // math cell arredonda pra cima 0.1 vira 1.
                                     const steps = Math.max(1, Math.ceil(distance / space));
 
-                                    for (let j = 0; j < steps; j++){
+                                    //for (let j = 0; j < steps; j++){
                                    //     const t = j / steps;
                                     //    const xlerp = x1 + dx * t;
                                     //    const ylerp = y1 + dy * t;
@@ -191,7 +191,7 @@ function StartInitWithType(layer,bgLayer){
                                    //         child.attrs.lineWidth
                                       //  );
                                      //   ctx.restore();
-                                    }
+                                    //}
                                 }
 
                                 ctx.fillStrokeShape(child);
@@ -337,7 +337,7 @@ function StartInitWithType(layer,bgLayer){
                                 // math cell arredonda pra cima 0.1 vira 1.
                                 const steps = Math.max(1, Math.ceil(distance / space));8
                                 
-                                for (let j = 0; j < steps; j++){
+                                //for (let j = 0; j < steps; j++){
                                     //const t = j / steps;
                                     //const xlerp = x1 + dx * t;
                                     //const ylerp = y1 + dy * t;
@@ -357,7 +357,7 @@ function StartInitWithType(layer,bgLayer){
                                     //);
                                     //ctx.restore();
                                 
-                                }
+                                //}
                             }
 
                             ctx.fillStrokeShape(child);
@@ -680,7 +680,7 @@ stage.on('mousedown touchstart', function(e) {
                     // math cell arredonda pra cima 0.1 vira 1.
                     const steps = Math.max(1, Math.ceil(distance / space));
 
-                    for (let j = 0; j < steps; j++){
+                    //for (let j = 0; j < steps; j++){
                         //const t = j / steps;
                         //const xlerp = x1 + dx * t;
                         //const ylerp = y1 + dy * t;
@@ -697,7 +697,7 @@ stage.on('mousedown touchstart', function(e) {
                         //);
                         //ctx.restore();
                     
-                    }
+                    //}
 
                 }
                 ctx.fillStrokeShape(shape);
@@ -836,10 +836,14 @@ stage.on('mousemove touchmove', function(e) {
 
 //#region MOUSE UP
 stage.on('touchend', function(e){
+    isDrawing = false;
+    dragpos = null;
     if (e.evt.touches.length < 2) {
         lastDist = 0;
         lastMidPoint = null;
     }
+    AddactionToHistory();
+
     
     
 });

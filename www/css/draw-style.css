@@ -76,10 +76,7 @@ body {
   padding: 1vh 0;
   box-shadow: 0 15px 8px rgba(0, 0, 0, 0.2);
   z-index: 999;
-}
-#toolbar input[type="color"],
-#toolbar input[type="range"] {
-  margin-left: 0.5vw;
+
 }
 
 /* ======== CANVAS ======== */
