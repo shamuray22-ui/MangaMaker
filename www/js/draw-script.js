@@ -73,6 +73,7 @@ function StartBrush(path,color) {
         
         // Se não existe, cria um novo
         const tempCanvas = document.createElement('canvas');
+        
         const tempCtx = tempCanvas.getContext('2d');
         const myImageObj = new Image();
         myImageObj.src = path;
@@ -80,14 +81,11 @@ function StartBrush(path,color) {
         myImageObj.onload = () => {
             tempCanvas.width = myImageObj.width;
             tempCanvas.height = myImageObj.height;
-            tempCtx.filter = 'blur(0px)';
             tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
 
             tempCtx.fillStyle = color;
             tempCtx.globalCompositeOperation = 'source-in';
             tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
-
-            tempCanvas.style.background = 'yellow';
             tempCtx.globalCompositeOperation = 'source-over';
             // Salva no cache e define como brush atual
             brushCache.push({ path: path, canvas: tempCanvas });
@@ -178,27 +176,26 @@ function StartInitWithType(layer,bgLayer){
                                     const steps = Math.max(1, Math.ceil(distance / space));
 
                                     for (let j = 0; j < steps; j++){
-                                        const t = j / steps;
-                                        const xlerp = x1 + dx * t;
-                                        const ylerp = y1 + dy * t;
+                                   //     const t = j / steps;
+                                    //    const xlerp = x1 + dx * t;
+                                    //    const ylerp = y1 + dy * t;
 
-                                        ctx.save();
-                                        ctx.translate(xlerp, ylerp);
-                                        ctx.rotate(angle);
+                                   //     ctx.save();
+                                  //      ctx.translate(xlerp, ylerp);
+                                   //     ctx.rotate(angle);
 
-                                        ctx.drawImage(child.attrs.customTexture,
-                                            -child.attrs.lineWidth / 2,
-                                            -child.attrs.lineWidth / 2,
-                                            child.attrs.lineWidth,
-                                            child.attrs.lineWidth
-                                        );
-                                        ctx.restore();
-                                    
+                                   //     ctx.drawImage(child.attrs.customTexture,
+                                   //         -child.attrs.lineWidth / 2,
+                                   //         -child.attrs.lineWidth / 2,
+                                   //         child.attrs.lineWidth,
+                                   //         child.attrs.lineWidth
+                                      //  );
+                                     //   ctx.restore();
                                     }
                                 }
 
                                 ctx.fillStrokeShape(child);
-                                //ctx.stroke();
+                                ctx.stroke();
                             });
                             
                         }
@@ -338,30 +335,33 @@ function StartInitWithType(layer,bgLayer){
                                 const angle = Math.atan2(dy, dx);
                                 //////// math cell e max > max compara o primeiro valor e retorna o maior
                                 // math cell arredonda pra cima 0.1 vira 1.
-                                const steps = Math.max(1, Math.ceil(distance / space));
-
+                                const steps = Math.max(1, Math.ceil(distance / space));8
+                                
                                 for (let j = 0; j < steps; j++){
-                                    const t = j / steps;
-                                    const xlerp = x1 + dx * t;
-                                    const ylerp = y1 + dy * t;
+                                    //const t = j / steps;
+                                    //const xlerp = x1 + dx * t;
+                                    //const ylerp = y1 + dy * t;
+                                    //
+                                    //
+                                    //ctx.save();
+                                    ////ctx.setTransform(1,0,0,1,0,0);
 
-                                    ctx.save();
-                                    ctx.translate(xlerp, ylerp);
-                                    ctx.rotate(angle);
+                                    //ctx.translate(xlerp, ylerp);
+                                    //ctx.rotate(angle);
 
-                                    ctx.drawImage(child.attrs.customTexture,
-                                        -child.attrs.lineWidth / 2,
-                                        -child.attrs.lineWidth / 2,
-                                        child.attrs.lineWidth,
-                                        child.attrs.lineWidth
-                                    );
-                                    ctx.restore();
+                                    //ctx.drawImage(child.attrs.customTexture,
+                                    //    -child.attrs.lineWidth / 2,
+                                    //    -child.attrs.lineWidth / 2,
+                                    //    child.attrs.lineWidth,
+                                    //    child.attrs.lineWidth
+                                    //);
+                                    //ctx.restore();
                                 
                                 }
                             }
 
                             ctx.fillStrokeShape(child);
-                            //ctx.stroke();
+                            ctx.stroke();
                         });
                         
                     }
@@ -681,25 +681,27 @@ stage.on('mousedown touchstart', function(e) {
                     const steps = Math.max(1, Math.ceil(distance / space));
 
                     for (let j = 0; j < steps; j++){
-                        const t = j / steps;
-                        const xlerp = x1 + dx * t;
-                        const ylerp = y1 + dy * t;
+                        //const t = j / steps;
+                        //const xlerp = x1 + dx * t;
+                        //const ylerp = y1 + dy * t;
 
-                        ctx.save();
-                        ctx.translate(xlerp, ylerp);
-                        ctx.rotate(angle);
-                        ctx.drawImage(shape.attrs.customTexture,
-                            -shape.attrs.lineWidth / 2,
-                            -shape.attrs.lineWidth / 2,
-                            shape.attrs.lineWidth,
-                            shape.attrs.lineWidth
-                        );
-                        ctx.restore();
+                        //ctx.save();
+                        ////ctx.setTransform(1,0,0,1,0,0);
+                        //ctx.translate(xlerp, ylerp);
+                        //ctx.rotate(angle);
+                        //ctx.drawImage(shape.attrs.customTexture,
+                        //    -shape.attrs.lineWidth / 2,
+                        //    -shape.attrs.lineWidth / 2,
+                        //    shape.attrs.lineWidth,
+                        //    shape.attrs.lineWidth
+                        //);
+                        //ctx.restore();
                     
                     }
 
                 }
                 ctx.fillStrokeShape(shape);
+                ctx.stroke();
                 
             }
 
