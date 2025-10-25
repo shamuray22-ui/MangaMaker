@@ -11,12 +11,12 @@
 
   <!-- Barra principal -->
   <header id="toolbar">
-    <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"> Undo</button>
-    <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"> Redo</button>
-    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"> Limpar</button>
-    <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"> Sair</button>
-    <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"> Tela</button>
-    <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"> Salvar</button>
+    <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"></button>
+    <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"></button>
+    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"></button>
+    <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"></button>
+    <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"></button>
+    <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"></button>
     <div id="pagesDiv"></div>
   </header>
 
@@ -25,18 +25,54 @@
 
   <!-- Ferramentas adicionais -->
   <div id="toolsdiv">
-    <button class="Generalbutton" onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"> Quad</button>
-    <button class="Generalbutton" onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"> Circle</button>
-    <button class="Generalbutton" onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"> Line</button>
-    <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"> Text</button>
-    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"> Laço</button>
+    <button class="Generalbutton" onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"></button>
+    <button class="Generalbutton" onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"></button>
+    <button class="Generalbutton" onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"></button>
+    <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"></button>
+    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"></button>
   </div>
 
   <!-- Seleção de pincel -->
   <div id="selectBrushDiv">
-    <label> Pinceis </label>
-    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/default.png')"> brush default <img src='assets/brush/default.png'> </button>
-    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/Xbrush.png')"> brush X <img src='assets/brush/Xbrush.png'> </button>
+    <label>Pinceis</label>
+    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/default.png')">
+      <img src='assets/brush/default.png'>
+    </button>
+    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/Xbrush.png')">
+      <img src='assets/brush/Xbrush.png'>
+    </button>
+  </div>
+  
+  <!-- Seleção de camadas -->
+  <div id="layerListDiv">
+    <label>Layers</label>
+    <div id="layerGrid">
+      <div id="layerCell">
+        <label>Name layer</label>
+        <img src="assets/drawing.png" id="previewLayer">
+        <button class="Generalbutton"><img src="assets/icons/move.png" alt="Reposicionar"></button>
+        <button class="Generalbutton"><img src="assets/icons/hidden.png" alt="Esconder"></button>
+        <button class="Generalbutton"><img src="assets/icons/inkmaker.png" alt="Clip"></button>
+        <button class="Generalbutton"><img src="assets/icons/clear.png" alt="Deletar"></button>
+      </div>
+      <div id="layerCell">
+        <label>Name layer</label>
+        <img src="assets/drawing.png" id="previewLayer">
+        <button class="Generalbutton"><img src="assets/icons/move.png" alt="Reposicionar"></button>
+        <button class="Generalbutton"><img src="assets/icons/hidden.png" alt="Esconder"></button>
+        <button class="Generalbutton"><img src="assets/icons/inkmaker.png" alt="Clip"></button>
+        <button class="Generalbutton"><img src="assets/icons/clear.png" alt="Deletar"></button>
+      </div>
+      <div id="layerCell">
+        <label>Name layer</label>
+        <img src="assets/drawing.png" id="previewLayer">
+        <button class="Generalbutton"><img src="assets/icons/move.png" alt="Reposicionar"></button>
+        <button class="Generalbutton"><img src="assets/icons/hidden.png" alt="Esconder"></button>
+        <button class="Generalbutton"><img src="assets/icons/inkmaker.png" alt="Clip"></button>
+        <button class="Generalbutton"><img src="assets/icons/clear.png" alt="Deletar"></button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Barra inferior -->
@@ -45,42 +81,45 @@
       <tr>
         <td>
           <label>
-            Tamanho: <input type="range" id="sizePicker" min="1" max="30" value="1">
+            <input type="range" id="sizePicker" min="1" max="30" value="1">
           </label>
         </td>
       </tr>
       <tr>
         <td>
           <label>
-            Opacidade: <input type="range" id="opacityPicker" min="1" max="30" value="100">
+            <input type="range" id="opacityPicker" min="1" max="30" value="100">
           </label>
         </td>
       </tr>
     </table>
 
     <button class="Generalbutton" onclick="toggleToolsDiv()">
-      <img src="assets/icons/tools.png" alt="Formas"> Formas
+      <img src="assets/icons/tools.png" alt="Formas">
     </button>
     <button class="Generalbutton" onclick="set_current_tool('pen')">
-      <img src="assets/icons/pen.png" alt="Caneta"> Pen
+      <img src="assets/icons/pen.png" alt="Caneta">
     </button>
     <button class="Generalbutton" onclick="showSelectBrushDiv()">
-      <img src="assets/brush/default.png" alt="Textura"> Texure
+      <img src="assets/brush/default.png" alt="Textura">
     </button>
     <button class="Generalbutton" onclick="set_current_tool('eraser')">
-      <img src="assets/icons/eraser.png" alt="Borracha"> Eraser
+      <img src="assets/icons/eraser.png" alt="Borracha">
     </button>
     <label>
-      Cor: <input type="color" id="colorPicker" value="#000000">
+      <input type="color" id="colorPicker" value="#000000">
     </label>
-    <button class="Generalbutton">Paginas list</button>
+    <button class="Generalbutton" onclick="showLayerListDiv()">
+      <img src="assets/icons/layers.png" alt="LayerImg">
+    </button>
     <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn">
-      <img src="assets/icons/autobrush.png" alt="Auto Brush"> AUTO
+      <img src="assets/icons/autobrush.png" alt="Auto Brush">
     </button>
     <button class="Generalbutton" onclick="resetRot()">
-      <img src="assets/icons/restartRot.png" alt="restartRot"> ResetRot
+      <img src="assets/icons/restartRot.png" alt="restartRot">
     </button>
   </footer>
+
   <!-- Popup de redimensionamento -->
   <section id="setSizeDiv">
     <label for="canvasWidth">Largura:</label>

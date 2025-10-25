@@ -1,4 +1,7 @@
 /* ======== BASE ======== */
+:root{
+    --DefaultpanelColor: #232323;
+}
 body {
   margin: 0;
   padding: 0;
@@ -181,6 +184,42 @@ body {
   resize: vertical;
 }
 
+/* ======== LISTA DE LAYERS ======== */
+#layerListDiv{
+    display: flex;
+    position: fixed;
+
+    overflow: scroll;
+    top: 302px;
+    width: 80%;
+    max-width: 800px;      
+    height: 600px;
+    padding: 20px;
+    border-radius: 10px;
+    gap: 15px;  
+    background-color: var(--DefaultpanelColor);
+}#layerListDiv label {
+  color: rgb(255, 255, 255);
+}
+#layerGrid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+#previewLayer{
+  width: 120px;
+  height: 120px;
+
+  object-fit: contain;
+  border-radius: 10px
+}
+#layerCell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+
+}
 /* ======== RESPONSIVIDADE ======== */
 @media (max-width: 480px) {
   #toolbar, #bottom-tools {

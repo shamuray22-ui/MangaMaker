@@ -15,6 +15,9 @@ selectBrushDiv.style.display = 'none';
 
 const toolsdiv = document.getElementById('toolsdiv');
 toolsdiv.style.display = 'none';
+
+const layerListDiv = document.getElementById('layerListDiv');
+layerListDiv.style.display = 'none';
 //#endregion
 
 //#region CANVAS CONFIGURATION
@@ -145,6 +148,20 @@ function toGallery(){
     }
     
 }
+/// showLayerListDiv
+
+function showLayerListDiv(){
+    if (layerListDiv.style.display === 'none') {
+        layerListDiv.style.display = 'flex';
+    } else if(layerListDiv.style.display === 'flex'){
+        layerListDiv.style.display = 'none';
+    }
+    else {
+        layerListDiv.style.display = 'none';
+    }
+}
+
+
 //#endregion
 
 //#region reset rot
