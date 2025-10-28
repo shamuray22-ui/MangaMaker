@@ -7,6 +7,7 @@ let DRAWSIZE = {
     height: 800
 }
 
+
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
 
@@ -31,7 +32,9 @@ const bgRect = new Konva.Rect({
     width: DRAWSIZE.width,
     stroke: 'black',
     strokeWidth: 1,
-    fill: '#ffff'
+    fill: '#ffff',
+    shadowBlur:12,
+    cornerRadius: 3,
 });
 
 //////// agora a gente pega as paginas
@@ -95,8 +98,8 @@ function StartBrush(path,color) {
     });
 }
 
-StartBrush('assets/brush/default.png','#000');
 
+StartBrush('assets/brush/default.png','#000');
 //#region STARTYPE
 function StartInitWithType(layer,bgLayer){
     //#region modo manga
@@ -215,7 +218,12 @@ function StartInitWithType(layer,bgLayer){
             
             pages['page' + pagenumbers] = {
                     background : null,
-                    draw : null
+                    draw : null,
+                    layers: {
+                        layer:{
+                            draw : null
+                        }
+                    }
             }
             const buttonPage = document.createElement('button');
             buttonPage.textContent = 'page ' + i;
@@ -258,15 +266,23 @@ function StartInitWithType(layer,bgLayer){
             
             
         }
-        //#region modo draw
-    } else if (Gettype === 'draw'){
+        
+    }  
+    //#region modo draw
+    else if (Gettype === 'draw'){
         pages['page0'] = {
             background : null,
-            draw : null
+            draw : null,
+            layers: {
+            }
+        
         }
         
         if(foundDraw && foundDraw.drawGroup != null){
+            
             pages['page' + currentpage].draw = Konva.Node.create(foundDraw.drawGroup);
+            pages['page' + currentpage].layers.layer = foundDraw.drawGroup;
+            console.log(pages['page' + currentpage].layers);
             
             DRAWSIZE.width = foundDraw.DRAWSIZE.width;
             DRAWSIZE.height = foundDraw.DRAWSIZE.height
@@ -400,13 +416,13 @@ function StartInitWithType(layer,bgLayer){
     }
 }
 
-const layer = new Konva.Layer();
+let layer = new Konva.Layer();
 
 stage.add(bgLayer);
 stage.add(layer);
 
 StartInitWithType(layer,bgLayer);
-
+console.log(stage.getLayers());
 let group = pages['page' + currentpage].draw;
 
 //#region  VARIAVEIS
@@ -496,6 +512,119 @@ function set_current_page(index){
     }
 
 }
+
+//#region ADD LAYER
+let layerList = stage.getLayers();
+let currentlayer = 0;
+function createUXlayer() {
+    const layerGrid = document.getElementById('layerGrid');
+    if (!layerGrid) {
+        console.error('Elemento #layerGrid não encontrado.');
+        return;
+    }
+
+    const layerCell = document.createElement('div');
+    layerCell.id = 'layerCell'; // usa class, id é pra ser único
+    // label
+    const ratio = document.createElement('input');
+    ratio.type = 'radio';
+    ratio.value = currentlayer;
+    ratio.name = 'layers';
+
+    const label = document.createElement('label');
+    label.textContent = currentlayer;
+    // preview
+    const preview = document.createElement('img');
+    preview.src = 'assets/drawing.png';
+    preview.id = 'previewLayer';
+
+    // função pra criar botão com ícone e alt
+    const makeButton = (icon, alt) => {
+        const btn = document.createElement('button');
+        btn.className = 'Generalbutton';
+        const img = document.createElement('img');
+        img.src = `assets/icons/${icon}.png`;
+        img.alt = alt;
+        btn.appendChild(img);
+        return btn;
+    };
+
+    // cria os botões
+    const move = makeButton('move', 'Reposicionar');
+    const hide = makeButton('hidden', 'Esconder');
+    const clip = makeButton('inkmaker', 'Clip');
+    const del = makeButton('clear', 'Deletar');
+    // joga tudo no layerCell
+    layerCell.appendChild(ratio);
+    layerCell.appendChild(label);
+    layerCell.appendChild(preview);
+    layerCell.appendChild(move);
+    layerCell.appendChild(hide);
+    layerCell.appendChild(clip);
+    layerCell.appendChild(del);
+    ratio.checked = true;
+    group = pages['page' + currentpage].draw;
+    // e finalmente coloca no grid
+    layerGrid.appendChild(layerCell);
+    layerCell.addEventListener('click', (event) => {
+        ratio.checked = true;
+    });
+    ratio.addEventListener('change', (event) => {
+        if (event.target.checked){
+            console.log(event.target.value);
+            
+        }
+    });
+    
+
+    del.onclick = () => {
+
+        if (label.textContent === '0' || ratio.checked === false) {
+            return;
+        }
+        layerList[currentlayer].remove();
+        currentlayer -= 1
+        layerList = stage.getLayers();
+        console.log(currentlayer);
+        layerGrid.removeChild(layerCell);
+        layerGrid.children[currentlayer].children[0].checked = true
+        console.log('deletado > ',layerList);
+        
+    }
+
+}
+
+for (let i = 0; i < layerList.length; i++) {
+    currentlayer = i;
+    createUXlayer();
+}
+
+function addLayer(imagedata = ''){
+    const newLayer = new Konva.Layer();
+    
+    
+    if(imagedata === ''){
+
+    }
+    newLayer.clipFunc(function(ctx){
+        ctx.beginPath();
+        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+        ctx.closePath();
+        ctx.clip();
+        
+    });
+    pages['page' + currentpage].draw = newLayer;
+
+    stage.add(newLayer);
+    layerList = stage.getLayers();
+    console.log(layerList);
+    currentlayer = layerList.length - 1;
+    group = pages['page' + currentpage].draw;
+    createUXlayer();
+
+}
+
+
 //#region ZOOM
 stage.container().addEventListener('wheel', function(e) {
     e.preventDefault();

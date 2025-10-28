@@ -86,7 +86,6 @@ function saveText(){
 
 }
 
-
 function cancelEdit(){
     textEditorDiv.style.visibility = 'hidden';
     undo();
@@ -151,14 +150,16 @@ function toGallery(){
 /// showLayerListDiv
 
 function showLayerListDiv(){
+    layerListDiv.classList.remove('enter');
     if (layerListDiv.style.display === 'none') {
         layerListDiv.style.display = 'flex';
+        layerListDiv.classList.add('enter');
+        
     } else if(layerListDiv.style.display === 'flex'){
         layerListDiv.style.display = 'none';
     }
-    else {
-        layerListDiv.style.display = 'none';
-    }
+
+
 }
 
 
