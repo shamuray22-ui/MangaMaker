@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MangaMaker - Tela de Desenho</title>
   <link rel="stylesheet" href="css/draw-style.css">
 </head>
+
 <body>
   <canvas id="canvasBrush" hidden></canvas>
 
@@ -13,10 +15,14 @@
   <header id="toolbar">
     <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"></button>
     <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"></button>
-    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png" alt="Limpar"></button>
-    <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png" alt="Sair"></button>
-    <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png" alt="Redimensionar"></button>
-    <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png" alt="Salvar"></button>
+    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png"
+        alt="Limpar"></button>
+    <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png"
+        alt="Sair"></button>
+    <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png"
+        alt="Redimensionar"></button>
+    <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png"
+        alt="Salvar"></button>
     <div id="pagesDiv"></div>
   </header>
 
@@ -25,11 +31,16 @@
 
   <!-- Ferramentas adicionais -->
   <div id="toolsdiv">
-    <button class="Generalbutton" onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png" alt="Retângulo"></button>
-    <button class="Generalbutton" onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png" alt="Círculo"></button>
-    <button class="Generalbutton" onclick="set_current_tool('line')"><img src="assets/icons/line.png" alt="Linha"></button>
-    <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png" alt="Texto"></button>
-    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png" alt="Selecionar"></button>
+    <button class="Generalbutton" onclick="set_current_tool('rectangle')"><img src="assets/icons/rectangle.png"
+        alt="Retângulo"></button>
+    <button class="Generalbutton" onclick="set_current_tool('circle')"><img src="assets/icons/elipse.png"
+        alt="Círculo"></button>
+    <button class="Generalbutton" onclick="set_current_tool('line')"><img src="assets/icons/line.png"
+        alt="Linha"></button>
+    <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png"
+        alt="Texto"></button>
+    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png"
+        alt="Selecionar"></button>
   </div>
 
   <!-- Seleção de pincel -->
@@ -42,7 +53,7 @@
       <img src='assets/brush/Xbrush.png'>
     </button>
   </div>
-  
+
   <!-- Seleção de camadas -->
   <div id="layerListDiv">
     <label>Layers</label>
@@ -101,10 +112,10 @@
   <section id="setSizeDiv">
     <label for="canvasWidth">Largura:</label>
     <input type="number" id="canvasWidth" value="800">
-    
+
     <label for="canvasHeight">Altura:</label>
     <input type="number" id="canvasHeight" value="600">
-    
+
     <button class="Generalbutton" onclick="applyCanvasSize()">Aplicar</button>
     <button class="Generalbutton" onclick="document.getElementById('setSizeDiv').style.display='none'">Cancelar</button>
   </section>
@@ -129,4 +140,5 @@
   <script src="js/configDraw-script.js"></script>
   <script src="js/KeyboardShortcuts.js"></script>
 </body>
+
 </html>

@@ -2047,3 +2047,4 @@ android/app/.idea/misc.xml
 android/app/.idea/runConfigurations.xml
 android/app/.idea/caches/deviceStreaming.xml
 android/.idea/studiobot.xml
+.github/copilot-instructions.md

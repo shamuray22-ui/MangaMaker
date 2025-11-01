@@ -21,7 +21,7 @@ layerListDiv.style.display = 'none';
 //#endregion
 
 //#region CANVAS CONFIGURATION
-function callSetSizeDiv(){
+function callSetSizeDiv() {
     const setSizeDiv = document.getElementById('setSizeDiv');
     if (setSizeDiv.style.display === 'none' || setSizeDiv.style.display === '') {
         setSizeDiv.style.display = 'flex';
@@ -30,7 +30,7 @@ function callSetSizeDiv(){
     }
 }
 
-function applyCanvasSize(){
+function applyCanvasSize() {
     let newWidth = parseInt(widthInput.value);
     let newHeight = parseInt(heightInput.value);
 
@@ -46,24 +46,24 @@ function applyCanvasSize(){
 //#endregion
 
 //#region TEXT EDITOR
-function showDivText(){
+function showDivText() {
     textEditorDiv.style.visibility = 'visible';
-    if (!lastText){
+    if (!lastText) {
         return;
     }
 }
 
 
-textScale.addEventListener('input', function() {
-    if(lastText == null){
+textScale.addEventListener('input', function () {
+    if (lastText == null) {
         return;
     }
     lastText.fontSize(parseInt(textScale.value));
     layer.draw();
 });
 
-editText.addEventListener('input', function() {
-    if(lastText == null){
+editText.addEventListener('input', function () {
+    if (lastText == null) {
         return;
     }
     const text = editText.value;
@@ -72,8 +72,8 @@ editText.addEventListener('input', function() {
 });
 
 
-function saveText(){
-    if(lastText == null){
+function saveText() {
+    if (lastText == null) {
         return;
     }
     const text = editText.value;
@@ -86,7 +86,7 @@ function saveText(){
 
 }
 
-function cancelEdit(){
+function cancelEdit() {
     textEditorDiv.style.visibility = 'hidden';
     undo();
     editText.value = '';
@@ -96,35 +96,35 @@ function cancelEdit(){
 
 //#region UI TOGGLES
 function toggleToolsDiv() {
-  if (toolsdiv.style.display === 'none') {
-    toolsdiv.style.display = 'grid';
-  } else if(toolsdiv.style.display === 'grid'){
-    toolsdiv.style.display = 'none';
-  }
-  else {
-    toolsdiv.style.display = 'none';
-  }
+    if (toolsdiv.style.display === 'none') {
+        toolsdiv.style.display = 'grid';
+    } else if (toolsdiv.style.display === 'grid') {
+        toolsdiv.style.display = 'none';
+    }
+    else {
+        toolsdiv.style.display = 'none';
+    }
 }
 
 
-function showSelectBrushDiv(){
-  if (selectBrushDiv.style.display === 'none') {
-    selectBrushDiv.style.display = 'flex';
-  } else if(selectBrushDiv.style.display === 'flex'){
-    selectBrushDiv.style.display = 'none';
-  }
-  else {
-    selectBrushDiv.style.display = 'none';
-  }
+function showSelectBrushDiv() {
+    if (selectBrushDiv.style.display === 'none') {
+        selectBrushDiv.style.display = 'flex';
+    } else if (selectBrushDiv.style.display === 'flex') {
+        selectBrushDiv.style.display = 'none';
+    }
+    else {
+        selectBrushDiv.style.display = 'none';
+    }
 }
 //#endregion
 
 //#region TOOL CONFIGURATION
-function setAutoSize(){
+function setAutoSize() {
     if (autosizeBtn.textContent == 'AUTO') {
         autosizeBtn.textContent = 'MANUAL';
         autosize = false;
-    }else if (autosizeBtn.textContent == 'MANUAL') {
+    } else if (autosizeBtn.textContent == 'MANUAL') {
         autosizeBtn.textContent = 'AUTO';
         autosize = true;
     }
@@ -137,25 +137,28 @@ function setAutoSize(){
 //#endregion
 
 //#region NAVIGATION
-function toGallery(){
+function toGallery() {
+    if (!isSaved) {
+        window.confirm('Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?') || saveCanvas();
+    }
     let gettype = localStorage.getItem('type');
-    
-    if(gettype == 'manga'){
+
+    if (gettype == 'manga') {
         window.location.href = "manga-screen.html?id=" + id;
-    } else{
+    } else {
         window.location.href = "index.html";
     }
-    
+
 }
 /// showLayerListDiv
 
-function showLayerListDiv(){
+function showLayerListDiv() {
     layerListDiv.classList.remove('enter');
     if (layerListDiv.style.display === 'none') {
         layerListDiv.style.display = 'flex';
         layerListDiv.classList.add('enter');
-        
-    } else if(layerListDiv.style.display === 'flex'){
+
+    } else if (layerListDiv.style.display === 'flex') {
         layerListDiv.style.display = 'none';
     }
 
@@ -166,7 +169,7 @@ function showLayerListDiv(){
 //#endregion
 
 //#region reset rot
-function resetRot(){
+function resetRot() {
     stage.rotation(0);
     stage.batchDraw();
 }

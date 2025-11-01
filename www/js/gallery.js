@@ -1,12 +1,12 @@
 //#region INITIALIZATION
 const drawlist = document.getElementById('drawlist');
 
-window.onload = function() {
+window.onload = function () {
     localStorage.setItem('type', 'draw');
     get_draws();
 }
 
-function get_draws(){
+function get_draws() {
 
     drawlist.innerHTML = '';
 
@@ -19,14 +19,14 @@ function get_draws(){
         const newPicture = document.createElement('img');
         const nameDraw = document.createElement('h1');
         const downloadbtn = document.createElement('button');
-        if (draw.drawURL != null){
+        if (draw.drawURL != null) {
             newPicture.src = draw.drawURL;
-        }else{
+        } else {
             newPicture.src = 'assets/drawing.png';
         }
-        
+
         nameDraw.textContent = draw.nameDraw;
-        
+
         downloadbtn.textContent = 'baixar';
 
         downloadbtn.onclick = () => {
@@ -41,7 +41,7 @@ function get_draws(){
         DrawCard.appendChild(nameDraw);
         drawlist.appendChild(DrawCard);
 
-        newPicture.addEventListener('click', () =>{
+        newPicture.addEventListener('click', () => {
             localStorage.setItem('type', 'draw');
             window.location.href = "draw-screen.html?id=" + draw.id;
         });
@@ -67,7 +67,7 @@ function get_draws(){
         MangaCard.appendChild(nameDraw);
         drawlist.appendChild(MangaCard);
 
-        MangaCard.addEventListener('click', function(){
+        MangaCard.addEventListener('click', function () {
             localStorage.setItem('type', 'manga');
             window.location.href = "manga-screen.html?id=" + manga.id;
         });
@@ -79,14 +79,14 @@ function get_draws(){
 //#endregion
 
 //#region DRAW MANAGEMENT
-function add_draw(){
+function add_draw() {
 
     const DrawCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
 
     let getDrawList = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-    
+
     newPicture.src = 'assets/drawing.png';
     nameDraw.textContent = 'novo desenho > ' + getDrawList.length;
 
@@ -98,7 +98,9 @@ function add_draw(){
         id: getDrawList.length,
         nameDraw: 'novo desenho ' + getDrawList.length,
         drawURL: null,
-        drawGroup: null,
+        layers: [
+        ],
+
         DRAWSIZE: {
             width: 600,
             height: 800
@@ -106,18 +108,18 @@ function add_draw(){
     }
 
     getDrawList.push(newDraw);
-    
-    
-    localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
 
-    
-    
 
-    DrawCard.addEventListener('click', () =>{
+    localStorage.setItem('draws-saveds', JSON.stringify(getDrawList));
+
+
+
+
+    DrawCard.addEventListener('click', () => {
         localStorage.setItem('type', 'draw');
         window.location.href = "draw-screen.html?id=" + newDraw.id;
     });
-    
+
 
     window.location.href = "draw-screen.html?id=" + newDraw.id;
 }
@@ -128,11 +130,11 @@ const createMangaDiv = document.getElementById('createMangaDiv');
 createMangaDiv.style.visibility = 'hidden';
 
 
-function ShowCreateMangaDiv(){
+function ShowCreateMangaDiv() {
     createMangaDiv.style.visibility = 'visible';
 }
 const sizeDrawCanvaPREV = document.getElementById('sizeDrawCanvaPREV');
-const ABSOLUTE = {x: 100, y: 100};
+const ABSOLUTE = { x: 100, y: 100 };
 
 sizeDrawCanvaPREV.width = ABSOLUTE.x;
 sizeDrawCanvaPREV.height = ABSOLUTE.y;
@@ -140,18 +142,18 @@ sizeDrawCanvaPREV.height = ABSOLUTE.y;
 const resPagesX = document.getElementById('resPagesX');
 const resPagesY = document.getElementById('resPagesY');
 
-resPagesX.addEventListener('input', function() {
+resPagesX.addEventListener('input', function () {
     sizeDrawCanvaPREV.width = ABSOLUTE.x + Number(resPagesX.value);
 });
 
-resPagesY.addEventListener('input', function() {
+resPagesY.addEventListener('input', function () {
     sizeDrawCanvaPREV.height = ABSOLUTE.y + Number(resPagesY.value);
 });
 
 
 const nameManga = document.getElementById('nameManga');
 
-function createManga(){
+function createManga() {
 
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
@@ -173,28 +175,28 @@ function createManga(){
         name: nameManga.value,
         chapters: []
     }
-    
+
     getMangaList.push(newManga);
     localStorage.setItem('mangas', JSON.stringify(getMangaList));
 
-    MangaCard.addEventListener('click', function(){
+    MangaCard.addEventListener('click', function () {
         window.location.href = "manga-screen.html?id=" + newManga.id;
     });
-    
+
 }
 
-function cancelCreateManga(){
+function cancelCreateManga() {
     createMangaDiv.style.visibility = 'hidden';
 }
 //#endregion
 
 //#region STORAGE MANAGEMENT
-function clearStorage(){
+function clearStorage() {
     let confim = window.confirm('isso vai apagar todas as suas obra e desenhos ');
-    if (confim == true){
+    if (confim == true) {
         localStorage.clear();
         window.location.reload();
-    }else{
+    } else {
         return;
     }
 }

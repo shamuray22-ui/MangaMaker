@@ -6,6 +6,7 @@ let DRAWSIZE = {
     width: 600,
     height: 800
 }
+let isSaved = false;
 
 
 const getwidthInput = document.getElementById('canvasWidth');
@@ -18,6 +19,9 @@ const pagesDiv = document.getElementById('pagesDiv');
 
 let currentpage = 0;
 
+let layerList = [];
+let currentlayer = 0;
+
 const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
     width: drawContainer.offsetWidth,
@@ -25,7 +29,7 @@ const stage = new Konva.Stage({
 });
 
 stage.container().style.background = '#868686ff';
-const bgLayer = new Konva.Layer({listening:false});
+const bgLayer = new Konva.Layer({ listening: false });
 
 const bgRect = new Konva.Rect({
     height: DRAWSIZE.height,
@@ -33,13 +37,13 @@ const bgRect = new Konva.Rect({
     stroke: 'black',
     strokeWidth: 1,
     fill: '#ffff',
-    shadowBlur:12,
+    shadowBlur: 12,
     cornerRadius: 3,
 });
 
 //////// agora a gente pega as paginas
 const pages = {
-    
+
 };
 
 let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
@@ -62,7 +66,7 @@ let scaleTexture = 1;
 // Cache de brushes - array de objetos {path, canvas}
 const brushCache = [];
 
-function StartBrush(path,color) {
+function StartBrush(path, color) {
     brushpath = path;
     // Procura se já existe um canvas para esse path
     return new Promise((resolve) => {
@@ -73,14 +77,14 @@ function StartBrush(path,color) {
             resolve(currentBrush);
             return;
         }
-        
+
         // Se não existe, cria um novo
         const tempCanvas = document.createElement('canvas');
-        
+
         const tempCtx = tempCanvas.getContext('2d');
         const myImageObj = new Image();
         myImageObj.src = path;
-        
+
         myImageObj.onload = () => {
             tempCanvas.width = myImageObj.width;
             tempCanvas.height = myImageObj.height;
@@ -99,29 +103,30 @@ function StartBrush(path,color) {
 }
 
 
-StartBrush('assets/brush/default.png','#000');
+StartBrush('assets/brush/default.png', '#000');
 //#region STARTYPE
-function StartInitWithType(layer,bgLayer){
+
+function StartInitWithType(layer, bgLayer) {
+
     //#region modo manga
-    if(Gettype === 'manga'){
+    if (Gettype === 'manga') {
         let PagesJson
         getManga.chapters.forEach((page) => {
-            if (chapID == page.number){
+            if (chapID == page.number) {
                 forgeratePageButton = page.pagesCount;
             }
-            
+
         });
-        for(let i = 0; i < forgeratePageButton; i++){
+        for (let i = 0; i < forgeratePageButton; i++) {
             pagenumbers += 1;
 
             const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
-            PagesJson = getPages[pagenumbers]
-            
-            
-            if (PagesJson != undefined){
+            PagesJson = getPages[pagenumbers];
+
+            if (PagesJson != undefined) {
                 PagesJson = Konva.Node.create(PagesJson);
                 // Adiciona clipFunc direto no node do grupo
-                PagesJson.clipFunc(function(ctx) {
+                PagesJson.clipFunc(function (ctx) {
                     ctx.beginPath();
                     ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
                     ctx.closePath();
@@ -129,24 +134,24 @@ function StartInitWithType(layer,bgLayer){
                 });
 
                 ////////////// pegando as linhas salvas e recriando
-                if (PagesJson.children.length < 1){
-                    StartBrush('assets/brush/default.png','#000');
+                if (PagesJson.children.length < 1) {
+                    StartBrush('assets/brush/default.png', '#000');
                 }
                 PagesJson.children.forEach(child => {
-                    StartBrush(child.attrs.texturepath,child.attrs.strokeColor).then(response => {
+                    StartBrush(child.attrs.texturepath, child.attrs.strokeColor).then(response => {
                         currentBrush = response;
-                        if (child.attrs.customClassName === 'ShapeLine'){
-                            
+                        if (child.attrs.customClassName === 'ShapeLine') {
+
                             child.setAttr('customTexture', currentBrush);
-                            
-                            child.sceneFunc(function(ctx) {
+
+                            child.sceneFunc(function (ctx) {
                                 ctx.beginPath();
-                                
+
                                 const points = child.attrs.points;
-                                
-                                if (points != null && points.length >= 2){
+
+                                if (points != null && points.length >= 2) {
                                     ctx.moveTo(points[0], points[1]);
-                                    for(let i = 2; i < points.length; i += 2){
+                                    for (let i = 2; i < points.length; i += 2) {
                                         ctx.lineTo(points[i], points[i + 1]);
                                     }
                                 }
@@ -156,15 +161,15 @@ function StartInitWithType(layer,bgLayer){
                                 ctx.lineJoin = child.attrs.lineJoin;
                                 ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
                                 let brushct = child.attrs.customTexture.getContext('2d');
-                                
+
                                 brushct.globalCompositeOperation = 'source-in';
                                 brushct.fillStyle = child.attrs.strokeColor;
-                                brushct.fillRect(0,0,child.attrs.customTexture.width,child.attrs.customTexture.height);
+                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
                                 brushct.globalCompositeOperation = 'source-over';
                                 const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
-                                
-                                for (let i = 2; i < points.length - 2; i+= 2){
-                                    
+
+                                for (let i = 2; i < points.length - 2; i += 2) {
+
                                     const x1 = points[i];
                                     const y1 = points[i + 1];
                                     const x2 = points[i + 2];
@@ -172,42 +177,24 @@ function StartInitWithType(layer,bgLayer){
 
                                     const dx = x2 - x1;
                                     const dy = y2 - y1;
-                                    const distance = Math.hypot(dx,dy);
+                                    const distance = Math.hypot(dx, dy);
                                     const angle = Math.atan2(dy, dx);
                                     //////// math cell e max > max compara o primeiro valor e retorna o maior
                                     // math cell arredonda pra cima 0.1 vira 1.
                                     const steps = Math.max(1, Math.ceil(distance / space));
-
-                                    //for (let j = 0; j < steps; j++){
-                                   //     const t = j / steps;
-                                    //    const xlerp = x1 + dx * t;
-                                    //    const ylerp = y1 + dy * t;
-
-                                   //     ctx.save();
-                                  //      ctx.translate(xlerp, ylerp);
-                                   //     ctx.rotate(angle);
-
-                                   //     ctx.drawImage(child.attrs.customTexture,
-                                   //         -child.attrs.lineWidth / 2,
-                                   //         -child.attrs.lineWidth / 2,
-                                   //         child.attrs.lineWidth,
-                                   //         child.attrs.lineWidth
-                                      //  );
-                                     //   ctx.restore();
-                                    //}
                                 }
 
                                 ctx.fillStrokeShape(child);
                                 ctx.stroke();
                             });
-                            
+
                         }
 
                     });
                 });
-            }else{
+            } else {
                 PagesJson = new Konva.Group({
-                    clipFunc: function(ctx) {
+                    clipFunc: function (ctx) {
                         ctx.beginPath(); // Inicia um novo caminho
                         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
                         ctx.closePath(); // Fecha o caminho
@@ -215,35 +202,33 @@ function StartInitWithType(layer,bgLayer){
                     }
                 });
             }
-            
+
             pages['page' + pagenumbers] = {
-                    background : null,
-                    draw : null,
-                    layers: {
-                        layer:{
-                            draw : null
-                        }
+                background: null,
+                draw: null,
+                layers: {
+                    layer: {
+                        draw: null
                     }
+                }
             }
             const buttonPage = document.createElement('button');
             buttonPage.textContent = 'page ' + i;
             pagesDiv.appendChild(buttonPage);
-            buttonPage.onclick = function() {
+            buttonPage.onclick = function () {
                 set_current_page(i);
-                
-                
+
             }
 
             //////////////populando as paginas ///////////////// 
 
-            if (PagesJson){
+            if (PagesJson) {
                 pages['page' + i].draw = PagesJson;
 
-            }else{
-                console.log('criando nova pagina vazia');
-                StartBrush('assets/brush/default.png','#000');
+            } else {
+                StartBrush('assets/brush/default.png', '#000');
                 pages['page' + i].draw = new Konva.Group({
-                    clipFunc: function(ctx) {
+                    clipFunc: function (ctx) {
                         ctx.beginPath(); // Inicia um novo caminho
                         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
                         ctx.closePath(); // Fecha o caminho
@@ -261,157 +246,138 @@ function StartInitWithType(layer,bgLayer){
             let group = pages['page' + i].draw;
 
 
-            bgLayer.add(pages['page'+ i].background);
+            bgLayer.add(pages['page' + i].background);
             layer.add(group);
-            
-            
+
+
         }
-        
-    }  
+
+    }
     //#region modo draw
-    else if (Gettype === 'draw'){
-        pages['page0'] = {
-            background : null,
-            draw : null,
-            layers: {
-            }
-        
+    else if (Gettype === 'draw') {
+        pages['page' + currentpage] = {
+            background: null,
+            layers: [
+
+            ]
+
         }
-        
-        if(foundDraw && foundDraw.drawGroup != null){
-            
-            pages['page' + currentpage].draw = Konva.Node.create(foundDraw.drawGroup);
-            pages['page' + currentpage].layers.layer = foundDraw.drawGroup;
-            console.log(pages['page' + currentpage].layers);
-            
+
+        if (foundDraw && foundDraw.layers[0] != null) {
+
+            for (let i = 0; i < foundDraw.layers.length; i++) {
+                if (foundDraw.layers[i].draw == null) {
+                    foundDraw.layers.slice(i, 1);
+                    //pages['page' + currentpage].layers.slice(i, 1); // reseta as layers
+
+                }
+                console.log(pages['page' + currentpage].layers)
+                let layer = foundDraw.layers[i];
+                pages['page' + currentpage].layers.push({ draw: null });
+                pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer);
+
+
+                pages['page' + currentpage].layers[i].draw.children.forEach(child => {
+
+
+                    StartBrush(child.attrs.texturepath).then(response => {
+                        currentBrush = response
+
+                        if (child.attrs.customClassName === 'ShapeLine') {
+
+                            child.setAttr('customTexture', currentBrush);
+
+                            child.sceneFunc(function (ctx) {
+                                ctx.beginPath();
+
+                                const points = child.attrs.points;
+
+                                if (points != null && points.length >= 2) {
+                                    ctx.moveTo(points[0], points[1]);
+                                    for (let i = 2; i < points.length; i += 2) {
+                                        ctx.lineTo(points[i], points[i + 1]);
+                                    }
+                                }
+                                ctx.strokeStyle = child.attrs.strokeColor;
+                                ctx.lineWidth = child.attrs.lineWidth;
+                                ctx.lineCap = child.attrs.lineCap;
+                                ctx.lineJoin = child.attrs.lineJoin;
+                                ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                                let brushct = child.attrs.customTexture.getContext('2d');
+
+                                brushct.globalCompositeOperation = 'source-in';
+                                brushct.fillStyle = child.attrs.strokeColor;
+                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
+                                brushct.globalCompositeOperation = 'source-over';
+
+                                ctx.fillStrokeShape(child);
+                                ctx.stroke();
+                            });
+
+                        }
+                    });
+                });
+            }
+
             DRAWSIZE.width = foundDraw.DRAWSIZE.width;
             DRAWSIZE.height = foundDraw.DRAWSIZE.height
             bgRect.width(DRAWSIZE.width);
             bgRect.height(DRAWSIZE.height);
-
             /// atualizando os numeros de resize da UX
             getwidthInput.value = DRAWSIZE.width;
             getheightInput.value = DRAWSIZE.height;
-            pages['page' + currentpage].draw.clipFunc(function(ctx) {
+            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
+                pages['page' + currentpage].layers[i].draw.clipFunc(function (ctx) {
                     ctx.beginPath();
                     ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
                     ctx.closePath();
                     ctx.clip();
-            });
-            
-            ////////////// pegando as linhas salvas e recriando
-            if (pages['page' + currentpage].draw.children.length < 1){
-                StartBrush('assets/brush/default.png','#000');
-            }
-            pages['page' + currentpage].draw.children.forEach(child => {
-                
-                
-                StartBrush(child.attrs.texturepath).then(response => {
-                    currentBrush = response
-                    
-                    if (child.attrs.customClassName === 'ShapeLine'){
-                        
-                        child.setAttr('customTexture', currentBrush);
-                        
-                        child.sceneFunc(function(ctx) {
-                            ctx.beginPath();
-                            
-                            const points = child.attrs.points;
-                            
-                            if (points != null && points.length >= 2){
-                                ctx.moveTo(points[0], points[1]);
-                                for(let i = 2; i < points.length; i += 2){
-                                    ctx.lineTo(points[i], points[i + 1]);
-                                }
-                            }
-                            ctx.strokeStyle = child.attrs.strokeColor;
-                            ctx.lineWidth = child.attrs.lineWidth;
-                            ctx.lineCap = child.attrs.lineCap;
-                            ctx.lineJoin = child.attrs.lineJoin;
-                            ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                            let brushct = child.attrs.customTexture.getContext('2d');
-                            
-                            brushct.globalCompositeOperation = 'source-in';
-                            brushct.fillStyle = child.attrs.strokeColor;
-                            brushct.fillRect(0,0,child.attrs.customTexture.width,child.attrs.customTexture.height);
-                            brushct.globalCompositeOperation = 'source-over';
-                            
-                            const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
-                            
-                            for (let i = 2; i < points.length - 2; i+= 2){
-                                
-                                const x1 = points[i];
-                                const y1 = points[i + 1];
-                                const x2 = points[i + 2];
-                                const y2 = points[i + 3];
-
-                                const dx = x2 - x1;
-                                const dy = y2 - y1;
-                                const distance = Math.hypot(dx,dy);
-                                const angle = Math.atan2(dy, dx);
-                                //////// math cell e max > max compara o primeiro valor e retorna o maior
-                                // math cell arredonda pra cima 0.1 vira 1.
-                                const steps = Math.max(1, Math.ceil(distance / space));8
-                                
-                                //for (let j = 0; j < steps; j++){
-                                    //const t = j / steps;
-                                    //const xlerp = x1 + dx * t;
-                                    //const ylerp = y1 + dy * t;
-                                    //
-                                    //
-                                    //ctx.save();
-                                    ////ctx.setTransform(1,0,0,1,0,0);
-
-                                    //ctx.translate(xlerp, ylerp);
-                                    //ctx.rotate(angle);
-
-                                    //ctx.drawImage(child.attrs.customTexture,
-                                    //    -child.attrs.lineWidth / 2,
-                                    //    -child.attrs.lineWidth / 2,
-                                    //    child.attrs.lineWidth,
-                                    //    child.attrs.lineWidth
-                                    //);
-                                    //ctx.restore();
-                                
-                                //}
-                            }
-
-                            ctx.fillStrokeShape(child);
-                            ctx.stroke();
-                        });
-                        
-                    }
                 });
-            });
-            
+                ////////////// pegando as linhas salvas e recriando
+                if (pages['page' + currentpage].layers[i].draw.children.length < 1) {
+                    StartBrush('assets/brush/default.png', '#000');
+                }
+            }
+
+
+
         }
-        else{
-            StartBrush('assets/brush/default.png','#000');
-            
-            pages['page' + currentpage].draw = new Konva.Group({
-                clipFunc: function(ctx) {
+        else {
+            StartBrush('assets/brush/default.png', '#000');
+            pages['page' + currentpage].layers.push({ draw: null });
+
+            pages['page' + currentpage].layers[0].draw = new Konva.Group({
+                clipFunc: function (ctx) {
                     ctx.beginPath(); // Inicia um novo caminho
                     ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
                     ctx.closePath(); // Fecha o caminho
                     ctx.clip(); // Aplica o recorte
                 }
             });
+
+
+
         }
-        
+
 
         // Crie um novo bgRect para o grupo de bg rect
         pages['page' + currentpage].background = new Konva.Group({
         });
 
         ////////// adiciona os grupos a page atual
-        let groupBgRect = pages['page' + currentpage].background;
-        let group = pages['page' + currentpage].draw;
-
         pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
 
+        let groupBgRect = pages['page' + currentpage].background;
 
         bgLayer.add(groupBgRect);
-        layer.add(group);
+        for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
+            let group = pages['page' + currentpage].layers[i].draw;
+
+            layer.add(group);
+
+            updateLayerList();
+
+        }
 
     }
 }
@@ -421,9 +387,11 @@ let layer = new Konva.Layer();
 stage.add(bgLayer);
 stage.add(layer);
 
-StartInitWithType(layer,bgLayer);
-console.log(stage.getLayers());
-let group = pages['page' + currentpage].draw;
+StartInitWithType(layer, bgLayer);
+
+
+let group = pages['page' + currentpage].layers[0].draw;
+
 
 //#region  VARIAVEIS
 
@@ -440,7 +408,7 @@ let composite = 'source-over';
 let undoHistory = [];
 let redoHistory = [];
 
-let startpos = {x: 0,y:0};
+let startpos = { x: 0, y: 0 };
 let dragpos = null;
 
 let lastRect = null;
@@ -479,49 +447,52 @@ function getGlobalMousePos() {
 }
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
-    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle','select','text'];
+    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text'];
     if (validTools.includes(tool)) {
         current_tool = tool;
         // Ajusta o modo de composição para a borracha
         if (tool === 'eraser') {
             composite = 'destination-out';
-            
+
         } else {
             composite = 'source-over';
         }
     }
 }
 
-function set_current_page(index){
+function set_current_page(index) {
 
-    for (let i = 0; i < pagesDiv.children.length; i++){
+    for (let i = 0; i < pagesDiv.children.length; i++) {
         currentpage = index;
         pagesDiv.children[i].style.color = 'black';
-        if (i != currentpage){
+        if (i != currentpage) {
             pagesDiv.children[i].style.color = 'blue';
             pages['page' + i].draw.hide();
             pages['page' + i].background.hide();
-            
-        }else{
+
+        } else {
             pagesDiv.children[i].style.color = 'green';
             pages['page' + i].draw.show();
             pages['page' + i].background.show();
             group = pages['page' + i].draw;
         }
-        
+
     }
 
 }
 
 //#region ADD LAYER
-let layerList = stage.getLayers();
-let currentlayer = 0;
+
+function updateLayerList() {
+    for (let i = 0; i < layer.children.length; i++) {
+        layerList = layer.find('Group');
+    }
+}
+updateLayerList();
+
+
 function createUXlayer() {
     const layerGrid = document.getElementById('layerGrid');
-    if (!layerGrid) {
-        console.error('Elemento #layerGrid não encontrado.');
-        return;
-    }
 
     const layerCell = document.createElement('div');
     layerCell.id = 'layerCell'; // usa class, id é pra ser único
@@ -533,6 +504,7 @@ function createUXlayer() {
 
     const label = document.createElement('label');
     label.textContent = currentlayer;
+
     // preview
     const preview = document.createElement('img');
     preview.src = 'assets/drawing.png';
@@ -563,70 +535,67 @@ function createUXlayer() {
     layerCell.appendChild(clip);
     layerCell.appendChild(del);
     ratio.checked = true;
-    group = pages['page' + currentpage].draw;
     // e finalmente coloca no grid
     layerGrid.appendChild(layerCell);
     layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
+        group = pages['page' + currentpage].layers[Number(ratio.value)].draw;
+
     });
     ratio.addEventListener('change', (event) => {
-        if (event.target.checked){
-            console.log(event.target.value);
-            
-        }
+        group = pages['page' + currentpage].layers[Number(event.target.value)].draw;
+
     });
-    
-
     del.onclick = () => {
-
         if (label.textContent === '0' || ratio.checked === false) {
             return;
         }
+
         layerList[currentlayer].remove();
-        currentlayer -= 1
-        layerList = stage.getLayers();
-        console.log(currentlayer);
+        updateLayerList();
+        currentlayer -= 1;
+
+
+        group = pages['page' + currentpage].layers[currentlayer].draw;
+
         layerGrid.removeChild(layerCell);
-        layerGrid.children[currentlayer].children[0].checked = true
-        console.log('deletado > ',layerList);
-        
+
+
     }
+    group = pages['page' + currentpage].layers[currentlayer].draw;
+
 
 }
 
 for (let i = 0; i < layerList.length; i++) {
     currentlayer = i;
     createUXlayer();
+
 }
 
-function addLayer(imagedata = ''){
-    const newLayer = new Konva.Layer();
-    
-    
-    if(imagedata === ''){
+function addLayer(imagedata = '') {
+    const newLayer = new Konva.Group();
 
-    }
-    newLayer.clipFunc(function(ctx){
+    newLayer.clipFunc(function (ctx) {
         ctx.beginPath();
         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
         ctx.closePath();
         ctx.clip();
-        
-    });
-    pages['page' + currentpage].draw = newLayer;
 
-    stage.add(newLayer);
-    layerList = stage.getLayers();
-    console.log(layerList);
-    currentlayer = layerList.length - 1;
-    group = pages['page' + currentpage].draw;
+    });
+    pages['page' + currentpage].layers.push({ draw: newLayer });
+    layer.add(newLayer);
+
+    currentlayer = layerList.length;
+    group = pages['page' + currentpage].layers[currentlayer].draw;
+    updateLayerList();
     createUXlayer();
 
 }
 
 
 //#region ZOOM
-stage.container().addEventListener('wheel', function(e) {
+stage.container().addEventListener('wheel', function (e) {
     e.preventDefault();
     const oldScale = stage.scaleX();
     const pointer = stage.getPointerPosition();
@@ -664,7 +633,7 @@ let lastDist = 0;
 let lastMidPoint = null;
 let lastAngle = 0;
 
-stage.container().addEventListener('touchmove', function(e) {
+stage.container().addEventListener('touchmove', function (e) {
     if (e.touches.length === 2) {
         isDrawing = false;
         e.preventDefault();
@@ -741,7 +710,7 @@ window.addEventListener('resize', () => {
     }
 });
 //#region START TOUCH OR MOUSE
-stage.on('mousedown touchstart', function(e) {
+stage.on('mousedown touchstart', function (e) {
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
     }
@@ -753,9 +722,9 @@ stage.on('mousedown touchstart', function(e) {
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
-    
 
-    if (current_tool == 'pen' || current_tool == 'eraser'){
+
+    if (current_tool == 'pen' || current_tool == 'eraser') {
 
 
 
@@ -770,18 +739,18 @@ stage.on('mousedown touchstart', function(e) {
             points: [],
             customClassName: 'ShapeLine',
             listening: false,
-            sceneFunc: function(ctx, shape){
+            sceneFunc: function (ctx, shape) {
                 ctx.beginPath();
                 const points = shape.attrs.points;
-                
+
                 ///////// math max compara o valor 0.1 (ou qualquer outro) e retorna o maior numero.
                 const space = Math.max(0.1, shape.attrs.lineWidth * 0.5);
 
-                if (points.length >= 2){ // precisa de pelo menos x,y
+                if (points.length >= 2) { // precisa de pelo menos x,y
                     ctx.moveTo(points[0], points[1]); // primeiro ponto
-                    for (let i = 2; i < points.length; i += 2){ // pula de 2 em 2
+                    for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
                         ctx.lineTo(points[i], points[i + 1]);
-                        
+
                     }
                 }
                 ctx.lineWidth = shape.attrs.lineWidth;
@@ -789,56 +758,22 @@ stage.on('mousedown touchstart', function(e) {
                 ctx.lineJoin = shape.attrs.lineJoin;
                 ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
                 let brushct = shape.attrs.customTexture.getContext('2d');
-                
+
                 brushct.globalCompositeOperation = 'source-in';
                 brushct.fillStyle = shape.attrs.strokeColor;
-                brushct.fillRect(0,0,shape.attrs.customTexture.width,shape.attrs.customTexture.height);
+                brushct.fillRect(0, 0, shape.attrs.customTexture.width, shape.attrs.customTexture.height);
                 brushct.globalCompositeOperation = 'source-over';
-                ////// gerando a textura na linha
-                for (let i = 2; i < points.length - 2; i+= 2){
-                    const x1 = points[i];
-                    const y1 = points[i + 1];
-                    const x2 = points[i + 2];
-                    const y2 = points[i + 3];
 
-                    const dx = x2 - x1;
-                    const dy = y2 - y1;
-                    const distance = Math.hypot(dx,dy);
-                    const angle = Math.atan2(dy, dx);
-                    //////// math cell e max > max compara o primeiro valor e retorna o maior
-                    // math cell arredonda pra cima 0.1 vira 1.
-                    const steps = Math.max(1, Math.ceil(distance / space));
-
-                    //for (let j = 0; j < steps; j++){
-                        //const t = j / steps;
-                        //const xlerp = x1 + dx * t;
-                        //const ylerp = y1 + dy * t;
-
-                        //ctx.save();
-                        ////ctx.setTransform(1,0,0,1,0,0);
-                        //ctx.translate(xlerp, ylerp);
-                        //ctx.rotate(angle);
-                        //ctx.drawImage(shape.attrs.customTexture,
-                        //    -shape.attrs.lineWidth / 2,
-                        //    -shape.attrs.lineWidth / 2,
-                        //    shape.attrs.lineWidth,
-                        //    shape.attrs.lineWidth
-                        //);
-                        //ctx.restore();
-                    
-                    //}
-
-                }
                 ctx.fillStrokeShape(shape);
                 ctx.stroke();
-                
+
             }
 
         });
         group.add(TexturedLine);
     }
 
-    else if (current_tool == 'rectangle'){
+    else if (current_tool == 'rectangle') {
         // iniciar com x/y no ponto de início e tamanho 0
         lastRect = new Konva.Rect({
             x: startpos.x,
@@ -860,10 +795,10 @@ stage.on('mousedown touchstart', function(e) {
             stroke: 'black'
         });
         group.add(lastCicle);
-        
+
 
     }
-    else if (current_tool == 'select'){
+    else if (current_tool == 'select') {
         lastSelectBox = new Konva.Rect({
             x: startpos.x,
             y: startpos.y,
@@ -878,18 +813,18 @@ stage.on('mousedown touchstart', function(e) {
         group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
         lastSelectBox.moveToTop();
     }
-    else if (current_tool == 'line'){
+    else if (current_tool == 'line') {
         lastLineTool = new Konva.Line({
             stroke: colorPicker.value,
             strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
-            points: [startpos.x, startpos.y,startpos.x,startpos.y],
+            points: [startpos.x, startpos.y, startpos.x, startpos.y],
             lineCap: 'round',
             lineJoin: 'round'
         });
         group.add(lastLineTool);
     }
-    else if (current_tool == 'text' && draggingText === false){
+    else if (current_tool == 'text' && draggingText === false) {
         lastText = new Konva.Text({
             x: startpos.x,
             y: startpos.y,
@@ -902,16 +837,16 @@ stage.on('mousedown touchstart', function(e) {
         showDivText();
 
         // Adiciona os eventos de drag aqui
-        lastText.on('dragstart', function() {
+        lastText.on('dragstart', function () {
             draggingText = true;
         });
-        lastText.on('dragend', function() {
+        lastText.on('dragend', function () {
             draggingText = false;
         });
     }
 });
 //#region MOUSE TOUCH MOVE AGAIN
-stage.on('mousemove touchmove', function(e) {
+stage.on('mousemove touchmove', function (e) {
     if (!isDrawing) {
         return;
     }
@@ -922,22 +857,22 @@ stage.on('mousemove touchmove', function(e) {
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
 
-    if (current_tool == 'pen' || current_tool == 'eraser' && TexturedLine){
+    if (current_tool == 'pen' || current_tool == 'eraser' && TexturedLine) {
         // Verifica se é um evento de toque e se há mais de um dedo na tela
         if (e.evt.touches && e.evt.touches.length > 1) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
         TexturedLine.attrs.points.push(pos.x, pos.y);
-        
+
         stage.batchDraw();
-    } 
-    else if (current_tool == 'circle' && lastCicle){
+    }
+    else if (current_tool == 'circle' && lastCicle) {
         lastCicle.x(x);
         lastCicle.y(y);
         lastCicle.radiusX(w);
         lastCicle.radiusY(h);
     }
-    else if (current_tool == 'rectangle' && lastRect){
+    else if (current_tool == 'rectangle' && lastRect) {
         // atualizar posição e tamanho dinamicamente usando pos (não pos)
 
         lastRect.x(x);
@@ -946,8 +881,8 @@ stage.on('mousemove touchmove', function(e) {
         lastRect.height(h);
 
 
-    } 
-    else if (current_tool == 'select' && lastSelectBox){
+    }
+    else if (current_tool == 'select' && lastSelectBox) {
 
         if (posing == false) {
             lastSelectBox.x(x);
@@ -956,15 +891,15 @@ stage.on('mousemove touchmove', function(e) {
             lastSelectBox.height(h);
         }
     }
-    else if (current_tool == 'line' && lastLineTool){
-        lastLineTool.points([startpos.x, startpos.y,pos.x,pos.y]);
+    else if (current_tool == 'line' && lastLineTool) {
+        lastLineTool.points([startpos.x, startpos.y, pos.x, pos.y]);
 
     }
 
 });
 
 //#region MOUSE UP
-stage.on('touchend', function(e){
+stage.on('touchend', function (e) {
     isDrawing = false;
     dragpos = null;
     if (e.evt.touches.length < 2) {
@@ -973,10 +908,10 @@ stage.on('touchend', function(e){
     }
     AddactionToHistory();
 
-    
-    
+
+
 });
-stage.on('mouseup', function(e) {
+stage.on('mouseup', function (e) {
     isDrawing = false;
     dragpos = null;
     if (lastSelectBox) {
@@ -998,7 +933,6 @@ stage.on('mouseup', function(e) {
             node.stroke('red');
         });
 
-        console.log('Itens selecionados:', selectedNodes.length);
 
         lastSelectBox.destroy();
         lastSelectBox = null;
@@ -1017,6 +951,7 @@ function clearCanvas() {
 
 //#region SAVE
 function saveCanvas() {
+    isSaved = true;
     ////// salvando as coordenadas da tela
     const laspos = stage.position();
     const lascale = stage.scaleX();
@@ -1025,16 +960,16 @@ function saveCanvas() {
 
     ////// resetando as coordenadas da tela pra pos inicial
 
-    stage.position({x:0,y:0});
-    stage.scale({x:1,y:1});
+    stage.position({ x: 0, y: 0 });
+    stage.scale({ x: 1, y: 1 });
     layer.draw();
     stage.rotation(0);
     bgLayer.draw();
     group.draw();
-    
-    if(Gettype == 'draw'){
 
-        if (foundDraw){
+    if (Gettype == 'draw') {
+
+        if (foundDraw) {
             //// guardamos a url pra mera vizualização na galeria;
             foundDraw.drawURL = stage.toDataURL({
                 mimeType: "image/png",
@@ -1043,32 +978,34 @@ function saveCanvas() {
                 height: DRAWSIZE.height
             });
             //// aqui que guardamos grupos
-            
-            foundDraw.drawGroup = pages['page0'].draw.toJSON();
+            foundDraw.layers = [];
+            for (let i = 0; i <= layerList.length - 1; i++) {
 
+                foundDraw.layers.push(pages['page' + currentpage].layers[i].draw.toJSON());
+
+
+            }
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
-        
         }
-        
-        
-        localStorage.setItem('draws-saveds',JSON.stringify(getDrawList));
+
+
+        localStorage.setItem('draws-saveds', JSON.stringify(getDrawList));
 
     } else if (Gettype == 'manga') {
-        alert('manga salvo com exito');
         const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
 
         for (let i = 0; i <= pagenumbers; i++) {
-            getPages[i] = pages['page' + i].draw.toJSON(); 
+            getPages[i] = pages['page' + i].draw.toJSON();
         }
-        
+
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
 
         localStorage.setItem('mangas', JSON.stringify(getMangaList));
     }
     //////// resturando as cordenadas da tela
     stage.position(laspos);
-    stage.scale({x:lascale,y:lascale});
+    stage.scale({ x: lascale, y: lascale });
     layer.draw();
     stage.rotation(lasrotation);
     bgLayer.draw();
@@ -1076,7 +1013,7 @@ function saveCanvas() {
 }
 //#region ADD TO HISTORY
 function AddactionToHistory() {
-    if (TexturedLine){
+    if (TexturedLine) {
         undoHistory.push(TexturedLine);
         TexturedLine = null;
     } else if (lastRect) {
@@ -1095,22 +1032,22 @@ function AddactionToHistory() {
 }
 
 //#region UNDO
-function undo(){
+function undo() {
     const lastAction = undoHistory.pop();
-    
+
 
     if (lastAction) {
         lastAction.remove(); // Remove a última linha do grupo
         redoHistory.push(lastAction); // Adiciona a ação removida ao histórico de refazer
         stage.batchDraw();
 
-        
+
     }
-    
+
 }
 
 //#region REDO
-function redo(){
+function redo() {
     const actionToRedo = redoHistory.pop();
     if (actionToRedo) {
         group.add(actionToRedo); // Adiciona a ação de volta ao grupo
@@ -1121,13 +1058,13 @@ function redo(){
 
 
 //#region MOUSE LEAVE
-stage.on('touchcancel', function(e) {
+stage.on('touchcancel', function (e) {
     if (e.evt.touches.length < 2) {
         lastDist = 0;
         lastMidPoint = null;
     }
 });
-stage.on('mouseleave ', function(e) {
+stage.on('mouseleave ', function (e) {
     lastLine = null;
     isDrawing = false;
 
