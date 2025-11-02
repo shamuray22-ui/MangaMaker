@@ -1,0 +1,173 @@
+/*
+  Global CSS variables (roots) for MangaMaker.
+  This file consolidates theme variables used across multiple CSS files so
+  you don't have duplicate :root blocks in each stylesheet.
+
+  It contains default values and three theme variants: .white-theme, .pink-theme, .blue-theme
+  The theme toggling in JS should add the corresponding class to the <html> element
+  (document.documentElement.classList).
+*/
+
+/* --- DEFAULT (escuro) --- */
+:root {
+    /* body backgrounds (aliases kept for compatibility) */
+    --bg-body: #282828;
+    --body-bg: var(--bg-body);
+
+    /* common text */
+    --font-color: #ffffff;
+
+    /* gallery/card */
+    --grid-bg: #8c8d8d;
+    --card-bg-start: #001c35;
+    --card-bg-end: #002848;
+    --card-border: #5e5e5e;
+
+    /* buttons */
+    --btn-bg: #4a87e2;
+    --btn-bg-hover: #74a5ff;
+    --btn-border: #2c5aa0;
+
+    /* popup */
+    --popup-bg: #00223D;
+    --popup-border: rgb(147, 147, 255);
+    --popup-input-bg: #2c5aa0;
+
+    /* draw/editor variables */
+    --DefaultpanelColor: #23232354;
+    --button-bg: #000000;
+    --button-border: #404040;
+    --button-hover-bg: #232323;
+    --button-shadow: rgba(255, 255, 255, 0.8);
+    --toolbar-bg: #222;
+    --toolbar-color: #fff;
+    --bottom-bg: #222;
+    --layer-bg: #444;
+    --layer-hover-bg: #5f5f5f;
+    --popup-color: #fff;
+    --setsize-bg: #f0f0f0;
+    --selectbrush-bg: #232323;
+
+    /* form / chapter */
+    --form-bg: rgb(83, 83, 83);
+    --form-button-bg: rgb(100, 100, 100);
+    --form-button-hover-bg: rgb(120, 120, 120);
+    --chapter-bg: rgb(83, 83, 83);
+    --chapter-font-color: #ffffff;
+
+    /* shadows (used by other styles) */
+    --shadow-dark: rgba(0, 0, 0, 0.6);
+    --shadow-darker: rgba(0, 0, 0, 0.8);
+}
+
+/* --- TEMA BRANCO --- */
+:root.white-theme {
+    --bg-body: #ffffff;
+    --body-bg: var(--bg-body);
+    --font-color: #222222;
+
+    --grid-bg: #e0e0e0;
+    --card-bg-start: #ffffff;
+    --card-bg-end: #f0f0f0;
+    --card-border: #cccccc;
+
+    --btn-bg: #4a87e2;
+    --btn-bg-hover: #74a5ff;
+    --btn-border: #2c5aa0;
+
+    --popup-bg: #ffffff;
+    --popup-border: #8888ff;
+    --popup-input-bg: #a0c0ff;
+
+    --DefaultpanelColor: #e0e0e0cc;
+    --body-bg: #ffffff;
+    --form-bg: #e0e0e0;
+    --form-button-bg: #cccccc;
+    --form-button-hover-bg: #bbbbbb;
+    --chapter-bg: #e0e0e0;
+    --chapter-font-color: #222222;
+
+    --button-bg: #dddddd;
+    --button-border: #aaaaaa;
+    --button-hover-bg: #cccccc;
+    --button-shadow: rgba(0, 0, 0, 0.3);
+    --toolbar-bg: #f0f0f0;
+    --toolbar-color: #222222;
+    --bottom-bg: #f0f0f0;
+    --layer-bg: #e0e0e0;
+    --layer-hover-bg: #d0d0d0;
+    --popup-bg: rgba(255, 255, 255, 0.9);
+    --popup-color: #222222;
+    --setsize-bg: #ffffff;
+    --selectbrush-bg: #e0e0e0;
+}
+
+/* --- TEMA ROSA --- */
+:root.pink-theme {
+    --bg-body: #ffe6f0;
+    --body-bg: var(--bg-body);
+    --font-color: #660033;
+
+    --grid-bg: #ffcce6;
+    --card-bg-start: #ffb3d1;
+    --card-bg-end: #ff99c2;
+    --card-border: #ff66a3;
+
+    --btn-bg: #ff66a3;
+    --btn-bg-hover: #ff85bf;
+    --btn-border: #cc3380;
+
+    --popup-bg: #ffb3d1;
+    --popup-border: #ff66a3;
+    --popup-input-bg: #ff85bf;
+
+    --DefaultpanelColor: #ffcce6cc;
+    --button-bg: #ff99c2;
+    --button-border: #cc3380;
+    --button-hover-bg: #ff85bf;
+    --button-shadow: rgba(255, 255, 255, 0.5);
+    --toolbar-bg: #ffb3d1;
+    --toolbar-color: #660033;
+    --bottom-bg: #ffb3d1;
+    --layer-bg: #ff99c2;
+    --layer-hover-bg: #ff85bf;
+    --popup-bg: rgba(255, 192, 203, 0.9);
+    --popup-color: #660033;
+    --setsize-bg: #ffcce6;
+    --selectbrush-bg: #ff99c2;
+}
+
+/* --- TEMA AZUL --- */
+:root.blue-theme {
+    --bg-body: #e6f0ff;
+    --body-bg: var(--bg-body);
+    --font-color: #003366;
+
+    --grid-bg: #cce0ff;
+    --card-bg-start: #99c2ff;
+    --card-bg-end: #66a3ff;
+    --card-border: #3385ff;
+
+    --btn-bg: #3385ff;
+    --btn-bg-hover: #66a3ff;
+    --btn-border: #003366;
+
+    --popup-bg: #99c2ff;
+    --popup-border: #3385ff;
+    --popup-input-bg: #66a3ff;
+
+    --DefaultpanelColor: #cce0ffcc;
+    --button-bg: #66a3ff;
+    --button-border: #003366;
+    --button-hover-bg: #3385ff;
+    --button-shadow: rgba(0, 0, 0, 0.3);
+    --toolbar-bg: #99c2ff;
+    --toolbar-color: #003366;
+    --bottom-bg: #99c2ff;
+    --layer-bg: #66a3ff;
+    --layer-hover-bg: #3385ff;
+    --popup-bg: rgba(173, 216, 230, 0.9);
+    --popup-color: #003366;
+    --setsize-bg: #cce0ff;
+    --selectbrush-bg: #66a3ff;
+}

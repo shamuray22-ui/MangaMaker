@@ -1,27 +1,32 @@
+/* Theme variables moved to css/global-roots.css */
+/* Page layout/styles below; variables are loaded globally via global-roots.css */
+
+/* ======== LAYOUT ======== */
 body {
-    background-color: rgb(129, 129, 129);
+    background-color: var(--body-bg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     font-family: Arial, sans-serif;
     padding-top: 40px;
+    color: var(--font-color);
 }
 
 /* Form de criação de capítulo */
 #create-chapter {
     z-index: 1;
     position: fixed;
-    background-color: rgb(83, 83, 83);
+    background-color: var(--form-bg);
     border-radius: 20px;
-    width: 90vw; /* Usar largura relativa */
-    max-width: 600px; /* Manter um máximo em telas grandes */
+    width: 90vw;
+    max-width: 600px;
     padding: 20px 30px;
     display: flex;
     flex-direction: column;
     gap: 16px;
     margin-bottom: 32px;
-    color: white;
+    color: var(--font-color);
 }
 
 #create-chapter h2 {
@@ -39,26 +44,28 @@ body {
     border: none;
     width: 100%;
     box-sizing: border-box;
+    color: var(--font-color);
+    background-color: var(--body-bg);
 }
 
 #create-chapter button {
     padding: 10px 16px;
     border: none;
     border-radius: 12px;
-    background-color: rgb(100, 100, 100);
-    color: white;
+    background-color: var(--form-button-bg);
+    color: var(--font-color);
     cursor: pointer;
     transition: 0.2s;
 }
 
 #create-chapter button:hover {
-    background-color: rgb(120, 120, 120);
+    background-color: var(--form-button-hover-bg);
     scale: 0.95;
 }
 
 /* Lista de capítulos */
 #chapter-list h1 {
-    color: white;
+    color: var(--chapter-font-color);
     margin: 0;
 }
 
@@ -71,9 +78,9 @@ body {
 
 #chapter-list div {
     border-radius: 20px;
-    background-color: rgb(83, 83, 83);
-    width: 90vw; /* Usar largura relativa */
-    max-width: 600px; /* Manter um máximo em telas grandes */
+    background-color: var(--chapter-bg);
+    width: 90vw;
+    max-width: 600px;
     height: 100px;
     scale: 0.9;
     display: flex;
@@ -81,8 +88,9 @@ body {
     justify-content: flex-start;
     gap: 20px;
     padding: 10px;
-    margin: 32px auto; /* Centraliza o card e aplica margem vertical */
+    margin: 32px auto;
     transition: 0.2s;
+    color: var(--chapter-font-color);
 }
 
 #chapter-list div:hover {
@@ -94,14 +102,14 @@ body {
     padding: 6px 10px;
     border-radius: 10px;
     border: none;
-    background-color: rgb(100, 100, 100);
-    color: white;
+    background-color: var(--form-button-bg);
+    color: var(--font-color);
     cursor: pointer;
     margin-right: 8px;
     transition: 0.2s;
 }
 
 #chapter-list button:hover {
-    background-color: rgb(120, 120, 120);
+    background-color: var(--form-button-hover-bg);
     scale: 0.95;
 }
