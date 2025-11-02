@@ -1,69 +1,79 @@
 /*
-  Global CSS variables (roots) for MangaMaker.
-  This file consolidates theme variables used across multiple CSS files so
-  you don't have duplicate :root blocks in each stylesheet.
+    global-roots.css — reorganized
 
-  It contains default values and three theme variants: .white-theme, .pink-theme, .blue-theme
-  The theme toggling in JS should add the corresponding class to the <html> element
-  (document.documentElement.classList).
+    Purpose: consolidate theme variables used across the app and make the file
+    readable. Variables are grouped by responsibility. Keep aliases for
+    backward-compatibility; see "Recommended names" comments.
+
+    Theme switching: JS sets a class on <html> (document.documentElement):
+        - '' (default) active variables come from :root
+        - 'white-theme' -> :root.white-theme
+        - 'pink-theme'  -> :root.pink-theme
+        - 'blue-theme'  -> :root.blue-theme
+
+    When updating names, keep aliases and update code incrementally.
 */
 
-/* --- DEFAULT (escuro) --- */
+/* ------------------------------------------------------------
+     DEFAULT THEME (dark) — base values used unless overridden by a themed class
+     ------------------------------------------------------------ */
 :root {
-    /* body backgrounds (aliases kept for compatibility) */
-    --bg-body: #282828;
-    --body-bg: var(--bg-body);
+    /* ---- Core (recommended names) ---- */
+    --body-bg: #282828;        /* recommended: use --body-bg for page background */
+    --font-color: #ffffff;     /* text color */
 
-    /* common text */
-    --font-color: #ffffff;
+    /* ---- Layout & surface colors ---- */
+    --grid-bg: #8c8d8d;        /* background for gallery grids */
+    --card-bg-start: #001c35;  /* gradient start for cards */
+    --card-bg-end: #002848;    /* gradient end for cards */
+    --card-border: #5e5e5e;    /* card border color */
 
-    /* gallery/card */
-    --grid-bg: #8c8d8d;
-    --card-bg-start: #001c35;
-    --card-bg-end: #002848;
-    --card-border: #5e5e5e;
-
-    /* buttons */
+    /* ---- Buttons (recommended names: --btn-*) ---- */
     --btn-bg: #4a87e2;
     --btn-bg-hover: #74a5ff;
     --btn-border: #2c5aa0;
 
-    /* popup */
-    --popup-bg: #00223D;
+    /* ---- Popups / dialogs ---- */
+    --popup-bg: #00223D;       /* dialog background */
     --popup-border: rgb(147, 147, 255);
-    --popup-input-bg: #2c5aa0;
+    --popup-input-bg: #2c5aa0; /* inputs inside popups */
 
-    /* draw/editor variables */
-    --DefaultpanelColor: #23232354;
-    --button-bg: #000000;
-    --button-border: #404040;
-    --button-hover-bg: #232323;
-    --button-shadow: rgba(255, 255, 255, 0.8);
-    --toolbar-bg: #222;
-    --toolbar-color: #fff;
-    --bottom-bg: #222;
-    --layer-bg: #444;
+    /* ---- Editor / draw UI (recommended names: --panel-*, --toolbar-*) ---- */
+    --DefaultpanelColor: #23232354; /* panel/backdrop color */
+    --toolbar-bg: #222;            /* top toolbar */
+    --toolbar-color: #fff;         /* toolbar text/icons */
+    --bottom-bg: #222;             /* bottom tools bar */
+
+    --layer-bg: #444;              /* layer list item */
     --layer-hover-bg: #5f5f5f;
-    --popup-color: #fff;
-    --setsize-bg: #f0f0f0;
-    --selectbrush-bg: #232323;
+    --selectbrush-bg: #232323;     /* brush selector background */
+    --setsize-bg: #f0f0f0;         /* resize dialog background */
 
-    /* form / chapter */
+    /* ---- Form / chapter UI ---- */
     --form-bg: rgb(83, 83, 83);
     --form-button-bg: rgb(100, 100, 100);
     --form-button-hover-bg: rgb(120, 120, 120);
     --chapter-bg: rgb(83, 83, 83);
     --chapter-font-color: #ffffff;
 
-    /* shadows (used by other styles) */
+    /* ---- Shadows / helpers ---- */
     --shadow-dark: rgba(0, 0, 0, 0.6);
     --shadow-darker: rgba(0, 0, 0, 0.8);
+
+    /* ---- Backwards-compatible aliases (do not prefer these for new code) ---- */
+    --bg-body: var(--body-bg);     /* legacy alias */
+    --button-bg: #000000;          /* some files used --button-bg; kept for compat */
+    --button-border: #404040;
+    --button-hover-bg: #232323;
+    --button-shadow: rgba(255, 255, 255, 0.8);
 }
 
-/* --- TEMA BRANCO --- */
+
+/* ------------------------------------------------------------
+     WHITE THEME — overrides for light theme
+     ------------------------------------------------------------ */
 :root.white-theme {
-    --bg-body: #ffffff;
-    --body-bg: var(--bg-body);
+    --body-bg: #ffffff;
     --font-color: #222222;
 
     --grid-bg: #e0e0e0;
@@ -80,7 +90,6 @@
     --popup-input-bg: #a0c0ff;
 
     --DefaultpanelColor: #e0e0e0cc;
-    --body-bg: #ffffff;
     --form-bg: #e0e0e0;
     --form-button-bg: #cccccc;
     --form-button-hover-bg: #bbbbbb;
@@ -90,28 +99,34 @@
     --button-bg: #dddddd;
     --button-border: #aaaaaa;
     --button-hover-bg: #cccccc;
-    --button-shadow: rgba(0, 0, 0, 0.3);
+    --button-shadow: rgba(0,0,0,0.3);
     --toolbar-bg: #f0f0f0;
     --toolbar-color: #222222;
     --bottom-bg: #f0f0f0;
     --layer-bg: #e0e0e0;
     --layer-hover-bg: #d0d0d0;
-    --popup-bg: rgba(255, 255, 255, 0.9);
+    --popup-bg: rgba(255,255,255,0.9);
     --popup-color: #222222;
     --setsize-bg: #ffffff;
     --selectbrush-bg: #e0e0e0;
 }
 
-/* --- TEMA ROSA --- */
+
+/* ------------------------------------------------------------
+     PINK THEME
+     ------------------------------------------------------------ */
 :root.pink-theme {
-    --bg-body: #ffe6f0;
-    --body-bg: var(--bg-body);
+    --body-bg: #ff7dc9;
     --font-color: #660033;
 
     --grid-bg: #ffcce6;
     --card-bg-start: #ffb3d1;
     --card-bg-end: #ff99c2;
     --card-border: #ff66a3;
+    
+    --form-bg: rgb(255, 147, 219);
+    --form-button-bg: rgb(241, 154, 215);
+    --form-button-hover-bg: rgb(255, 182, 237);
 
     --btn-bg: #ff66a3;
     --btn-bg-hover: #ff85bf;
@@ -120,27 +135,29 @@
     --popup-bg: #ffb3d1;
     --popup-border: #ff66a3;
     --popup-input-bg: #ff85bf;
-
+    --chapter-bg: rgb(211, 77, 133);
     --DefaultpanelColor: #ffcce6cc;
     --button-bg: #ff99c2;
     --button-border: #cc3380;
     --button-hover-bg: #ff85bf;
-    --button-shadow: rgba(255, 255, 255, 0.5);
+    --button-shadow: rgba(255,255,255,0.5);
     --toolbar-bg: #ffb3d1;
     --toolbar-color: #660033;
     --bottom-bg: #ffb3d1;
     --layer-bg: #ff99c2;
     --layer-hover-bg: #ff85bf;
-    --popup-bg: rgba(255, 192, 203, 0.9);
+    --popup-bg: rgba(255,192,203,0.9);
     --popup-color: #660033;
     --setsize-bg: #ffcce6;
     --selectbrush-bg: #ff99c2;
 }
 
-/* --- TEMA AZUL --- */
+
+/* ------------------------------------------------------------
+     BLUE THEME
+     ------------------------------------------------------------ */
 :root.blue-theme {
-    --bg-body: #e6f0ff;
-    --body-bg: var(--bg-body);
+    --body-bg: #a9cbff;
     --font-color: #003366;
 
     --grid-bg: #cce0ff;
@@ -148,10 +165,14 @@
     --card-bg-end: #66a3ff;
     --card-border: #3385ff;
 
+    --form-bg: rgb(88, 58, 156);
+    --form-button-bg: rgb(120, 173, 233);
+    --form-button-hover-bg: rgb(182, 216, 255);
+
     --btn-bg: #3385ff;
     --btn-bg-hover: #66a3ff;
     --btn-border: #003366;
-
+    --chapter-bg: rgb(96, 125, 180);
     --popup-bg: #99c2ff;
     --popup-border: #3385ff;
     --popup-input-bg: #66a3ff;
@@ -160,13 +181,13 @@
     --button-bg: #66a3ff;
     --button-border: #003366;
     --button-hover-bg: #3385ff;
-    --button-shadow: rgba(0, 0, 0, 0.3);
+    --button-shadow: rgba(0,0,0,0.3);
     --toolbar-bg: #99c2ff;
     --toolbar-color: #003366;
     --bottom-bg: #99c2ff;
     --layer-bg: #66a3ff;
     --layer-hover-bg: #3385ff;
-    --popup-bg: rgba(173, 216, 230, 0.9);
+    --popup-bg: rgba(173,216,230,0.9);
     --popup-color: #003366;
     --setsize-bg: #cce0ff;
     --selectbrush-bg: #66a3ff;
