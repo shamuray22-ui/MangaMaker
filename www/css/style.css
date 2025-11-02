@@ -1,6 +1,85 @@
+/* --- TEMA PADRÃO ESCURO --- */
+:root {
+    --bg-body: #282828;
+    --font-color: #ffffff;
+    --grid-bg: #8c8d8d;
+    --card-bg-start: #001c35;
+    --card-bg-end: #002848;
+    --card-border: #5e5e5e;
+    --btn-bg: #4a87e2;
+    --btn-bg-hover: #74a5ff;
+    --btn-border: #2c5aa0;
+    --popup-bg: #00223D;
+    --popup-border: rgb(147, 147, 255);
+    --popup-input-bg: #2c5aa0;
+}
+
+/* --- TEMA BRANCO --- */
+:root.white-theme {
+    --bg-body: #ffffff;
+    --font-color: #222222;
+    --grid-bg: #e0e0e0;
+    --card-bg-start: #ffffff;
+    --card-bg-end: #f0f0f0;
+    --card-border: #cccccc;
+    --btn-bg: #4a87e2;
+    --btn-bg-hover: #74a5ff;
+    --btn-border: #2c5aa0;
+    --popup-bg: #ffffff;
+    --popup-border: #8888ff;
+    --popup-input-bg: #a0c0ff;
+}
+
+/* --- TEMA ROSA --- */
+:root.pink-theme {
+    --bg-body: #ffe6f0;
+    --font-color: #660033;
+    --grid-bg: #ffcce6;
+    --card-bg-start: #ffb3d1;
+    --card-bg-end: #ff99c2;
+    --card-border: #ff66a3;
+    --btn-bg: #ff66a3;
+    --btn-bg-hover: #ff85bf;
+    --btn-border: #cc3380;
+    --popup-bg: #ffb3d1;
+    --popup-border: #ff66a3;
+    --popup-input-bg: #ff85bf;
+}
+
+/* --- TEMA AZUL --- */
+:root.blue-theme {
+    --bg-body: #e6f0ff;
+    --font-color: #003366;
+    --grid-bg: #cce0ff;
+    --card-bg-start: #99c2ff;
+    --card-bg-end: #66a3ff;
+    --card-border: #3385ff;
+    --btn-bg: #3385ff;
+    --btn-bg-hover: #66a3ff;
+    --btn-border: #003366;
+    --popup-bg: #99c2ff;
+    --popup-border: #3385ff;
+    --popup-input-bg: #66a3ff;
+}
+
+/* Botões de tema */
+.theme-buttons {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 15px;
+}
+
+.theme-buttons button {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 2px solid #666;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* --- BODY --- */
 body {
-    background-color: #282828;
-    /* fundo neutro */
+    background-color: var(--bg-body);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
@@ -9,22 +88,21 @@ body {
 /* --- GRID --- */
 #drawlist {
     display: grid;
-    /*-template-columns: repeat(auto-fit, minmax(220px, 1fr));*/
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 30px;
-    background-color: #8c8d8d;
+    background-color: var(--grid-bg);
     justify-items: center;
 }
 
 /* --- CARDS --- */
 #drawlist div {
-    border: 3px solid #5e5e5e;
-    background: linear-gradient(160deg, #001c35, #002848);
+    border: 3px solid var(--card-border);
+    background: linear-gradient(160deg, var(--card-bg-start), var(--card-bg-end));
     border-radius: 16px;
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 12px var(--shadow-dark);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,7 +113,7 @@ body {
 
 #drawlist div:hover {
     transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 12px 22px var(--shadow-darker);
 }
 
 /* --- IMAGENS --- */
@@ -59,25 +137,25 @@ body {
     font-size: 20px;
     margin: 8px 0 5px 0;
     text-align: center;
-    color: #ffffff;
+    color: var(--font-color);
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 #drawlist div button {
-    background-color: #4a87e2;
-    border: solid 2px #2c5aa0;
+    background-color: var(--btn-bg);
+    border: solid 2px var(--btn-border);
     border-radius: 12px;
     font-size: 20px;
     width: 70%;
     margin: 8px 0 5px 0;
     text-align: center;
-    color: #ffffff;
+    color: var(--font-color);
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 #drawlist div button:hover {
-    background-color: #74a5ff;
-    border: solid 2px #2c5aa0;
+    background-color: var(--btn-bg-hover);
+    border: solid 2px var(--btn-border);
     transform: scale(1.2);
 }
 
@@ -97,9 +175,8 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #00223D;
-    border: solid 6px rgb(147, 147, 255);
-
+    background-color: var(--popup-bg);
+    border: solid 6px var(--popup-border);
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
@@ -112,14 +189,14 @@ footer {
 }
 
 #createMangaDiv label {
-    color: #fff;
+    color: var(--font-color);
     margin-bottom: 8px;
     font-weight: bold;
 }
 
 #createMangaDiv input {
     text-align: center;
-    color: white;
-    background-color: #2c5aa0;
+    color: var(--font-color);
+    background-color: var(--popup-input-bg);
     border: none;
 }

@@ -1,16 +1,94 @@
-/* ======== BASE ======== */
-:root{
-    --DefaultpanelColor: #23232354;
+/* ======== BASE VARIÁVEIS ======== */
+:root {
+  --DefaultpanelColor: #23232354;
+  --body-bg: #f4f4f4;
+  --font-color: #ffffff;
+  --button-bg: #000000;
+  --button-border: #404040;
+  --button-hover-bg: #232323;
+  --button-shadow: rgba(255, 255, 255, 0.8);
+  --toolbar-bg: #222;
+  --toolbar-color: #fff;
+  --bottom-bg: #222;
+  --layer-bg: #444;
+  --layer-hover-bg: #5f5f5f;
+  --popup-bg: rgba(0, 0, 0, 0.6);
+  --popup-color: #fff;
+  --setsize-bg: #f0f0f0;
+  --selectbrush-bg: #232323;
 }
+
+/* --- TEMA BRANCO --- */
+:root.white-theme {
+  --DefaultpanelColor: #e0e0e0cc;
+  --body-bg: #ffffff;
+  --font-color: #222222;
+  --button-bg: #dddddd;
+  --button-border: #aaaaaa;
+  --button-hover-bg: #cccccc;
+  --button-shadow: rgba(0, 0, 0, 0.3);
+  --toolbar-bg: #f0f0f0;
+  --toolbar-color: #222222;
+  --bottom-bg: #f0f0f0;
+  --layer-bg: #e0e0e0;
+  --layer-hover-bg: #d0d0d0;
+  --popup-bg: rgba(255, 255, 255, 0.9);
+  --popup-color: #222222;
+  --setsize-bg: #ffffff;
+  --selectbrush-bg: #e0e0e0;
+}
+
+/* --- TEMA ROSA --- */
+:root.pink-theme {
+  --DefaultpanelColor: #ffcce6cc;
+  --body-bg: #ffe6f0;
+  --font-color: #660033;
+  --button-bg: #ff99c2;
+  --button-border: #cc3380;
+  --button-hover-bg: #ff85bf;
+  --button-shadow: rgba(255, 255, 255, 0.5);
+  --toolbar-bg: #ffb3d1;
+  --toolbar-color: #660033;
+  --bottom-bg: #ffb3d1;
+  --layer-bg: #ff99c2;
+  --layer-hover-bg: #ff85bf;
+  --popup-bg: rgba(255, 192, 203, 0.9);
+  --popup-color: #660033;
+  --setsize-bg: #ffcce6;
+  --selectbrush-bg: #ff99c2;
+}
+
+/* --- TEMA AZUL --- */
+:root.blue-theme {
+  --DefaultpanelColor: #cce0ffcc;
+  --body-bg: #e6f0ff;
+  --font-color: #003366;
+  --button-bg: #66a3ff;
+  --button-border: #003366;
+  --button-hover-bg: #3385ff;
+  --button-shadow: rgba(0, 0, 0, 0.3);
+  --toolbar-bg: #99c2ff;
+  --toolbar-color: #003366;
+  --bottom-bg: #99c2ff;
+  --layer-bg: #66a3ff;
+  --layer-hover-bg: #3385ff;
+  --popup-bg: rgba(173, 216, 230, 0.9);
+  --popup-color: #003366;
+  --setsize-bg: #cce0ff;
+  --selectbrush-bg: #66a3ff;
+}
+
+/* ======== BASE CSS ======== */
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  background: var(--body-bg);
+  color: var(--font-color);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden; /* evita scroll desnecessário */
+  overflow: hidden;
 }
 
 /* ======== BOTÕES ======== */
@@ -19,17 +97,14 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   gap: 8px;
   width: 60px;
   height: 60px;
-
-  background-color: #000;
-  border: 1px solid #404040;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
   border-radius: 10px;
-  color: #fff;
-  box-shadow: 0 3px 2px rgba(255, 255, 255, 0.8);
-
+  color: var(--font-color);
+  box-shadow: 0 3px 2px var(--button-shadow);
   cursor: pointer;
   transform: scale(0.97);
   transition: all 0.2s ease;
@@ -37,8 +112,8 @@ body {
 
 .Generalbutton:hover {
   transform: scale(1);
-  background-color: #232323;
-  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.8);
+  background-color: var(--button-hover-bg);
+  box-shadow: 0 3px 10px var(--button-shadow);
 }
 
 .Generalbutton img {
@@ -46,90 +121,78 @@ body {
   max-height: 24px;
 }
 
-/* ======== TOOLS ENGAVETADO*/
-
+/* ======== TOOLS ENGAVETADO ======== */
 #toolsdiv {
   position: fixed;
   bottom: 120px;
   left: 0;
-  padding-top: 30px;
-  padding-left: 30px;
-  padding-bottom: 30px;
+  padding: 30px 0 30px 30px;
   width: auto;
   height: auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 5px;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: var(--DefaultpanelColor);
 }
 
 /* ======== TOOLBAR SUPERIOR ======== */
 #toolbar {
-  background: #222;
-  color: #fff;
+  background: var(--toolbar-bg);
+  color: var(--toolbar-color);
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 1.5vw;
-
-  padding: 1vh 2vw;
+  padding: 1vh 0;
   flex-shrink: 0;
   position: relative;
-  padding: 1vh 0;
   box-shadow: 0 15px 8px rgba(0, 0, 0, 0.2);
   z-index: 999;
-
 }
 
 /* ======== CANVAS ======== */
 #draw-canvas {
   flex-grow: 1;
   width: 100%;
-  height: calc(100vh - 12vh); /* compensação para barras */
+  height: calc(100vh - 12vh);
   max-height: 100%;
   display: block;
   cursor: crosshair;
 }
+
 /* ======== BARRA INFERIOR ======== */
 #bottom-tools {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-
-  background: #222;
-  color: #fff;
-
+  background: var(--bottom-bg);
+  color: var(--toolbar-color);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 2vw;
-
   padding: 1vh 0;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
-
   z-index: 999;
 }
 
-/* ======== POPUP AJUSTE DE TAMANHO ======== */
+/* ======== POPUPS E DIVS ======== */
 #setSizeDiv {
   position: absolute;
   top: 8vh;
   left: 50%;
   transform: translateX(-50%);
-
-  background: #f0f0f0;
+  background: var(--setsize-bg);
   padding: 1.5vh 2vw;
   border-radius: 0.8rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 100;
   display: flex;
   align-items: center;
   gap: 1vw;
-
   max-height: 70vh;
   overflow-y: auto;
 }
@@ -137,56 +200,55 @@ body {
 #selectBrushDiv {
   position: fixed;
   display: flex;
-  flex-direction: column;   /* lista de brushes lado a lado */
+  flex-direction: column;
   overflow: scroll;
   top: 302px;
-  background-color: #232323;
-  width: 50%;            /* ou algo proporcional */
-  max-width: 800px;      /* limite pra não virar monstro */
+  background-color: var(--selectbrush-bg);
+  width: 50%;
+  max-width: 800px;
   height: 600px;
   padding: 20px;
   border-radius: 10px;
-  gap: 15px;             /* espaçamento entre brushes */
-}#selectBrushDiv label {
-  color: rgb(255, 255, 255);            /* espaçamento entre brushes */
-} 
+  gap: 15px;
+}
 
-#BrushBtn{
+#selectBrushDiv label {
+  color: var(--font-color);
+}
+
+#BrushBtn {
   width: 200px;
   align-items: flex-start;
-} 
-/* ======== EDITOR DE TEXTO ======== */
+}
+
 #textEditorDiv {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  background: rgba(0,0,0,0.6);
+  background: var(--popup-bg);
   padding: 2vh 2vw;
   border-radius: 1rem;
-
   z-index: 1000;
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
-  color: #fff;
+  color: var(--popup-color);
 }
 
-/* TEXT AREA */
 #editText {
   min-height: 10vh;
-  width: 100%;;
+  width: 100%;
   box-sizing: border-box;
   border-radius: 6px;
   border: 1px solid #444;
   padding: 0.5rem;
   resize: vertical;
 }
-/* ======== LISTA DE LAYERS ======== */
+
 #layerListDiv {
   position: fixed;
-  top: 18vh; /* substitui o 277px fixo */
+  top: 18vh;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -194,7 +256,7 @@ body {
   overflow-y: auto;
   width: 90%;
   max-width: 800px;
-  height: 70vh; /* substitui o 600px fixo */
+  height: 70vh;
   padding: 20px;
   border-radius: 10px;
   gap: 15px;
@@ -204,103 +266,21 @@ body {
   scrollbar-color: #555 #222;
 }
 
-#layerListDiv::-webkit-scrollbar {
-  width: 8px;
-}
-#layerListDiv::-webkit-scrollbar-thumb {
-  background-color: #555;
-  border-radius: 4px;
-}
-#layerListDiv::-webkit-scrollbar-track {
-  background-color: #222;
-}
-
 #layerListDiv label {
-  color: #fff;
+  color: var(--font-color);
 }
 
-/* GRID DE LAYERS */
-#layerGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-/* PRÉ-VISUALIZAÇÃO */
-#previewLayer {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  border-radius: 10px;
-}
-
-/* CÉLULA DE LAYER */
 #layerCell {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px;
-  background-color: #444;
+  background-color: var(--layer-bg);
   border-radius: 10px;
   transition: all 0.15s ease;
 }
+
 #layerCell:hover {
-  background-color: #5f5f5f;
+  background-color: var(--layer-hover-bg);
   transform: scale(1.02);
-}
-
-/* ANIMAÇÃO RÁPIDA DE ENTRADA */
-.enter {
-  animation: enter 0.3s ease;
-}
-
-@keyframes enter {
-  from {
-    transform: translateY(100px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ======== RESPONSIVIDADE ======== */
-@media (max-width: 600px) {
-  #layerListDiv {
-    top: 10vh;
-    height: 75vh;
-    padding: 10px;
-    gap: 10px;
-  }
-  #previewLayer {
-    width: 80px;
-    height: 80px;
-  }
-}
-
-@media (max-width: 480px) {
-  #toolbar, #bottom-tools {
-    gap: 1vw;
-    padding: 1vh 1vw;
-  }
-
-  #setSizeDiv {
-    padding: 1vh 1vw;
-  }
-
-  #textEditorDiv {
-    padding: 1.5vh 2vw;
-  }
-
-  #draw-canvas {
-    height: calc(100vh - 14vh);
-  }
-
-  #brushbutton {
-    width: 50px;
-    height: 50px;
-    gap: 6px;
-  }
 }
