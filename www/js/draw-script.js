@@ -11,16 +11,13 @@ let isSaved = false;
 
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
-
+const layerGrid = document.getElementById('layerGrid');
+    
 let Gettype = localStorage.getItem('type');
 
 const drawContainer = document.getElementById('draw-canvas');
 const pagesDiv = document.getElementById('pagesDiv');
 
-let currentpage = 0;
-
-let layerList = [];
-let currentlayer = 0;
 
 const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
@@ -66,6 +63,21 @@ let scaleTexture = 1;
 // Cache de brushes - array de objetos {path, canvas}
 const brushCache = [];
 
+
+//#region updateLayerList
+let currentpage = 0;
+
+let layerList = [];
+let currentlayer = 0;
+
+function updateLayerList() {
+    if (!pages['page' + currentpage]) return;
+    layerList = [];
+    layerList = pages['page' + currentpage].layers;
+    
+}
+
+
 function StartBrush(path, color) {
     brushpath = path;
     // Procura se já existe um canvas para esse path
@@ -107,10 +119,9 @@ StartBrush('assets/brush/default.png', '#000');
 //#region STARTYPE
 
 function StartInitWithType(layer, bgLayer) {
-
     //#region modo manga
     if (Gettype === 'manga') {
-        let PagesJson
+
         getManga.chapters.forEach((page) => {
             if (chapID == page.number) {
                 forgeratePageButton = page.pagesCount;
@@ -118,140 +129,61 @@ function StartInitWithType(layer, bgLayer) {
 
         });
         for (let i = 0; i < forgeratePageButton; i++) {
-            pagenumbers += 1;
-
-            const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
-            PagesJson = getPages[pagenumbers];
-
-            if (PagesJson != undefined) {
-                PagesJson = Konva.Node.create(PagesJson);
-                // Adiciona clipFunc direto no node do grupo
-                PagesJson.clipFunc(function (ctx) {
-                    ctx.beginPath();
-                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                    ctx.closePath();
-                    ctx.clip();
-                });
-
-                ////////////// pegando as linhas salvas e recriando
-                if (PagesJson.children.length < 1) {
-                    StartBrush('assets/brush/default.png', '#000');
-                }
-                PagesJson.children.forEach(child => {
-                    StartBrush(child.attrs.texturepath, child.attrs.strokeColor).then(response => {
-                        currentBrush = response;
-                        if (child.attrs.customClassName === 'ShapeLine') {
-
-                            child.setAttr('customTexture', currentBrush);
-
-                            child.sceneFunc(function (ctx) {
-                                ctx.beginPath();
-
-                                const points = child.attrs.points;
-
-                                if (points != null && points.length >= 2) {
-                                    ctx.moveTo(points[0], points[1]);
-                                    for (let i = 2; i < points.length; i += 2) {
-                                        ctx.lineTo(points[i], points[i + 1]);
-                                    }
-                                }
-                                ctx.strokeStyle = child.attrs.strokeColor;
-                                ctx.lineWidth = child.attrs.lineWidth;
-                                ctx.lineCap = child.attrs.lineCap;
-                                ctx.lineJoin = child.attrs.lineJoin;
-                                ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                                let brushct = child.attrs.customTexture.getContext('2d');
-
-                                brushct.globalCompositeOperation = 'source-in';
-                                brushct.fillStyle = child.attrs.strokeColor;
-                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
-                                brushct.globalCompositeOperation = 'source-over';
-                                const space = Math.max(0.1, child.attrs.lineWidth * 0.5);
-
-                                for (let i = 2; i < points.length - 2; i += 2) {
-
-                                    const x1 = points[i];
-                                    const y1 = points[i + 1];
-                                    const x2 = points[i + 2];
-                                    const y2 = points[i + 3];
-
-                                    const dx = x2 - x1;
-                                    const dy = y2 - y1;
-                                    const distance = Math.hypot(dx, dy);
-                                    const angle = Math.atan2(dy, dx);
-                                    //////// math cell e max > max compara o primeiro valor e retorna o maior
-                                    // math cell arredonda pra cima 0.1 vira 1.
-                                    const steps = Math.max(1, Math.ceil(distance / space));
-                                }
-
-                                ctx.fillStrokeShape(child);
-                                ctx.stroke();
-                            });
-
-                        }
-
-                    });
-                });
-            } else {
-                PagesJson = new Konva.Group({
-                    clipFunc: function (ctx) {
-                        ctx.beginPath(); // Inicia um novo caminho
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                        ctx.closePath(); // Fecha o caminho
-                        ctx.clip(); // Aplica o recorte
-                    }
-                });
-            }
-
-            pages['page' + pagenumbers] = {
+            /////////// o trabalho do i é enemurar as paginas não as layers
+            pages['page' + i] = {
                 background: null,
-                draw: null,
-                layers: {
-                    layer: {
-                        draw: null
-                    }
-                }
+                layers: [
+                ]
             }
-            const buttonPage = document.createElement('button');
-            buttonPage.textContent = 'page ' + i;
-            pagesDiv.appendChild(buttonPage);
-            buttonPage.onclick = function () {
-                set_current_page(i);
+            const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
 
-            }
+            if (hasDrawInPage != null){
+                
+            } else{
+                pages['page' + i].layers.push({draw:new Konva.Group({})});
 
-            //////////////populando as paginas ///////////////// 
-
-            if (PagesJson) {
-                pages['page' + i].draw = PagesJson;
-
-            } else {
-                StartBrush('assets/brush/default.png', '#000');
-                pages['page' + i].draw = new Konva.Group({
-                    clipFunc: function (ctx) {
-                        ctx.beginPath(); // Inicia um novo caminho
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                        ctx.closePath(); // Fecha o caminho
-                        ctx.clip(); // Aplica o recorte
-                    }
+                pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
+                        ctx.beginPath();
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                        ctx.closePath();
+                        ctx.clip();
                 });
             }
-            // Crie um novo bgRect para o grupo de bg rect
-            pages['page' + i].background = new Konva.Group({
+            
+            pages['page' + currentpage].background = new Konva.Group({
             });
 
             ////////// adiciona os grupos a page atual
-            let groupBgRect = bgRect.clone();
-            pages['page' + i].background.add(groupBgRect);
-            let group = pages['page' + i].draw;
+            let bgclone = bgRect.clone();
 
+            pages['page' + currentpage].background.add(bgclone); // Adicione o novo retângulo ao grupo
 
-            bgLayer.add(pages['page' + i].background);
+            let groupBgRect = pages['page' + currentpage].background;
+            
+            let group = pages['page' + i].layers[0].draw;
+            
+            bgLayer.add(groupBgRect);
             layer.add(group);
 
+            groupBgRect.hide();
+            group.hide();
 
+            currentpage = i;
+            ////////// criando a UX 😎😎😎😎
+            const buttonPage = document.createElement('button');
+            buttonPage.className = 'Generalbutton';
+            buttonPage.textContent = i + 1;
+            buttonPage.style.margin = '2px';
+
+            buttonPage.onclick = () => {
+                set_current_page(i);
+            };
+            pagesDiv.appendChild(buttonPage);
+
+            
+           
         }
-
+        
     }
     //#region modo draw
     else if (Gettype === 'draw') {
@@ -360,7 +292,7 @@ function StartInitWithType(layer, bgLayer) {
         }
 
 
-        // Crie um novo bgRect para o grupo de bg rect
+        // Um novo bgRect para o grupo de bg rect
         pages['page' + currentpage].background = new Konva.Group({
         });
 
@@ -368,7 +300,6 @@ function StartInitWithType(layer, bgLayer) {
         pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
 
         let groupBgRect = pages['page' + currentpage].background;
-
         bgLayer.add(groupBgRect);
         for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
             let group = pages['page' + currentpage].layers[i].draw;
@@ -387,12 +318,14 @@ let layer = new Konva.Layer();
 stage.add(bgLayer);
 stage.add(layer);
 
-StartInitWithType(layer, bgLayer);
 
+StartInitWithType(layer, bgLayer);
 
 let group = pages['page' + currentpage].layers[0].draw;
 
+set_current_page(0);
 
+updateLayerList();
 //#region  VARIAVEIS
 
 let isDrawing = false;
@@ -460,40 +393,44 @@ function set_current_tool(tool) {
     }
 }
 
+//#region SET CURRENT PAGE
 function set_current_page(index) {
-
+    
+    currentlayer = 0;
+    currentpage = index;
     for (let i = 0; i < pagesDiv.children.length; i++) {
-        currentpage = index;
-        pagesDiv.children[i].style.color = 'black';
-        if (i != currentpage) {
-            pagesDiv.children[i].style.color = 'blue';
-            pages['page' + i].draw.hide();
+        //////// escodende geral antes de mostrar a page selecionada
+        
+        if (pages['page' + i].background){
             pages['page' + i].background.hide();
-
-        } else {
-            pagesDiv.children[i].style.color = 'green';
-            pages['page' + i].draw.show();
-            pages['page' + i].background.show();
-            group = pages['page' + i].draw;
         }
+        pages['page' + i].layers.forEach(layer => {
+            layer.draw.hide();
+            
+        });
+    }
+    pages['page' + currentpage].background.show();
+    pages['page' + currentpage].layers.forEach(layer => {
+        layer.draw.show();
+        group = layer.draw;
+        
+
+    });
+    stage.batchDraw();
+    updateLayerList();
+    layerGrid.innerHTML = '';
+    for (let i = 0; i < layerList.length; i++) {
+        currentlayer = i;
+        createUXlayer();
 
     }
-
 }
 
 //#region ADD LAYER
 
-function updateLayerList() {
-    for (let i = 0; i < layer.children.length; i++) {
-        layerList = layer.find('Group');
-    }
-}
-updateLayerList();
 
 
 function createUXlayer() {
-    const layerGrid = document.getElementById('layerGrid');
-
     const layerCell = document.createElement('div');
     layerCell.id = 'layerCell'; // usa class, id é pra ser único
     // label
@@ -551,7 +488,10 @@ function createUXlayer() {
             return;
         }
 
-        layerList[currentlayer].remove();
+        pages['page' + currentpage].layers[currentlayer].draw.remove();
+        layerList.splice(currentlayer,1);
+        console.log(layerList);
+        
         updateLayerList();
         currentlayer -= 1;
 
@@ -560,14 +500,11 @@ function createUXlayer() {
 
         layerGrid.removeChild(layerCell);
 
-
     }
-    group = pages['page' + currentpage].layers[currentlayer].draw;
-
-
 }
 
 for (let i = 0; i < layerList.length; i++) {
+    layerGrid.innerHTML = '';
     currentlayer = i;
     createUXlayer();
 
@@ -586,7 +523,9 @@ function addLayer(imagedata = '') {
     pages['page' + currentpage].layers.push({ draw: newLayer });
     layer.add(newLayer);
 
-    currentlayer = layerList.length;
+    currentlayer = layerList.length - 1;
+    console.log(pages['page' + currentpage].layers)
+    console.log(currentlayer);
     group = pages['page' + currentpage].layers[currentlayer].draw;
     updateLayerList();
     createUXlayer();

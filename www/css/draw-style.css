@@ -200,8 +200,22 @@ body {
   border-radius: 10px;
   transition: all 0.15s ease;
 }
-
+#layerCell img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  
+}
 #layerCell:hover {
   background-color: var(--layer-hover-bg);
   transform: scale(1.02);
+}
+
+#pagesDiv{
+  display: flex;
+  flex-direction: row;
+  
+
+}#pagesDiv button{
+  height: 30px;
 }
