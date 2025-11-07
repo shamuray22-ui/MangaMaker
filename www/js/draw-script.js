@@ -129,6 +129,7 @@ function StartInitWithType(layer, bgLayer) {
 
         });
         for (let i = 0; i < forgeratePageButton; i++) {
+            pagenumbers += 1;
             /////////// o trabalho do i é enemurar as paginas não as layers
             pages['page' + i] = {
                 background: null,
@@ -138,8 +139,55 @@ function StartInitWithType(layer, bgLayer) {
             const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
 
             if (hasDrawInPage != null){
+                const lengthArr = hasDrawInPage.layers.length - 1;
+                pages['page' + i].layers.push({draw:Konva.Node.create(hasDrawInPage.layers[lengthArr].draw)});
                 
-            } else{
+                pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
+                    StartBrush(child.attrs.texturepath).then(response => {
+                        currentBrush = response
+
+                        if (child.attrs.customClassName === 'ShapeLine') {
+
+                            child.setAttr('customTexture', currentBrush);
+
+                            child.sceneFunc(function (ctx) {
+                                ctx.beginPath();
+
+                                const points = child.attrs.points;
+
+                                if (points != null && points.length >= 2) {
+                                    ctx.moveTo(points[0], points[1]);
+                                    for (let i = 2; i < points.length; i += 2) {
+                                        ctx.lineTo(points[i], points[i + 1]);
+                                    }
+                                }
+                                ctx.strokeStyle = child.attrs.strokeColor;
+                                ctx.lineWidth = child.attrs.lineWidth;
+                                ctx.lineCap = child.attrs.lineCap;
+                                ctx.lineJoin = child.attrs.lineJoin;
+                                ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                                let brushct = child.attrs.customTexture.getContext('2d');
+
+                                brushct.globalCompositeOperation = 'source-in';
+                                brushct.fillStyle = child.attrs.strokeColor;
+                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
+                                brushct.globalCompositeOperation = 'source-over';
+
+                                ctx.fillStrokeShape(child);
+                                ctx.stroke();
+                            });
+
+                        }
+                    });
+                });
+                pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
+                        ctx.beginPath();
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                        ctx.closePath();
+                        ctx.clip();
+                });
+            }
+            else{
                 pages['page' + i].layers.push({draw:new Konva.Group({})});
 
                 pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
@@ -179,9 +227,6 @@ function StartInitWithType(layer, bgLayer) {
                 set_current_page(i);
             };
             pagesDiv.appendChild(buttonPage);
-
-            
-           
         }
         
     }
@@ -427,9 +472,6 @@ function set_current_page(index) {
 }
 
 //#region ADD LAYER
-
-
-
 function createUXlayer() {
     const layerCell = document.createElement('div');
     layerCell.id = 'layerCell'; // usa class, id é pra ser único
@@ -935,7 +977,11 @@ function saveCanvas() {
         const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
 
         for (let i = 0; i <= pagenumbers; i++) {
-            getPages[i] = pages['page' + i].draw.toJSON();
+            //getPages[i] = pages['page' + i].layers[pages['page' + i].layers.length].draw.toJSON();
+            
+            getPages[i] = pages['page' + i];
+            console.log(getPages);
+            
         }
 
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
