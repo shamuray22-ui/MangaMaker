@@ -141,6 +141,8 @@ function StartInitWithType(layer, bgLayer) {
             if (hasDrawInPage != null){
                 const lengthArr = hasDrawInPage.layers.length - 1;
                 pages['page' + i].layers.push({draw:Konva.Node.create(hasDrawInPage.layers[lengthArr].draw)});
+                pages['page' + i].background = null;
+                console.log(lengthArr);
                 
                 pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
                     StartBrush(child.attrs.texturepath).then(response => {
@@ -189,7 +191,7 @@ function StartInitWithType(layer, bgLayer) {
             }
             else{
                 pages['page' + i].layers.push({draw:new Konva.Group({})});
-
+                pages['page' + i].background = null;
                 pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
                         ctx.beginPath();
                         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
@@ -198,15 +200,16 @@ function StartInitWithType(layer, bgLayer) {
                 });
             }
             
-            pages['page' + currentpage].background = new Konva.Group({
+            pages['page' + i].background = new Konva.Group({
             });
 
             ////////// adiciona os grupos a page atual
             let bgclone = bgRect.clone();
+            console.log(pages['page' + i]);
+            
+            pages['page' + i].background.add(bgclone); // Adicione o novo retângulo ao grupo
 
-            pages['page' + currentpage].background.add(bgclone); // Adicione o novo retângulo ao grupo
-
-            let groupBgRect = pages['page' + currentpage].background;
+            let groupBgRect = pages['page' + i].background;
             
             let group = pages['page' + i].layers[0].draw;
             
@@ -443,8 +446,11 @@ function set_current_page(index) {
     
     currentlayer = 0;
     currentpage = index;
+    console.log('pagesDiv.children.length> ',pagesDiv.children.length,' ',forgeratePageButton);
+    
     for (let i = 0; i < pagesDiv.children.length; i++) {
         //////// escodende geral antes de mostrar a page selecionada
+        console.log(pages['page' + i]);
         
         if (pages['page' + i].background){
             pages['page' + i].background.hide();
@@ -454,7 +460,9 @@ function set_current_page(index) {
             
         });
     }
-    pages['page' + currentpage].background.show();
+    if (pages['page' + currentpage].background){
+        pages['page' + currentpage].background.show();
+    }
     pages['page' + currentpage].layers.forEach(layer => {
         layer.draw.show();
         group = layer.draw;
