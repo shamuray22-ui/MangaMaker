@@ -137,57 +137,59 @@ function StartInitWithType(layer, bgLayer) {
                 ]
             }
             const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
-
+            let lengthArr = -1;
             if (hasDrawInPage != null){
-                const lengthArr = hasDrawInPage.layers.length - 1;
-                pages['page' + i].layers.push({draw:Konva.Node.create(hasDrawInPage.layers[lengthArr].draw)});
-                pages['page' + i].background = null;
-                console.log(lengthArr);
-                
-                pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
-                    StartBrush(child.attrs.texturepath).then(response => {
-                        currentBrush = response
+                hasDrawInPage.layers.forEach(layer =>{
+                    pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
+                    pages['page' + i].background = null;
+                    lengthArr += 1;
+                    pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
+                        StartBrush(child.attrs.texturepath).then(response => {
+                            currentBrush = response
 
-                        if (child.attrs.customClassName === 'ShapeLine') {
+                            if (child.attrs.customClassName === 'ShapeLine') {
+                                
 
-                            child.setAttr('customTexture', currentBrush);
+                                child.setAttr('customTexture', currentBrush);
 
-                            child.sceneFunc(function (ctx) {
-                                ctx.beginPath();
+                                child.sceneFunc(function (ctx) {
+                                    ctx.beginPath();
 
-                                const points = child.attrs.points;
+                                    const points = child.attrs.points;
 
-                                if (points != null && points.length >= 2) {
-                                    ctx.moveTo(points[0], points[1]);
-                                    for (let i = 2; i < points.length; i += 2) {
-                                        ctx.lineTo(points[i], points[i + 1]);
+                                    if (points != null && points.length >= 2) {
+                                        ctx.moveTo(points[0], points[1]);
+                                        for (let i = 2; i < points.length; i += 2) {
+                                            ctx.lineTo(points[i], points[i + 1]);
+                                        }
                                     }
-                                }
-                                ctx.strokeStyle = child.attrs.strokeColor;
-                                ctx.lineWidth = child.attrs.lineWidth;
-                                ctx.lineCap = child.attrs.lineCap;
-                                ctx.lineJoin = child.attrs.lineJoin;
-                                ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                                let brushct = child.attrs.customTexture.getContext('2d');
+                                    ctx.strokeStyle = child.attrs.strokeColor;
+                                    ctx.lineWidth = child.attrs.lineWidth;
+                                    ctx.lineCap = child.attrs.lineCap;
+                                    ctx.lineJoin = child.attrs.lineJoin;
+                                    ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
+                                    let brushct = child.attrs.customTexture.getContext('2d');
 
-                                brushct.globalCompositeOperation = 'source-in';
-                                brushct.fillStyle = child.attrs.strokeColor;
-                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
-                                brushct.globalCompositeOperation = 'source-over';
+                                    brushct.globalCompositeOperation = 'source-in';
+                                    brushct.fillStyle = child.attrs.strokeColor;
+                                    brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
+                                    brushct.globalCompositeOperation = 'source-over';
 
-                                ctx.fillStrokeShape(child);
-                                ctx.stroke();
-                            });
+                                    ctx.fillStrokeShape(child);
+                                    ctx.stroke();
+                                });
 
-                        }
+                            }
+                        });
+                    });
+                    pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
+                            ctx.beginPath();
+                            ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                            ctx.closePath();
+                            ctx.clip();
                     });
                 });
-                pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
-                        ctx.beginPath();
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                        ctx.closePath();
-                        ctx.clip();
-                });
+
             }
             else{
                 pages['page' + i].layers.push({draw:new Konva.Group({})});
@@ -205,19 +207,22 @@ function StartInitWithType(layer, bgLayer) {
 
             ////////// adiciona os grupos a page atual
             let bgclone = bgRect.clone();
-            console.log(pages['page' + i]);
             
             pages['page' + i].background.add(bgclone); // Adicione o novo retângulo ao grupo
-
+            /////////// talvez eu use muito for e foreach desnecessariamente
             let groupBgRect = pages['page' + i].background;
-            
-            let group = pages['page' + i].layers[0].draw;
+            pages['page' + i].layers.forEach(layercell =>{
+                layercell.draw.hide();
+                console.log(layercell);
+                
+                layer.add(layercell.draw);
+                
+                updateLayerList()
+            });
             
             bgLayer.add(groupBgRect);
-            layer.add(group);
 
             groupBgRect.hide();
-            group.hide();
 
             currentpage = i;
             ////////// criando a UX 😎😎😎😎
@@ -369,13 +374,13 @@ stage.add(layer);
 
 StartInitWithType(layer, bgLayer);
 
+
 let group = pages['page' + currentpage].layers[0].draw;
 
 set_current_page(0);
 
 updateLayerList();
 //#region  VARIAVEIS
-
 let isDrawing = false;
 let TexturedLine;
 
@@ -446,11 +451,9 @@ function set_current_page(index) {
     
     currentlayer = 0;
     currentpage = index;
-    console.log('pagesDiv.children.length> ',pagesDiv.children.length,' ',forgeratePageButton);
     
     for (let i = 0; i < pagesDiv.children.length; i++) {
         //////// escodende geral antes de mostrar a page selecionada
-        console.log(pages['page' + i]);
         
         if (pages['page' + i].background){
             pages['page' + i].background.hide();
@@ -574,8 +577,6 @@ function addLayer(imagedata = '') {
     layer.add(newLayer);
 
     currentlayer = layerList.length - 1;
-    console.log(pages['page' + currentpage].layers)
-    console.log(currentlayer);
     group = pages['page' + currentpage].layers[currentlayer].draw;
     updateLayerList();
     createUXlayer();
@@ -982,18 +983,14 @@ function saveCanvas() {
         localStorage.setItem('draws-saveds', JSON.stringify(getDrawList));
 
     } else if (Gettype == 'manga') {
-        const getPages = getManga.chapters.find(chap => chap.number == chapID).pages || [];
-
+        const getPages = [];
+        
         for (let i = 0; i <= pagenumbers; i++) {
-            //getPages[i] = pages['page' + i].layers[pages['page' + i].layers.length].draw.toJSON();
-            
-            getPages[i] = pages['page' + i];
-            console.log(getPages);
+            getPages.push(pages['page' + i]);
             
         }
-
+        
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-
         localStorage.setItem('mangas', JSON.stringify(getMangaList));
     }
     //////// resturando as cordenadas da tela
