@@ -143,6 +143,8 @@ function StartInitWithType(layer, bgLayer) {
                     pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
                     pages['page' + i].background = null;
                     lengthArr += 1;
+                    console.log(pages['page' + i].layers);
+                    
                     pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
                         StartBrush(child.attrs.texturepath).then(response => {
                             currentBrush = response
@@ -213,11 +215,10 @@ function StartInitWithType(layer, bgLayer) {
             let groupBgRect = pages['page' + i].background;
             pages['page' + i].layers.forEach(layercell =>{
                 layercell.draw.hide();
-                console.log(layercell);
                 
                 layer.add(layercell.draw);
                 
-                updateLayerList()
+                
             });
             
             bgLayer.add(groupBgRect);
@@ -225,6 +226,7 @@ function StartInitWithType(layer, bgLayer) {
             groupBgRect.hide();
 
             currentpage = i;
+            updateLayerList()
             ////////// criando a UX 😎😎😎😎
             const buttonPage = document.createElement('button');
             buttonPage.className = 'Generalbutton';
@@ -555,9 +557,8 @@ function createUXlayer() {
 
     }
 }
-
+layerGrid.innerHTML = '';
 for (let i = 0; i < layerList.length; i++) {
-    layerGrid.innerHTML = '';
     currentlayer = i;
     createUXlayer();
 
