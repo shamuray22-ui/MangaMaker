@@ -1,23 +1,10 @@
-/*
-    global-roots.css — reorganized
-
-    Purpose: consolidate theme variables used across the app and make the file
-    readable. Variables are grouped by responsibility. Keep aliases for
-    backward-compatibility; see "Recommended names" comments.
-
-    Theme switching: JS sets a class on <html> (document.documentElement):
-        - '' (default) active variables come from :root
-        - 'white-theme' -> :root.white-theme
-        - 'pink-theme'  -> :root.pink-theme
-        - 'blue-theme'  -> :root.blue-theme
-
-    When updating names, keep aliases and update code incrementally.
-*/
 
 /* ------------------------------------------------------------
      DEFAULT THEME (dark) — base values used unless overridden by a themed class
      ------------------------------------------------------------ */
 :root {
+    --headerColorbg: #8c8d8d;
+    --headerButton: #ffffff;
     /* ---- Core (recommended names) ---- */
     --body-bg: #282828;        /* recommended: use --body-bg for page background */
     --font-color: #ffffff;     /* text color */
@@ -73,6 +60,8 @@
      WHITE THEME — overrides for light theme
      ------------------------------------------------------------ */
 :root.white-theme {
+    --headerColorbg: #818181;
+    --headerButton: #ffffff;
     --body-bg: #ffffff;
     --font-color: #222222;
 
@@ -116,6 +105,8 @@
      PINK THEME
      ------------------------------------------------------------ */
 :root.pink-theme {
+    --headerColorbg: #e0558f;
+    --headerButton: #fccbe6;
     --body-bg: #ff7dc9;
     --font-color: #660033;
 
@@ -157,6 +148,8 @@
      BLUE THEME
      ------------------------------------------------------------ */
 :root.blue-theme {
+    --headerColorbg: #294183;
+    --headerButton: #d8e7ff;
     --body-bg: #a9cbff;
     --font-color: #003366;
 

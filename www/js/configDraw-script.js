@@ -139,7 +139,13 @@ function setAutoSize() {
 //#region NAVIGATION
 function toGallery() {
     if (!isSaved) {
-        window.confirm('Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?') || saveCanvas();
+        let quest = window.confirm('Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?');
+        if (quest){
+            saveCanvas()
+        }
+        else{
+            return;
+        }
     }
     let gettype = localStorage.getItem('type');
 

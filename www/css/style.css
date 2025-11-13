@@ -2,6 +2,16 @@
 /* Keep page styles below; variables are loaded globally via global-roots.css */
 
 /* Botões de tema */
+
+.header{
+    background-color: var(--headerColorbg);
+    padding: 10px;
+}.header button {
+    background-color: var(--headerButton);
+    padding: 10px;
+    border-radius: 30px;
+    
+}
 .theme-buttons {
     display: inline-flex;
     gap: 8px;
