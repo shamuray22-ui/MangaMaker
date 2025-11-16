@@ -133,6 +133,7 @@ function StartInitWithType(layer, bgLayer) {
             /////////// o trabalho do i é enemurar as paginas não as layers
             pages['page' + i] = {
                 background: null,
+                PageURL: null,
                 layers: [
                 ]
             }
@@ -142,6 +143,7 @@ function StartInitWithType(layer, bgLayer) {
                 hasDrawInPage.layers.forEach(layer =>{
                     pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
                     pages['page' + i].background = null;
+                    pages['page' + i].PageURL = null;
                     lengthArr += 1;
                     console.log(pages['page' + i].layers);
                     
@@ -985,12 +987,20 @@ function saveCanvas() {
 
     } else if (Gettype == 'manga') {
         const getPages = [];
-        
+
+     
         for (let i = 0; i <= pagenumbers; i++) {
-            getPages.push(pages['page' + i]);
+            pages['page' + i].PageURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio: 3,   // 3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
             
+            getPages.push(pages['page' + i]);
         }
         
+
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
         localStorage.setItem('mangas', JSON.stringify(getMangaList));
     }

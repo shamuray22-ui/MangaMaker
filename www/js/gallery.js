@@ -48,9 +48,6 @@ function get_draws() {
 
     });
 
-
-
-
     //////////////////////// aqui começa o load de manga
 
     let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
@@ -59,18 +56,25 @@ function get_draws() {
 
         const MangaCard = document.createElement('div');
         const newPicture = document.createElement('img');
+        const downloadMangaBtn = document.createElement('button');
+        downloadMangaBtn.textContent = 'Baixar Manga';
         const nameDraw = document.createElement('h1');
         newPicture.src = 'assets/HQIcon.png';
         nameDraw.textContent = manga.name;
 
         MangaCard.appendChild(newPicture);
         MangaCard.appendChild(nameDraw);
+        MangaCard.append(downloadMangaBtn);
         drawlist.appendChild(MangaCard);
 
-        MangaCard.addEventListener('click', function () {
+        newPicture.addEventListener('click', function () {
             localStorage.setItem('type', 'manga');
             window.location.href = "manga-screen.html?id=" + manga.id;
         });
+        downloadMangaBtn.onclick = () =>{
+            downloadManga(manga);
+        }
+
         createMangaDiv.style.visibility = 'hidden';
 
     });
@@ -158,6 +162,8 @@ function createManga() {
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
+    const downloadManga = document.createElement('button');
+    downloadManga.textContent = 'Baixar Manga';
     let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
 
     newPicture.src = 'assets/HQIcon.png'
@@ -165,6 +171,7 @@ function createManga() {
 
     MangaCard.appendChild(newPicture);
     MangaCard.appendChild(nameDraw);
+    MangaCard.append(downloadManga);
     drawlist.appendChild(MangaCard);
 
     createMangaDiv.style.visibility = 'hidden';
@@ -184,6 +191,27 @@ function createManga() {
     });
 
 }
+
+function downloadManga(manga) {
+
+    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    let getrightmanga = getMangaList.find(current => current.id === manga.id);
+
+    if (getrightmanga) {
+        getrightmanga.chapters.forEach(chap => {
+            console.log(chap);
+            
+            chap.pages?.forEach(page => {
+                const link = document.createElement('a');
+                link.href = page.PageURL;
+                link.download = chap.title + ' '+chap.pagesCount;
+                link.click();
+
+            });
+        });
+    }
+}
+
 
 function cancelCreateManga() {
     createMangaDiv.style.visibility = 'hidden';
