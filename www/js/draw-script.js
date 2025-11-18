@@ -6,7 +6,7 @@ let DRAWSIZE = {
     width: 600,
     height: 800
 }
-let isSaved = false;
+let isSaved = true;
 
 
 const getwidthInput = document.getElementById('canvasWidth');
@@ -172,14 +172,14 @@ function StartInitWithType(layer, bgLayer) {
                                     ctx.lineCap = child.attrs.lineCap;
                                     ctx.lineJoin = child.attrs.lineJoin;
                                     ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                                    let brushct = child.attrs.customTexture.getContext('2d');
+                                    //let brushct = child.attrs.customTexture.getContext('2d');
 
-                                    brushct.globalCompositeOperation = 'source-in';
-                                    brushct.fillStyle = child.attrs.strokeColor;
-                                    brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
-                                    brushct.globalCompositeOperation = 'source-over';
+                                    //brushct.globalCompositeOperation = 'source-in';
+                                    //brushct.fillStyle = child.attrs.strokeColor;
+                                    //brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
+                                    //brushct.globalCompositeOperation = 'source-over';
 
-                                    ctx.fillStrokeShape(child);
+                                    //ctx.fillStrokeShape(child);
                                     ctx.stroke();
                                 });
 
@@ -718,7 +718,7 @@ stage.on('mousedown touchstart', function (e) {
 
 
     if (current_tool == 'pen' || current_tool == 'eraser') {
-
+        isSaved = false
         TexturedLine = new Konva.Shape({
             strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,

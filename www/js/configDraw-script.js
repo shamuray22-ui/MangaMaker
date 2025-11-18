@@ -141,7 +141,7 @@ function toGallery() {
     if (!isSaved) {
         let quest = window.confirm('Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?');
         if (quest){
-            saveCanvas()
+            window.location.href = "index.html";
         }
         else{
             return;
