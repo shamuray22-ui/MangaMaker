@@ -719,12 +719,11 @@ stage.on('mousedown touchstart', function (e) {
 
     if (current_tool == 'pen' || current_tool == 'eraser') {
 
-
-
         TexturedLine = new Konva.Shape({
             strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
+            opacity: opacityPicker.value / 30, // Adicione a opacidade aqui
             lineCap: 'round',
             lineJoin: 'round',
             customTexture: currentBrush,
@@ -733,6 +732,9 @@ stage.on('mousedown touchstart', function (e) {
             customClassName: 'ShapeLine',
             listening: false,
             sceneFunc: function (ctx, shape) {
+                // Aplica a opacidade do shape ao contexto do canvas
+                ctx.globalAlpha = shape.attrs.opacity;
+
                 ctx.beginPath();
                 const points = shape.attrs.points;
 
@@ -746,6 +748,7 @@ stage.on('mousedown touchstart', function (e) {
 
                     }
                 }
+                ctx.strokeStyle = shape.attrs.strokeColor;
                 ctx.lineWidth = shape.attrs.lineWidth;
                 ctx.lineCap = shape.attrs.lineCap;
                 ctx.lineJoin = shape.attrs.lineJoin;
