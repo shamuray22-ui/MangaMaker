@@ -503,6 +503,9 @@ function createUXlayer() {
     const preview = document.createElement('img');
     preview.src = 'assets/drawing.png';
     preview.id = 'previewLayer';
+    const rangevis = document.createElement('input');
+    rangevis.value = 100;
+    rangevis.type = 'range';
 
     // função pra criar botão com ícone e alt
     const makeButton = (icon, alt) => {
@@ -516,18 +519,16 @@ function createUXlayer() {
     };
 
     // cria os botões
-    const move = makeButton('move', 'Reposicionar');
     const hide = makeButton('hidden', 'Esconder');
-    const clip = makeButton('inkmaker', 'Clip');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
     layerCell.appendChild(ratio);
     layerCell.appendChild(label);
     layerCell.appendChild(preview);
-    layerCell.appendChild(move);
+    layerCell.appendChild(rangevis);
     layerCell.appendChild(hide);
-    layerCell.appendChild(clip);
     layerCell.appendChild(del);
+
     ratio.checked = true;
     // e finalmente coloca no grid
     layerGrid.appendChild(layerCell);
@@ -539,6 +540,18 @@ function createUXlayer() {
     ratio.addEventListener('change', (event) => {
         group = pages['page' + currentpage].layers[Number(event.target.value)].draw;
 
+    });
+    hide.onclick = () => {
+        if (group.attrs.visible){
+            group.hide();
+        }
+        else{
+            group.show();
+        }
+        
+    }
+    rangevis.addEventListener('change', (p) => {
+        group.opacity(p.target.value / 100);
     });
     del.onclick = () => {
         if (label.textContent === '0' || ratio.checked === false) {
@@ -723,7 +736,7 @@ stage.on('mousedown touchstart', function (e) {
             strokeColor: colorPicker.value,
             lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
-            opacity: opacityPicker.value / 30, // Adicione a opacidade aqui
+            //opacity: (opacityPicker.value / 30), // Multiplica a opacidade do pincel pela da camada
             lineCap: 'round',
             lineJoin: 'round',
             customTexture: currentBrush,
@@ -732,14 +745,11 @@ stage.on('mousedown touchstart', function (e) {
             customClassName: 'ShapeLine',
             listening: false,
             sceneFunc: function (ctx, shape) {
-                // Aplica a opacidade do shape ao contexto do canvas
-                ctx.globalAlpha = shape.attrs.opacity;
-
                 ctx.beginPath();
-                const points = shape.attrs.points;
+                // Aplica a opacidade do shape ao contexto do canvas
+                ///ctx.globalAlpha = shape.attrs.opacity;
 
-                ///////// math max compara o valor 0.1 (ou qualquer outro) e retorna o maior numero.
-                const space = Math.max(0.1, shape.attrs.lineWidth * 0.5);
+                const points = shape.attrs.points;
 
                 if (points.length >= 2) { // precisa de pelo menos x,y
                     ctx.moveTo(points[0], points[1]); // primeiro ponto
@@ -766,6 +776,7 @@ stage.on('mousedown touchstart', function (e) {
             }
 
         });
+        TexturedLine.opacity(opacityPicker.value / 30);
         group.add(TexturedLine);
     }
 
