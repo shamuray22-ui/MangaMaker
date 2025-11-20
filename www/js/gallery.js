@@ -212,6 +212,52 @@ function downloadManga(manga) {
     }
 }
 
+function loadjson() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = readerEvent => {
+            const content = readerEvent.target.result;
+            try {
+                const data = JSON.parse(content);
+                if (data.draws && data.mangas) {
+                    localStorage.setItem('draws-saveds', JSON.stringify(data.draws));
+                    localStorage.setItem('mangas', JSON.stringify(data.mangas));
+                    window.location.reload();
+                } else {
+                    alert('Arquivo JSON inválido.');
+                }
+            } catch (error) {
+                alert('Erro ao carregar o arquivo JSON.');
+                console.error(error);
+            }
+        }
+        reader.readAsText(file);
+    }
+    input.click();
+}
+
+function savejson() {
+    const data = {
+        draws: JSON.parse(localStorage.getItem('draws-saveds')) || [],
+        mangas: JSON.parse(localStorage.getItem('mangas')) || []
+    };
+
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'MangaMaker_backup.json';
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
 
 function cancelCreateManga() {
     createMangaDiv.style.visibility = 'hidden';
