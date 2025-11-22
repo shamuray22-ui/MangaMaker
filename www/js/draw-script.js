@@ -333,7 +333,7 @@ function StartInitWithType(layer, bgLayer) {
         }
         else {
             StartBrush('assets/brush/default.png', '#000');
-            pages['page' + currentpage].layers.push({ draw: null });
+            pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
 
             pages['page' + currentpage].layers[0].draw = new Konva.Group({
                 clipFunc: function (ctx) {
@@ -406,7 +406,8 @@ let lastCicle = null;
 let lastSelectBox = null;
 let lastLineTool = null;
 let lastText = null;
-
+let trans;
+let imgReference
 let draggingText = false;
 let endline = 0;
 
@@ -437,7 +438,7 @@ function getGlobalMousePos() {
 }
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
-    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text'];
+    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text','transform'];
     if (validTools.includes(tool)) {
         current_tool = tool;
         // Ajusta o modo de composição para a borracha
@@ -457,6 +458,7 @@ function set_current_page(index) {
     currentpage = index;
     
     for (let i = 0; i < pagesDiv.children.length; i++) {
+        set_current_tool('pen');
         //////// escodende geral antes de mostrar a page selecionada
         
         if (pages['page' + i].background){
@@ -488,6 +490,7 @@ function set_current_page(index) {
 
 //#region ADD LAYER
 function createUXlayer() {
+    
     const layerCell = document.createElement('div');
     layerCell.id = 'layerCell'; // usa class, id é pra ser único
     // label
@@ -532,10 +535,47 @@ function createUXlayer() {
     ratio.checked = true;
     // e finalmente coloca no grid
     layerGrid.appendChild(layerCell);
+    
     layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
+        imgReference = pages['page' + currentpage].layers[Number(ratio.value)].hasimage;
+        
+        
         group = pages['page' + currentpage].layers[Number(ratio.value)].draw;
+        console.log('------>',imgReference);
 
+        if (imgReference){
+            stage.off('click tap')
+            imgReference.off('click tap');
+            set_current_tool('transform');
+            trans = new Konva.Transformer();
+            group.add(trans);
+            imgReference.on('click tap',function() {
+                trans.nodes([pages['page' + currentpage].layers[Number(ratio.value)].hasimage]);
+                group.draw();
+                imgReference.draggable(true)
+            });
+            stage.on('click tap', function(e) {
+                if (e.target === stage) {
+                    trans.nodes([]);
+                    imgReference.draggable(false)
+                }
+            });
+
+        }else{
+            if (trans){
+                console.log(imgReference);
+                
+                imgReference.draggable(false);
+                trans.destroy();
+                set_current_tool('pen');
+                
+                
+                group.draw();
+            }
+            
+            
+        }
     });
     ratio.addEventListener('change', (event) => {
         group = pages['page' + currentpage].layers[Number(event.target.value)].draw;
@@ -580,8 +620,9 @@ for (let i = 0; i < layerList.length; i++) {
 }
 
 function addLayer(imagedata = '') {
+    let konvaImage;
     const newLayer = new Konva.Group();
-
+    set_current_tool('pen')
     newLayer.clipFunc(function (ctx) {
         ctx.beginPath();
         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
@@ -589,14 +630,41 @@ function addLayer(imagedata = '') {
         ctx.clip();
 
     });
-    pages['page' + currentpage].layers.push({ draw: newLayer });
-    layer.add(newLayer);
+    
+    if (imagedata != ''){
+        const url = URL.createObjectURL(imagedata);
 
-    currentlayer = layerList.length - 1;
-    group = pages['page' + currentpage].layers[currentlayer].draw;
-    updateLayerList();
-    createUXlayer();
+        const img = new Image();
+        img.src = url;
+        img.onload = function() {
+            konvaImage = new Konva.Image({
+                x: 50,
+                y: 50,
+                image: img,
+                width: 200,
+                height: 200,
+                draggable: true
+            });
+            set_current_tool('transform')
+            newLayer.add(konvaImage);
 
+            pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:konvaImage});
+            layer.add(newLayer);
+
+            currentlayer = layerList.length - 1;
+            group = pages['page' + currentpage].layers[currentlayer].draw;
+            updateLayerList();
+            createUXlayer();
+        }
+
+    } else{
+        pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:null});
+        layer.add(newLayer);
+        currentlayer = layerList.length - 1;
+        group = pages['page' + currentpage].layers[currentlayer].draw;
+        updateLayerList();
+        createUXlayer();
+    }
 }
 
 
