@@ -172,7 +172,6 @@ function showLayerListDiv() {
 }
 
 const referenceInput = document.getElementById('referenceInput');
-console.log(referenceInput);
 
 referenceInput.addEventListener('change', function(e) {
     const arquivo = e.target.files[0];

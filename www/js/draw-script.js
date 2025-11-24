@@ -260,7 +260,6 @@ function StartInitWithType(layer, bgLayer) {
                     //pages['page' + currentpage].layers.slice(i, 1); // reseta as layers
 
                 }
-                console.log(pages['page' + currentpage].layers)
                 let layer = foundDraw.layers[i];
                 pages['page' + currentpage].layers.push({ draw: null });
                 pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer);
@@ -463,7 +462,6 @@ function set_current_page(index) {
     currentpage = index;
     
     for (let i = 0; i < pagesDiv.children.length; i++) {
-        set_current_tool('pen');
         //////// escodende geral antes de mostrar a page selecionada
         
         if (pages['page' + i].background){
@@ -501,10 +499,12 @@ function createUXlayer() {
     // label
     const ratio = document.createElement('input');
     ratio.type = 'radio';
-    ratio.value = currentlayer;
+    ratio.value = (currentlayer);
+    console.log(currentlayer);
+    
     ratio.name = 'layers';
-
     const label = document.createElement('label');
+    
     label.textContent = currentlayer;
 
     // preview
@@ -537,18 +537,25 @@ function createUXlayer() {
     layerCell.appendChild(hide);
     layerCell.appendChild(del);
 
-    ratio.checked = true;
+    //ratio.checked = true;
+    //ratio.dispatchEvent(new Event('change'));
     // e finalmente coloca no grid
-    layerGrid.appendChild(layerCell);
     
+    layerGrid.appendChild(layerCell);
     layerCell.addEventListener('click', (event) => {
+        console.log('minha pooooooooooooooooooooooooooooooooooooooooooooooooooomba');
+        
         ratio.checked = true;
-        group = pages['page' + currentpage].layers[Number(ratio.value)].draw;
-        checkimage(Number(ratio.value));
+        ratio.dispatchEvent(new Event('change'));
     });
+    layerCell.click();
     ratio.addEventListener('change', (event) => {
-        group = pages['page' + currentpage].layers[Number(event.target.value)].draw;
-        checkimage(Number(ratio.value));
+        const num = Number(event.target.value);
+        console.log(num);
+        group = pages['page' + currentpage].layers[num].draw;
+        ///
+        
+        checkimage(num);
     });
     hide.onclick = () => {
         if (group.attrs.visible){
@@ -563,6 +570,7 @@ function createUXlayer() {
     rangevis.addEventListener('change', (p) => {
         group.opacity(p.target.value / 100);
     });
+
     del.onclick = () => {
         if (label.textContent === '0' || ratio.checked === false) {
             return;
@@ -570,12 +578,9 @@ function createUXlayer() {
 
         pages['page' + currentpage].layers[currentlayer].draw.remove();
         layerList.splice(currentlayer,1);
-        console.log(layerList);
-        
         updateLayerList();
         currentlayer -= 1;
-
-
+        ratio.value = (currentlayer);
         group = pages['page' + currentpage].layers[currentlayer].draw;
         checkimage(currentlayer);
         layerGrid.removeChild(layerCell);
@@ -591,6 +596,8 @@ function createUXlayer() {
             LocalimgReference.draggable(true)
             trans.nodes([LocalimgReference]);
         }else{
+            if (imgReference == null){return}
+            set_current_tool('pen');
             imgReference.draggable(false);
             trans.nodes([]);
         }
