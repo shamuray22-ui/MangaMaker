@@ -372,6 +372,8 @@ function StartInitWithType(layer, bgLayer) {
 
 let layer = new Konva.Layer();
 
+
+
 stage.add(bgLayer);
 stage.add(layer);
 
@@ -384,6 +386,9 @@ let group = pages['page' + currentpage].layers[0].draw;
 set_current_page(0);
 
 updateLayerList();
+let trans = new Konva.Transformer();
+
+group.add(trans);
 //#region  VARIAVEIS
 let isDrawing = false;
 let TexturedLine;
@@ -406,7 +411,7 @@ let lastCicle = null;
 let lastSelectBox = null;
 let lastLineTool = null;
 let lastText = null;
-let trans;
+
 let imgReference
 let draggingText = false;
 let endline = 0;
@@ -538,48 +543,12 @@ function createUXlayer() {
     
     layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
-        imgReference = pages['page' + currentpage].layers[Number(ratio.value)].hasimage;
-        
-        
         group = pages['page' + currentpage].layers[Number(ratio.value)].draw;
-        console.log('------>',imgReference);
-
-        if (imgReference){
-            stage.off('click tap')
-            imgReference.off('click tap');
-            set_current_tool('transform');
-            trans = new Konva.Transformer();
-            group.add(trans);
-            imgReference.on('click tap',function() {
-                trans.nodes([pages['page' + currentpage].layers[Number(ratio.value)].hasimage]);
-                group.draw();
-                imgReference.draggable(true)
-            });
-            stage.on('click tap', function(e) {
-                if (e.target === stage) {
-                    trans.nodes([]);
-                    imgReference.draggable(false)
-                }
-            });
-
-        }else{
-            if (trans){
-                console.log(imgReference);
-                
-                imgReference.draggable(false);
-                trans.destroy();
-                set_current_tool('pen');
-                
-                
-                group.draw();
-            }
-            
-            
-        }
+        checkimage(Number(ratio.value));
     });
     ratio.addEventListener('change', (event) => {
         group = pages['page' + currentpage].layers[Number(event.target.value)].draw;
-
+        checkimage(Number(ratio.value));
     });
     hide.onclick = () => {
         if (group.attrs.visible){
@@ -590,6 +559,7 @@ function createUXlayer() {
         }
         
     }
+
     rangevis.addEventListener('change', (p) => {
         group.opacity(p.target.value / 100);
     });
@@ -607,9 +577,26 @@ function createUXlayer() {
 
 
         group = pages['page' + currentpage].layers[currentlayer].draw;
-
+        checkimage(currentlayer);
         layerGrid.removeChild(layerCell);
 
+    }
+    function checkimage(number){
+        let LocalimgReference = pages['page' + currentpage].layers[number].hasimage;
+        if (pages['page' + currentpage].layers[number].hasimage){
+            imgReference = pages['page' + currentpage].layers[number].hasimage;
+        }
+        
+        if(LocalimgReference){
+            LocalimgReference.draggable(true)
+            trans.nodes([LocalimgReference]);
+        }else{
+            imgReference.draggable(false);
+            trans.nodes([]);
+        }
+
+        
+        group.draw();
     }
 }
 layerGrid.innerHTML = '';
@@ -643,7 +630,7 @@ function addLayer(imagedata = '') {
                 image: img,
                 width: 200,
                 height: 200,
-                draggable: true
+                draggable: false
             });
             set_current_tool('transform')
             newLayer.add(konvaImage);
