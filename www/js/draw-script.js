@@ -500,7 +500,6 @@ function createUXlayer() {
     const ratio = document.createElement('input');
     ratio.type = 'radio';
     ratio.value = (currentlayer);
-    console.log(currentlayer);
     
     ratio.name = 'layers';
     const label = document.createElement('label');
@@ -543,8 +542,6 @@ function createUXlayer() {
     
     layerGrid.appendChild(layerCell);
     layerCell.addEventListener('click', (event) => {
-        console.log('minha pooooooooooooooooooooooooooooooooooooooooooooooooooomba');
-        
         ratio.checked = true;
         ratio.dispatchEvent(new Event('change'));
     });
@@ -983,6 +980,30 @@ stage.on('touchend', function (e) {
 stage.on('mouseup', function (e) {
     isDrawing = false;
     dragpos = null;
+    var a = 5
+    var b = 3
+    var zoiada = a - b;
+    console.log(zoiada);
+    
+    ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
+    // 296.25, 172, 307.25, 167, 311.25]
+
+    for(let i = 0; i < TexturedLine.attrs.points.length - 1; i+=2){
+        ///////// aplicando o teoromema do piltaguras
+        let mypoint ={x:TexturedLine.attrs.points[i],y:TexturedLine.attrs.points[i + 1]};
+        let nextpoint = {x:TexturedLine.attrs.points[i + 2],y:TexturedLine.attrs.points[i + 3]};
+        let finalx1 = mypoint.x - nextpoint.x;
+        let finalx2 = mypoint.y - nextpoint.y;
+        let result = (finalx1 * finalx1) + (finalx2 * finalx2)
+        if (result < 20){
+            TexturedLine.attrs.points.splice(i,4);
+        }
+        console.log(result);
+        
+        
+    }
+    
+    
     if (lastSelectBox) {
         const selectionRect = lastSelectBox.getClientRect();
         const selectedNodes = [];
