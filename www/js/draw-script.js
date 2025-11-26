@@ -972,36 +972,23 @@ stage.on('touchend', function (e) {
         lastDist = 0;
         lastMidPoint = null;
     }
+
+    simplifyPoints();
+
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
+
+    }
     AddactionToHistory();
-
-
-
+    stage.batchDraw();
 });
 stage.on('mouseup', function (e) {
     isDrawing = false;
     dragpos = null;
-    var a = 5
-    var b = 3
-    var zoiada = a - b;
-    console.log(zoiada);
-    
-    ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
-    // 296.25, 172, 307.25, 167, 311.25]
 
-    for(let i = 0; i < TexturedLine.attrs.points.length - 1; i+=2){
-        ///////// aplicando o teoromema do piltaguras
-        let mypoint ={x:TexturedLine.attrs.points[i],y:TexturedLine.attrs.points[i + 1]};
-        let nextpoint = {x:TexturedLine.attrs.points[i + 2],y:TexturedLine.attrs.points[i + 3]};
-        let finalx1 = mypoint.x - nextpoint.x;
-        let finalx2 = mypoint.y - nextpoint.y;
-        let result = (finalx1 * finalx1) + (finalx2 * finalx2)
-        if (result < 20){
-            TexturedLine.attrs.points.splice(i,4);
-        }
-        console.log(result);
-        
-        
-    }
+
+    simplifyPoints();
     
     
     if (lastSelectBox) {
@@ -1033,6 +1020,27 @@ stage.on('mouseup', function (e) {
     stage.batchDraw();
 });
 
+function simplifyPoints(){
+    ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
+    // 296.25, 172, 307.25, 167, 311.25]
+    for(let i = 0; i < TexturedLine.attrs.points.length - 1; i+=2){
+        ///////// aplicando o teoromema do piltaguras
+        let mypoint ={x:TexturedLine.attrs.points[i],y:TexturedLine.attrs.points[i + 1]};
+        let nextpoint = {x:TexturedLine.attrs.points[i + 2],y:TexturedLine.attrs.points[i + 3]};
+        let finalx1 = mypoint.x - nextpoint.x;
+        let finalx2 = mypoint.y - nextpoint.y;
+        let result = (finalx1 * finalx1) + (finalx2 * finalx2)
+        if (result < 20){
+            
+            if (i > 2){
+                TexturedLine.attrs.points.splice(i,4);
+            }
+            
+        }
+        
+        
+    }
+}
 
 function clearCanvas() {
     group.destroyChildren(); // Remove todas as linhas do grupo
@@ -1157,20 +1165,26 @@ function redo() {
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {
+    lastLine = null;
+    isDrawing = false;
     if (e.evt.touches.length < 2) {
         lastDist = 0;
         lastMidPoint = null;
     }
-});
-stage.on('mouseleave ', function (e) {
-    lastLine = null;
-    isDrawing = false;
-
-    AddactionToHistory();
-
     if (lastSelectBox) {
         lastSelectBox.destroy();
         lastSelectBox = null;
 
     }
+    AddactionToHistory();
+});
+stage.on('mouseleave ', function (e) {
+    lastLine = null;
+    isDrawing = false;
+    if (lastSelectBox) {
+        lastSelectBox.destroy();
+        lastSelectBox = null;
+
+    }
+    AddactionToHistory();
 });
