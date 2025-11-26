@@ -776,6 +776,7 @@ window.addEventListener('resize', () => {
 });
 //#region START TOUCH OR MOUSE
 stage.on('mousedown touchstart', function (e) {
+    e.evt.preventDefault();
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
     }
@@ -913,8 +914,12 @@ stage.on('mousedown touchstart', function (e) {
 });
 //#region MOUSE TOUCH MOVE AGAIN
 stage.on('mousemove touchmove', function (e) {
+    e.evt.preventDefault();
     if (!isDrawing) {
         return;
+    }
+    if (e.evt.touches && e.evt.touches.length > 1) {
+        return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
     }
     const pos = getGlobalMousePos();
 
@@ -966,6 +971,7 @@ stage.on('mousemove touchmove', function (e) {
 
 //#region MOUSE UP
 stage.on('touchend', function (e) {
+    e.evt.preventDefault();
     isDrawing = false;
     dragpos = null;
     if (e.evt.touches.length < 2) {
@@ -1165,6 +1171,7 @@ function redo() {
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {
+    e.evt.preventDefault();
     lastLine = null;
     isDrawing = false;
     if (e.evt.touches.length < 2) {
