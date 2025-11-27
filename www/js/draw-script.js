@@ -392,6 +392,7 @@ group.add(trans);
 let isDrawing = false;
 let TexturedLine;
 
+let simplifyStrenght = 2;
 let autosize = true;
 let autoSizeSensi = 3;
 
@@ -1039,7 +1040,7 @@ function simplifyPoints(){
         if (result < 20){
             
             if (i > 2){
-                TexturedLine.attrs.points.splice(i,4);
+                TexturedLine.attrs.points.splice(i,simplifyStrenght);
             }
             
         }

@@ -187,3 +187,20 @@ function resetRot() {
     stage.rotation(0);
     stage.batchDraw();
 }
+
+
+const definitionsscreen = document.getElementById('definitionsscreen');
+const strongSimply = document.getElementById('strongSimply');
+definitionsscreen.style.display = 'none';
+simplifyStrenght = strongSimply.value;
+strongSimply.addEventListener('change',function(){
+    simplifyStrenght = strongSimply.value;
+})
+function calldefinitions(){
+    if (definitionsscreen.style.display === 'none') {
+        definitionsscreen.style.display = 'flex';
+
+    } else if (definitionsscreen.style.display === 'flex') {
+        definitionsscreen.style.display = 'none';
+    }
+}

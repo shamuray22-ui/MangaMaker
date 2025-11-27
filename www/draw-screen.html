@@ -12,7 +12,9 @@
 <body>
   <canvas id="canvasBrush" hidden></canvas>
 
-  <!-- Barra principal -->
+  <!-- Barra principal --> 
+
+   
   <header id="toolbar">
     <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"></button>
     <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"></button>
@@ -24,8 +26,8 @@
         alt="Redimensionar"></button>
     <button class="Generalbutton" id="saveBtn" onclick="saveCanvas()"><img src="assets/icons/save.png"
         alt="Salvar"></button>
-    <button class="Generalbutton" id="saveBtn" onclick="calldefinitions()"><img src="assets/icons/save.png"
-        alt="Salvar"></button>
+    <button class="Generalbutton" id="settingsBtn" onclick="calldefinitions()"><img src="assets/icons/settings.png"
+        alt="Setting"></button>
   </header>
   <div id="pagesDiv"></div>
 
@@ -34,9 +36,11 @@
 
   <div id="definitionsscreen">
     <label>
-      Definitions!!
+      CONFIGS
     </label>
-    <div id="contentdefinitions">
+    <div>
+      <label> Força de simplificação</label>
+      <input id="strongSimply" type="range" min="2" step="2" value="4" max="8">
       
     </div>
   </div>

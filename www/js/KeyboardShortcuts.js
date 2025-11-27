@@ -16,11 +16,11 @@ document.addEventListener('keydown', function(event) {
         set_current_tool('eraser');
     } else if (event.key === 'q'){
         set_current_tool('pen');
-    } else if (event.key === 'd'){
+    } else if (event.key === 'ArrowLeft'){
         let rotfactor = 0;
         rotfactor += 0.5;
         stage.rotate(rotfactor);
-    }else if (event.key === 'a'){
+    }else if (event.key === 'ArrowRight'){
         let newfactor = 0;
         newfactor -= 0.5;
         stage.rotate(newfactor);
