@@ -370,11 +370,12 @@ function StartInitWithType(layer, bgLayer) {
 }
 
 let layer = new Konva.Layer();
-
-
+let realayers = []
+realayers.push(layer)
 
 stage.add(bgLayer);
 stage.add(layer);
+
 
 
 StartInitWithType(layer, bgLayer);
@@ -479,15 +480,18 @@ function set_current_page(index) {
     pages['page' + currentpage].layers.forEach(layer => {
         layer.draw.show();
         group = layer.draw;
-        
-
     });
     stage.batchDraw();
     updateLayerList();
     layerGrid.innerHTML = '';
-    for (let i = 0; i < layerList.length; i++) {
+    for(let w = 0; w < realayers.length - 1; w++){
+        realayers[w].hide();
+    }
+    for (let i = 0; i < layerList.length - 1; i++) {
         currentlayer = i;
         createUXlayer();
+        
+        realayers[i].show();
 
     }
 }
@@ -613,6 +617,7 @@ for (let i = 0; i < layerList.length; i++) {
 
 function addLayer(imagedata = '') {
     let konvaImage;
+    let newRealLayer = new Konva.Layer();
     const newLayer = new Konva.Group();
     set_current_tool('pen')
     newLayer.clipFunc(function (ctx) {
@@ -639,10 +644,11 @@ function addLayer(imagedata = '') {
             });
             set_current_tool('transform')
             newLayer.add(konvaImage);
-
+            
             pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:konvaImage});
-            layer.add(newLayer);
-
+            newRealLayer.add(newLayer);
+            stage.add(newRealLayer);
+            realayers.push(newRealLayer);
             currentlayer = layerList.length - 1;
             group = pages['page' + currentpage].layers[currentlayer].draw;
             updateLayerList();
@@ -651,7 +657,9 @@ function addLayer(imagedata = '') {
 
     } else{
         pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:null});
-        layer.add(newLayer);
+        newRealLayer.add(newLayer);
+        stage.add(newRealLayer);
+        realayers.push(newRealLayer);
         currentlayer = layerList.length - 1;
         group = pages['page' + currentpage].layers[currentlayer].draw;
         updateLayerList();
@@ -913,7 +921,9 @@ stage.on('mousedown touchstart', function (e) {
         });
     }
 });
+
 //#region MOUSE TOUCH MOVE AGAIN
+let some = null
 stage.on('mousemove touchmove', function (e) {
     e.evt.preventDefault();
     if (!isDrawing) {
@@ -928,15 +938,23 @@ stage.on('mousemove touchmove', function (e) {
     const y = Math.min(startpos.y, pos.y);
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
-
+    
     if (current_tool == 'pen' || current_tool == 'eraser' && TexturedLine) {
         // Verifica se é um evento de toque e se há mais de um dedo na tela
         if (e.evt.touches && e.evt.touches.length > 1) {
             return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
         }
-        TexturedLine.attrs.points.push(pos.x, pos.y);
-
+        if (!some){
+            some = {x:pos.x,y:pos.y}
+        }
+        
+        some.x += (pos.x - some.x) * (1 - 0.71)
+        some.y += (pos.y - some.y) * (1 - 0.71)
+        
+        TexturedLine.attrs.points.push(some.x, some.y);
+        
         stage.batchDraw();
+        
     }
     else if (current_tool == 'circle' && lastCicle) {
         lastCicle.x(x);
@@ -993,10 +1011,10 @@ stage.on('touchend', function (e) {
 stage.on('mouseup', function (e) {
     isDrawing = false;
     dragpos = null;
-
+    
 
     simplifyPoints();
-    
+    some = null
     
     if (lastSelectBox) {
         const selectionRect = lastSelectBox.getClientRect();
