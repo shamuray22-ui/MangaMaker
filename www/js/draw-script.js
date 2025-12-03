@@ -859,7 +859,13 @@ stage.on('mousedown touchstart', function (e) {
             fill: '#ffff', // transparente por padrão
             stroke: 'black'
         });
-        group.add(lastRect);
+        let newclipgroup = new Konva.Group({
+            clip:{
+
+            }
+        })
+        newclipgroup.add(lastRect)
+        group.add(newclipgroup);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
     } else if (current_tool == 'circle') {
         lastCicle = new Konva.Ellipse({
@@ -924,6 +930,7 @@ stage.on('mousedown touchstart', function (e) {
 
 //#region MOUSE TOUCH MOVE AGAIN
 let some = null
+let strongStabilizador = document.getElementById('strongStabilizador');
 stage.on('mousemove touchmove', function (e) {
     e.evt.preventDefault();
     if (!isDrawing) {
@@ -948,8 +955,8 @@ stage.on('mousemove touchmove', function (e) {
             some = {x:pos.x,y:pos.y}
         }
         
-        some.x += (pos.x - some.x) * (1 - 0.71)
-        some.y += (pos.y - some.y) * (1 - 0.71)
+        some.x += (pos.x - some.x) * (1-strongStabilizador.value);
+        some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         
         TexturedLine.attrs.points.push(some.x, some.y);
         
