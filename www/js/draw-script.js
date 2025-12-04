@@ -819,9 +819,11 @@ stage.on('mousedown touchstart', function (e) {
 
     if (current_tool == 'pen' || current_tool == 'eraser') {
         isSaved = false
+        let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
+        let color = colorPicker.value
         TexturedLine = new Konva.Shape({
-            strokeColor: colorPicker.value,
-            lineWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
+            strokeColor: color,
+            lineWidth: scaletexture,
             globalCompositeOperation: composite,
             //opacity: (opacityPicker.value / 30), // Multiplica a opacidade do pincel pela da camada
             lineCap: 'round',
@@ -834,17 +836,7 @@ stage.on('mousedown touchstart', function (e) {
             sceneFunc: function (ctx, shape) {
                 ctx.beginPath();
                 // Aplica a opacidade do shape ao contexto do canvas
-                ///ctx.globalAlpha = shape.attrs.opacity;
-
-                const points = shape.attrs.points;
-
-                if (points.length >= 2) { // precisa de pelo menos x,y
-                    ctx.moveTo(points[0], points[1]); // primeiro ponto
-                    for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
-                        ctx.lineTo(points[i], points[i + 1]);
-
-                    }
-                }
+                ctx.globalAlpha = shape.attrs.opacity;
                 ctx.strokeStyle = shape.attrs.strokeColor;
                 ctx.lineWidth = shape.attrs.lineWidth;
                 ctx.lineCap = shape.attrs.lineCap;
@@ -857,7 +849,18 @@ stage.on('mousedown touchstart', function (e) {
                 brushct.fillRect(0, 0, shape.attrs.customTexture.width, shape.attrs.customTexture.height);
                 brushct.globalCompositeOperation = 'source-over';
 
-                ctx.fillStrokeShape(shape);
+                const points = shape.attrs.points;
+
+                if (points.length >= 2) { // precisa de pelo menos x,y
+                    //ctx.moveTo(points[0], points[1]); // primeiro ponto
+                    for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
+                        coisanoTextura(points,i,ctx);
+                        ///ctx.lineTo(points[i], points[i + 1]);
+
+                    }
+                }
+
+                //ctx.fillStrokeShape(shape);
                 ctx.stroke();
 
             }
@@ -945,6 +948,45 @@ stage.on('mousedown touchstart', function (e) {
         });
     }
 });
+//#region coisanoTextura
+function coisanoTextura(points,i,ctx){
+    
+    /////// i é ++2 e points é [x,y,x1,y1]
+    ctx.drawImage(currentBrush,
+        points[i] - ctx.lineWidth/2,
+        points[i + 1] - ctx.lineWidth/2,
+        ctx.lineWidth,ctx.lineWidth
+        
+    );
+    let x = points[i - 2];
+    let y = points[i - 1];
+    let x1 = points[i];
+    let y1 = points[i + 1];
+    let hyp1 = x1 - x;
+    let hyp2 = y1 - y;
+    let result = Math.sqrt(hyp1*hyp1+hyp2*hyp2);
+    if (result === 0){
+        return;
+    }
+    let step = ctx.lineWidth * 0.3;
+    
+    let steps = Math.floor(result / step);
+    steps = Math.min(steps,30);
+    for (let st = 0; st<= steps; st++){
+        let initInter = x + (hyp1 * st / steps);
+        let endInter = y + (hyp2 * st / steps);
+
+        ctx.drawImage(currentBrush,
+            initInter - ctx.lineWidth/2,
+            endInter - ctx.lineWidth/2,
+            ctx.lineWidth,ctx.lineWidth
+        );
+
+    }
+    //console.log(result);
+    
+
+}
 
 //#region MOUSE TOUCH MOVE AGAIN
 let some = null
@@ -976,9 +1018,24 @@ stage.on('mousemove touchmove', function (e) {
         some.x += (pos.x - some.x) * (1-strongStabilizador.value);
         some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         
-        TexturedLine.attrs.points.push(some.x, some.y);
+        let points = TexturedLine.attrs.points;
+
+        if(points.length === 0){
+            TexturedLine.attrs.points.push(some.x, some.y);
+
+        }else{
+            const mypoint ={x:TexturedLine.attrs.points[points.length - 2],y:TexturedLine.attrs.points[points.length - 1]};
+            const finalx1 = mypoint.x - some.x;
+            const finalx2 = mypoint.y - some.y;
+            const result = (finalx1 * finalx1) + (finalx2 * finalx2)
+            if (result > 20){
+                TexturedLine.attrs.points.push(some.x, some.y);
+                stage.batchDraw();
+                
+            }
+        }
+
         
-        stage.batchDraw();
         
     }
     else if (current_tool == 'circle' && lastCicle) {
@@ -1030,6 +1087,9 @@ stage.on('touchend', function (e) {
         lastSelectBox = null;
 
     }
+    if (TexturedLine){
+        TexturedLine.cache()
+    }
     AddactionToHistory();
     stage.batchDraw();
 });
@@ -1037,7 +1097,8 @@ stage.on('mouseup', function (e) {
     isDrawing = false;
     dragpos = null;
     
-
+    console.log(undoHistory.length);
+    
     simplifyPoints();
     some = null
     
@@ -1064,7 +1125,39 @@ stage.on('mouseup', function (e) {
         lastSelectBox.destroy();
         lastSelectBox = null;
     }
+if (TexturedLine) {
+        const points = TexturedLine.attrs.points;
+        
+        // Garante que a linha tenha pelo menos 1 ponto (2 coordenadas)
+        if (points.length >= 2) {
+            let minX = points[0];
+            let maxX = points[0];
+            let minY = points[1];
+            let maxY = points[1];
 
+            // 1. Calcula o menor e maior X e Y em todos os pontos
+            for (let i = 2; i < points.length; i += 2) {
+                minX = Math.min(minX, points[i]);
+                maxX = Math.max(maxX, points[i]);
+                minY = Math.min(minY, points[i + 1]);
+                maxY = Math.max(maxY, points[i + 1]);
+            }
+            
+            const lw = TexturedLine.attrs.lineWidth;
+            
+            // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
+            TexturedLine.cache({
+                // O cache precisa começar um pouco antes do X/Y mínimo para incluir metade do stroke
+                x: minX - lw / 2, 
+                y: minY - lw / 2, 
+                // A largura/altura precisa ser a distância total (max - min) + a largura do stroke (lw)
+                width: maxX - minX + lw, 
+                height: maxY - minY + lw,
+                pixelRatio:3,
+                hitGraphEnabled: false
+            });
+        }
+    }
     AddactionToHistory();
 
     stage.batchDraw();
@@ -1093,6 +1186,8 @@ function simplifyPoints(){
 }
 
 function clearCanvas() {
+    undoHistory = [];
+    redoHistory = [];
     group.destroyChildren(); // Remove todas as linhas do grupo
 }
 
@@ -1239,3 +1334,54 @@ stage.on('mouseleave ', function (e) {
     }
     AddactionToHistory();
 });
+(function () {
+    const fpsDisplay = document.createElement('div');
+    fpsDisplay.style.position = 'fixed';
+    fpsDisplay.style.top = '10px';
+    fpsDisplay.style.left = '10px';
+    fpsDisplay.style.padding = '5px';
+    fpsDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    fpsDisplay.style.color = '#00FF00'; // Cor verde para destacar
+    fpsDisplay.style.fontFamily = 'monospace';
+    fpsDisplay.style.fontSize = '14px';
+    fpsDisplay.style.zIndex = '9999';
+    fpsDisplay.textContent = 'FPS: --';
+    
+    // Adiciona o elemento ao corpo do documento
+    document.body.appendChild(fpsDisplay);
+
+    let lastTime = 0;
+    let frameCount = 0;
+    let fps = 0;
+    
+    /**
+     * Loop principal de medição.
+     * @param {number} currentTime - Timestamp fornecido pelo requestAnimationFrame.
+     */
+    function calculateFPS(currentTime) {
+        // Incrementa o contador de frames
+        frameCount++;
+
+        // Calcula a diferença de tempo desde a última atualização de FPS
+        const elapsed = currentTime - lastTime;
+
+        // Atualiza o FPS a cada 1000ms (1 segundo)
+        if (elapsed > 1000) {
+            // Calcula o FPS: frames contados / segundos decorridos
+            fps = Math.round((frameCount * 1000) / elapsed);
+            
+            // Atualiza o display
+            fpsDisplay.textContent = `FPS: ${fps}`;
+            
+            // Reseta contadores
+            frameCount = 0;
+            lastTime = currentTime;
+        }
+
+        // Chama a função novamente no próximo quadro de redesenho
+        requestAnimationFrame(calculateFPS);
+    }
+
+    // Inicia o loop de cálculo de FPS
+    requestAnimationFrame(calculateFPS);
+})();
