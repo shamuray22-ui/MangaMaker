@@ -4,17 +4,18 @@ const drawlist = document.getElementById('drawlist');
 window.onload = function () {
     localStorage.setItem('type', 'draw');
     get_draws();
+    
 }
 
-function get_draws() {
+async function get_draws() {
 
     drawlist.innerHTML = '';
 
     //////////////////////// aqui começa o load de draw
-
-    let getDrawList = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-
-    getDrawList.forEach((draw) => {
+    let drawList = await getDrawList() || [];
+    
+    
+    drawList.forEach((draw) => {
         const DrawCard = document.createElement('div');
         const newPicture = document.createElement('img');
         const nameDraw = document.createElement('h1');
@@ -50,9 +51,9 @@ function get_draws() {
 
     //////////////////////// aqui começa o load de manga
 
-    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    let mangaList = await getMangasList() || [];
 
-    getMangaList.forEach((manga) => {
+    mangaList.forEach((manga) => {
 
         const MangaCard = document.createElement('div');
         const newPicture = document.createElement('img');
@@ -83,24 +84,24 @@ function get_draws() {
 //#endregion
 
 //#region DRAW MANAGEMENT
-function add_draw() {
+async function add_draw() {
 
     const DrawCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
-
-    let getDrawList = JSON.parse(localStorage.getItem('draws-saveds')) || [];
-
+    
+    let drawListData = await getDrawList() || [];
+    
     newPicture.src = 'assets/drawing.png';
-    nameDraw.textContent = 'novo desenho > ' + getDrawList.length;
+    nameDraw.textContent = 'novo desenho > ' + drawListData.length;
 
     DrawCard.appendChild(newPicture);
     DrawCard.appendChild(nameDraw);
     drawlist.appendChild(DrawCard);
 
     const newDraw = {
-        id: getDrawList.length,
-        nameDraw: 'novo desenho ' + getDrawList.length,
+        id: drawListData.length,
+        nameDraw: 'novo desenho ' + drawListData.length,
         drawURL: null,
         layers: [
         ],
@@ -111,10 +112,10 @@ function add_draw() {
         }
     }
 
-    getDrawList.push(newDraw);
+    drawListData.push(newDraw);
+    
 
-
-    localStorage.setItem('draws-saveds', JSON.stringify(getDrawList));
+    addToDrawList(drawListData);
 
 
 
@@ -125,7 +126,7 @@ function add_draw() {
     });
 
 
-    window.location.href = "draw-screen.html?id=" + newDraw.id;
+    //window.location.href = "draw-screen.html?id=" + newDraw.id;
 }
 //#endregion
 
@@ -157,14 +158,14 @@ resPagesY.addEventListener('input', function () {
 
 const nameManga = document.getElementById('nameManga');
 
-function createManga() {
+async function createManga() {
 
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
     const downloadManga = document.createElement('button');
     downloadManga.textContent = 'Baixar Manga';
-    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    let mangaList = await getMangasList() || [];
 
     newPicture.src = 'assets/HQIcon.png'
     nameDraw.textContent = nameManga.value;
@@ -178,13 +179,14 @@ function createManga() {
 
     ////////// hora de criar um pacote de hq no local storage
     const newManga = {
-        id: getMangaList.length,
+        id: mangaList.length,
         name: nameManga.value,
         chapters: []
     }
 
-    getMangaList.push(newManga);
-    localStorage.setItem('mangas', JSON.stringify(getMangaList));
+    mangaList.push(newManga);
+
+    await addToMangasList(mangaList);
 
     MangaCard.addEventListener('click', function () {
         window.location.href = "manga-screen.html?id=" + newManga.id;
@@ -268,6 +270,7 @@ function cancelCreateManga() {
 function clearStorage() {
     let confim = window.confirm('isso vai apagar todas as suas obra e desenhos ');
     if (confim == true) {
+        localforage.clear();
         localStorage.clear();
         window.location.reload();
     } else {

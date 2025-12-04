@@ -7,15 +7,20 @@ create_chapter.style.visibility = 'hidden';
 const search = new URLSearchParams(window.location.search);
 const id = search.get('id');
 // Carrega a lista de TODOS os mangás
-let mangaList = JSON.parse(localStorage.getItem('mangas')) || [];
-// Encontra o mangá específico que foi selecionado na galeria
-const selectedManga = mangaList.find(manga => manga.id === Number(id));
+let selectedManga;
 
-window.onload = function() {
+async function startSavedData(){
+    mangaList = await getMangasList();
+    selectedManga = mangaList ? mangaList.find(manga => manga.id === Number(id)) : null;
+}
+
+async function boot(){
     localStorage.setItem('type', 'manga');
+    await startSavedData();
     loadChapterList();
 }
 
+boot();
 // Função que carrega a lista de capítulos (depois você conecta com localStorage)
 function loadChapterList(){
 
@@ -48,7 +53,7 @@ function toggleCreateChapter() {
 }
 
 // Adiciona um capítulo novo
-function addChapter() {
+async function addChapter() {
     const chapterName = document.getElementById('chapter-name').value || 'Novo Capítulo';
     const pagesNumber = document.getElementById('pages-number').value || 10;
     
@@ -62,9 +67,8 @@ function addChapter() {
             pages: []
         };
         // Adiciona o novo capítulo ao array de capítulos do mangá selecionado
-        selectedManga.chapters.push(newChapterData); // Adiciona o novo capítulo ao mangá correto
-        // Salva a lista de mangás COMPLETA (que foi modificada) de volta no localStorage
-        localStorage.setItem('mangas', JSON.stringify(mangaList));
+        selectedManga.chapters.push(newChapterData);
+        addToMangasList(mangaList);
         
     }
 }

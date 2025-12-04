@@ -43,18 +43,27 @@ const pages = {
 
 };
 
-let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+
+
+let forgeratePageButton = null;
+let pagenumbers = -1;
+let drawlist;
+let foundDraw;
+let mangaList;
 const search = new URLSearchParams(window.location.search);
 const id = search.get('id');
 const chapID = search.get('chapID');
 
-const getManga = getMangaList.find(manga => manga.id === Number(id));
+let getManga;
+async function startSavedData(){
+    drawlist = await getDrawList();
+    console.log(drawlist);
+    mangaList = await getMangasList();
+    getManga = mangaList ? mangaList.find(manga => manga.id === Number(id)) : null;
+    foundDraw = drawlist ? drawlist.find(draw => draw.id === Number(id)) : null;
+    console.log(foundDraw);
+}
 
-let forgeratePageButton = null;
-let pagenumbers = -1;
-
-let getDrawList = JSON.parse(localStorage.getItem('draws-saveds'));
-const foundDraw = getDrawList ? getDrawList.find(draw => draw.id === Number(id)) : null;
 
 //#region StartBrush
 let currentBrush = null;
@@ -114,8 +123,6 @@ function StartBrush(path, color) {
     });
 }
 
-
-StartBrush('assets/brush/default.png', '#000');
 //#region STARTYPE
 
 function StartInitWithType(layer, bgLayer) {
@@ -251,7 +258,8 @@ function StartInitWithType(layer, bgLayer) {
             ]
 
         }
-
+        console.log('antes > ', foundDraw);
+        
         if (foundDraw && foundDraw.layers[0] != null) {
 
             for (let i = 0; i < foundDraw.layers.length; i++) {
@@ -376,19 +384,29 @@ realayers.push(layer)
 stage.add(bgLayer);
 stage.add(layer);
 
+let group;
+
+let trans;
+
+async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer){
+    await startSavedData();
+    await StartBrush('assets/brush/default.png', '#000');
+    StartInitWithType(layer, bgLayer);
+    set_current_page(0);
+    updateLayerList();
+    group = pages['page' + currentpage].layers[0].draw;
+    trans = new Konva.Transformer();
+    group.add(trans);
+}
 
 
-StartInitWithType(layer, bgLayer);
+
+RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
 
 
-let group = pages['page' + currentpage].layers[0].draw;
 
-set_current_page(0);
 
-updateLayerList();
-let trans = new Konva.Transformer();
 
-group.add(trans);
 //#region  VARIAVEIS
 let isDrawing = false;
 let TexturedLine;
@@ -1080,7 +1098,7 @@ function clearCanvas() {
 
 
 //#region SAVE
-function saveCanvas() {
+async function saveCanvas() {
     isSaved = true;
     ////// salvando as coordenadas da tela
     const laspos = stage.position();
@@ -1118,9 +1136,9 @@ function saveCanvas() {
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
         }
-
-
-        localStorage.setItem('draws-saveds', JSON.stringify(getDrawList));
+        
+        
+        await addToDrawList(drawlist);
 
     } else if (Gettype == 'manga') {
         const getPages = [];
@@ -1139,7 +1157,7 @@ function saveCanvas() {
         
 
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-        localStorage.setItem('mangas', JSON.stringify(getMangaList));
+        addToMangasList(mangaList);
     }
     //////// resturando as cordenadas da tela
     stage.position(laspos);

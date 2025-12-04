@@ -1,6 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     const themesave = localStorage.getItem('theme');
+    
     console.log(themesave);
 
     console.log(localStorage);
