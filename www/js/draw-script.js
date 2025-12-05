@@ -155,43 +155,19 @@ function StartInitWithType(layer, bgLayer) {
                     console.log(pages['page' + i].layers);
                     
                     pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
-                        StartBrush(child.attrs.texturepath).then(response => {
-                            currentBrush = response
-
-                            if (child.attrs.customClassName === 'ShapeLine') {
-                                
-
+                        if (child.attrs.customClassName === 'ShapeLine') {
+                            StartBrush(child.attrs.texturepath).then(response => {
+                                currentBrush = response
                                 child.setAttr('customTexture', currentBrush);
 
                                 child.sceneFunc(function (ctx) {
-                                    ctx.beginPath();
-
-                                    const points = child.attrs.points;
-
-                                    if (points != null && points.length >= 2) {
-                                        ctx.moveTo(points[0], points[1]);
-                                        for (let i = 2; i < points.length; i += 2) {
-                                            ctx.lineTo(points[i], points[i + 1]);
-                                        }
-                                    }
-                                    ctx.strokeStyle = child.attrs.strokeColor;
-                                    ctx.lineWidth = child.attrs.lineWidth;
-                                    ctx.lineCap = child.attrs.lineCap;
-                                    ctx.lineJoin = child.attrs.lineJoin;
-                                    ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                                    //let brushct = child.attrs.customTexture.getContext('2d');
-
-                                    //brushct.globalCompositeOperation = 'source-in';
-                                    //brushct.fillStyle = child.attrs.strokeColor;
-                                    //brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
-                                    //brushct.globalCompositeOperation = 'source-over';
-
-                                    //ctx.fillStrokeShape(child);
-                                    ctx.stroke();
+                                    strokenize(ctx,child);
                                 });
+                                cacherize(child);
 
-                            }
-                        });
+                                
+                            });
+                        }
                     });
                     pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
                             ctx.beginPath();
@@ -275,43 +251,19 @@ function StartInitWithType(layer, bgLayer) {
 
                 pages['page' + currentpage].layers[i].draw.children.forEach(child => {
 
-
-                    StartBrush(child.attrs.texturepath).then(response => {
-                        currentBrush = response
-
-                        if (child.attrs.customClassName === 'ShapeLine') {
-
+                    if (child.attrs.customClassName === 'ShapeLine'){
+                        StartBrush(child.attrs.texturepath).then(response => {
+                            currentBrush = response
                             child.setAttr('customTexture', currentBrush);
-
+                            
                             child.sceneFunc(function (ctx) {
-                                ctx.beginPath();
-
-                                const points = child.attrs.points;
-
-                                if (points != null && points.length >= 2) {
-                                    ctx.moveTo(points[0], points[1]);
-                                    for (let i = 2; i < points.length; i += 2) {
-                                        ctx.lineTo(points[i], points[i + 1]);
-                                    }
-                                }
-                                ctx.strokeStyle = child.attrs.strokeColor;
-                                ctx.lineWidth = child.attrs.lineWidth;
-                                ctx.lineCap = child.attrs.lineCap;
-                                ctx.lineJoin = child.attrs.lineJoin;
-                                ctx.globalCompositeOperation = child.attrs.globalCompositeOperation;
-                                let brushct = child.attrs.customTexture.getContext('2d');
-
-                                brushct.globalCompositeOperation = 'source-in';
-                                brushct.fillStyle = child.attrs.strokeColor;
-                                brushct.fillRect(0, 0, child.attrs.customTexture.width, child.attrs.customTexture.height);
-                                brushct.globalCompositeOperation = 'source-over';
-
-                                ctx.fillStrokeShape(child);
-                                ctx.stroke();
+                                strokenize(ctx,child);
+                                
                             });
+                            cacherize(child)
+                        });
+                    }
 
-                        }
-                    });
                 });
             }
 
@@ -410,6 +362,7 @@ RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, b
 //#region  VARIAVEIS
 let isDrawing = false;
 let TexturedLine;
+let LineEraser;
 
 let simplifyStrenght = 2;
 let autosize = true;
@@ -817,7 +770,7 @@ stage.on('mousedown touchstart', function (e) {
     startpos = pos;
 
 
-    if (current_tool == 'pen' || current_tool == 'eraser') {
+    if (current_tool == 'pen') {
         isSaved = false
         let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
         let color = colorPicker.value
@@ -834,42 +787,33 @@ stage.on('mousedown touchstart', function (e) {
             customClassName: 'ShapeLine',
             listening: false,
             sceneFunc: function (ctx, shape) {
-                ctx.beginPath();
-                // Aplica a opacidade do shape ao contexto do canvas
-                ctx.globalAlpha = shape.attrs.opacity;
-                ctx.strokeStyle = shape.attrs.strokeColor;
-                ctx.lineWidth = shape.attrs.lineWidth;
-                ctx.lineCap = shape.attrs.lineCap;
-                ctx.lineJoin = shape.attrs.lineJoin;
-                ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
-                let brushct = shape.attrs.customTexture.getContext('2d');
-
-                brushct.globalCompositeOperation = 'source-in';
-                brushct.fillStyle = shape.attrs.strokeColor;
-                brushct.fillRect(0, 0, shape.attrs.customTexture.width, shape.attrs.customTexture.height);
-                brushct.globalCompositeOperation = 'source-over';
-
-                const points = shape.attrs.points;
-
-                if (points.length >= 2) { // precisa de pelo menos x,y
-                    //ctx.moveTo(points[0], points[1]); // primeiro ponto
-                    for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
-                        coisanoTextura(points,i,ctx);
-                        ///ctx.lineTo(points[i], points[i + 1]);
-
-                    }
-                }
-
-                //ctx.fillStrokeShape(shape);
-                ctx.stroke();
+                //////////// grande misterio, de onde vem essa função e de que serve
+                strokenize(ctx,shape)
 
             }
 
         });
         TexturedLine.opacity(opacityPicker.value / 30);
         group.add(TexturedLine);
-    }
+        stage.batchDraw();
+    }else if (current_tool == 'eraser'){
+        // Cria o traço de borracha (LineEraser)
+        let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
 
+        LineEraser = new Konva.Line({
+            stroke: '#000000', // A cor não importa, mas precisa ser opaca
+            strokeWidth: scaletexture,
+            globalCompositeOperation: composite, // 'destination-out'
+            lineCap: 'round',
+            lineJoin: 'round',
+            points: [pos.x, pos.y],
+            listening: false,
+            customClassName: 'LineEraser'
+        });
+        LineEraser.opacity(opacityPicker.value / 30);
+        group.add(LineEraser);
+        stage.batchDraw();
+    }
     else if (current_tool == 'rectangle') {
         // iniciar com x/y no ponto de início e tamanho 0
         lastRect = new Konva.Rect({
@@ -949,6 +893,37 @@ stage.on('mousedown touchstart', function (e) {
     }
 });
 //#region coisanoTextura
+function strokenize(ctx,shape){
+    ctx.beginPath();
+    // Aplica a opacidade do shape ao contexto do canvas
+    ctx.globalAlpha = shape.attrs.opacity;
+    ctx.strokeStyle = shape.attrs.strokeColor;
+    ctx.lineWidth = shape.attrs.lineWidth;
+    ctx.lineCap = shape.attrs.lineCap;
+    ctx.lineJoin = shape.attrs.lineJoin;
+    ctx.globalCompositeOperation = shape.attrs.globalCompositeOperation;
+    let brushct = shape.attrs.customTexture.getContext('2d');
+
+    brushct.globalCompositeOperation = 'source-in';
+    brushct.fillStyle = shape.attrs.strokeColor;
+    brushct.fillRect(0, 0, shape.attrs.customTexture.width, shape.attrs.customTexture.height);
+    brushct.globalCompositeOperation = 'source-over';
+
+    const points = shape.attrs.points;
+
+    if (points.length >= 2) { // precisa de pelo menos x,y
+        //ctx.moveTo(points[0], points[1]); // primeiro ponto
+        for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
+            coisanoTextura(points,i,ctx);
+            ///ctx.lineTo(points[i], points[i + 1]);
+
+        }
+    }
+
+    //ctx.fillStrokeShape(shape);
+    ctx.stroke();
+}
+
 function coisanoTextura(points,i,ctx){
     
     /////// i é ++2 e points é [x,y,x1,y1]
@@ -1001,16 +976,7 @@ stage.on('mousemove touchmove', function (e) {
     }
     const pos = getGlobalMousePos();
 
-    const x = Math.min(startpos.x, pos.x);
-    const y = Math.min(startpos.y, pos.y);
-    const w = Math.abs(pos.x - startpos.x);
-    const h = Math.abs(pos.y - startpos.y);
-    
-    if (current_tool == 'pen' || current_tool == 'eraser' && TexturedLine) {
-        // Verifica se é um evento de toque e se há mais de um dedo na tela
-        if (e.evt.touches && e.evt.touches.length > 1) {
-            return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
-        }
+    if (current_tool == 'pen' && TexturedLine) {
         if (!some){
             some = {x:pos.x,y:pos.y}
         }
@@ -1018,25 +984,22 @@ stage.on('mousemove touchmove', function (e) {
         some.x += (pos.x - some.x) * (1-strongStabilizador.value);
         some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         
-        let points = TexturedLine.attrs.points;
+        
+        TexturedLine.attrs.points.push(some.x, some.y);
+        stage.batchDraw();
+    } else if (current_tool == 'eraser' && LineEraser){
 
-        if(points.length === 0){
-            TexturedLine.attrs.points.push(some.x, some.y);
 
-        }else{
-            const mypoint ={x:TexturedLine.attrs.points[points.length - 2],y:TexturedLine.attrs.points[points.length - 1]};
-            const finalx1 = mypoint.x - some.x;
-            const finalx2 = mypoint.y - some.y;
-            const result = (finalx1 * finalx1) + (finalx2 * finalx2)
-            if (result > 20){
-                TexturedLine.attrs.points.push(some.x, some.y);
-                stage.batchDraw();
-                
-            }
+        if (!some){
+            some = {x:pos.x,y:pos.y}
         }
-
+        
+        some.x += (pos.x - some.x) * (1-strongStabilizador.value);
+        some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         
         
+        LineEraser.points(LineEraser.points().concat([some.x, some.y]));
+        stage.batchDraw();
     }
     else if (current_tool == 'circle' && lastCicle) {
         lastCicle.x(x);
@@ -1125,47 +1088,52 @@ stage.on('mouseup', function (e) {
         lastSelectBox.destroy();
         lastSelectBox = null;
     }
-if (TexturedLine) {
-        const points = TexturedLine.attrs.points;
-        
-        // Garante que a linha tenha pelo menos 1 ponto (2 coordenadas)
-        if (points.length >= 2) {
-            let minX = points[0];
-            let maxX = points[0];
-            let minY = points[1];
-            let maxY = points[1];
-
-            // 1. Calcula o menor e maior X e Y em todos os pontos
-            for (let i = 2; i < points.length; i += 2) {
-                minX = Math.min(minX, points[i]);
-                maxX = Math.max(maxX, points[i]);
-                minY = Math.min(minY, points[i + 1]);
-                maxY = Math.max(maxY, points[i + 1]);
-            }
-            
-            const lw = TexturedLine.attrs.lineWidth;
-            
-            // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
-            TexturedLine.cache({
-                // O cache precisa começar um pouco antes do X/Y mínimo para incluir metade do stroke
-                x: minX - lw / 2, 
-                y: minY - lw / 2, 
-                // A largura/altura precisa ser a distância total (max - min) + a largura do stroke (lw)
-                width: maxX - minX + lw, 
-                height: maxY - minY + lw,
-                pixelRatio:3,
-                hitGraphEnabled: false
-            });
-        }
-    }
+    cacherize(TexturedLine);
     AddactionToHistory();
 
     stage.batchDraw();
 });
 
+function cacherize(Line){
+    if (Line) {
+            const points = Line.attrs.points;
+            
+            // Garante que a linha tenha pelo menos 1 ponto (2 coordenadas)
+            if (points.length >= 2) {
+                let minX = points[0];
+                let maxX = points[0];
+                let minY = points[1];
+                let maxY = points[1];
+
+                // 1. Calcula o menor e maior X e Y em todos os pontos
+                for (let i = 2; i < points.length; i += 2) {
+                    minX = Math.min(minX, points[i]);
+                    maxX = Math.max(maxX, points[i]);
+                    minY = Math.min(minY, points[i + 1]);
+                    maxY = Math.max(maxY, points[i + 1]);
+                }
+                
+                const lw = Line.attrs.lineWidth;
+                
+                // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
+                Line.cache({
+                    // O cache precisa começar um pouco antes do X/Y mínimo para incluir metade do stroke
+                    x: minX - lw / 2, 
+                    y: minY - lw / 2, 
+                    // A largura/altura precisa ser a distância total (max - min) + a largura do stroke (lw)
+                    width: maxX - minX + lw, 
+                    height: maxY - minY + lw,
+                    pixelRatio:3,
+                    hitGraphEnabled: false
+                });
+            }
+        }
+}
+
 function simplifyPoints(){
     ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
     // 296.25, 172, 307.25, 167, 311.25]
+    if (!TexturedLine){return;}
     for(let i = 0; i < TexturedLine.attrs.points.length - 1; i+=2){
         ///////// aplicando o teoromema do piltaguras
         let mypoint ={x:TexturedLine.attrs.points[i],y:TexturedLine.attrs.points[i + 1]};
@@ -1205,21 +1173,21 @@ async function saveCanvas() {
 
     stage.position({ x: 0, y: 0 });
     stage.scale({ x: 1, y: 1 });
-    layer.draw();
+    stage.draw();
     stage.rotation(0);
     bgLayer.draw();
-    group.draw();
+    stage.draw();
 
     if (Gettype == 'draw') {
 
         if (foundDraw) {
             //// guardamos a url pra mera vizualização na galeria;
-            foundDraw.drawURL = stage.toDataURL({
-                mimeType: "image/png",
-                pixelRatio: 3,   // 3x mais nítido
-                width: DRAWSIZE.width,
-                height: DRAWSIZE.height
-            });
+            // foundDraw.drawURL = stage.toDataURL({
+            //     mimeType: "image/png",
+            //     pixelRatio: 3,   // 3x mais nítido
+            //     width: DRAWSIZE.width,
+            //     height: DRAWSIZE.height
+            // });
             //// aqui que guardamos grupos
             foundDraw.layers = [];
             for (let i = 0; i <= layerList.length - 1; i++) {
@@ -1267,6 +1235,9 @@ function AddactionToHistory() {
     if (TexturedLine) {
         undoHistory.push(TexturedLine);
         TexturedLine = null;
+    } else if(LineEraser){
+        undoHistory.push(LineEraser);
+        LineEraser = null;
     } else if (lastRect) {
         undoHistory.push(lastRect);
         lastRect = null;
