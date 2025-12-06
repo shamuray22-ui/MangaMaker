@@ -6,22 +6,36 @@
 .header{
     background-color: var(--headerColorbg);
     padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }.header button {
     background-color: var(--headerButton);
     padding: 10px;
     border-radius: 30px;
+    border: #ffffff;
+    color: white;
     
+
+    /* se possivel finja que isso funciona */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}.header button img{
+    width: 32px;
+    height: 32px;
+
 }
 .theme-buttons {
     display: inline-flex;
     gap: 8px;
-    margin-left: 15px;
 }
 
 .theme-buttons button {
     padding: 5px 10px;
     border-radius: 8px;
-    border: 2px solid #666;
+    border: #ffffff;
     cursor: pointer;
     font-weight: bold;
 }
@@ -46,7 +60,6 @@ body {
 
 /* --- CARDS --- */
 #drawlist div {
-    border: 3px solid var(--card-border);
     background: linear-gradient(160deg, var(--card-bg-start), var(--card-bg-end));
     border-radius: 16px;
     overflow: hidden;
@@ -73,7 +86,6 @@ body {
     object-fit: contain;
     border-radius: 10px;
     margin: 12px 0;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
 }
 

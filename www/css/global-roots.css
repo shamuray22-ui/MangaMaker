@@ -3,20 +3,20 @@
      DEFAULT THEME (dark) — base values used unless overridden by a themed class
      ------------------------------------------------------------ */
 :root {
-    --headerColorbg: #8c8d8d;
-    --headerButton: #ffffff;
+    --headerColorbg: #131313;
+    --headerButton: #1a1a1d;
     /* ---- Core (recommended names) ---- */
     --body-bg: #282828;        /* recommended: use --body-bg for page background */
     --font-color: #ffffff;     /* text color */
 
     /* ---- Layout & surface colors ---- */
     --grid-bg: #8c8d8d;        /* background for gallery grids */
-    --card-bg-start: #001c35;  /* gradient start for cards */
-    --card-bg-end: #002848;    /* gradient end for cards */
+    --card-bg-start: #0f0f0f;  /* gradient start for cards */
+    --card-bg-end: #1d1d1d;    /* gradient end for cards */
     --card-border: #5e5e5e;    /* card border color */
 
     /* ---- Buttons (recommended names: --btn-*) ---- */
-    --btn-bg: #4a87e2;
+    --btn-bg: #233859;
     --btn-bg-hover: #74a5ff;
     --btn-border: #2c5aa0;
 
@@ -60,8 +60,8 @@
      WHITE THEME — overrides for light theme
      ------------------------------------------------------------ */
 :root.white-theme {
-    --headerColorbg: #818181;
-    --headerButton: #ffffff;
+    --headerColorbg: #ffffff;
+    --headerButton: #8e8e8e;
     --body-bg: #ffffff;
     --font-color: #222222;
 
@@ -106,7 +106,7 @@
      ------------------------------------------------------------ */
 :root.pink-theme {
     --headerColorbg: #e0558f;
-    --headerButton: #fccbe6;
+    --headerButton: #661653;
     --body-bg: #ff7dc9;
     --font-color: #660033;
 
@@ -148,8 +148,8 @@
      BLUE THEME
      ------------------------------------------------------------ */
 :root.blue-theme {
-    --headerColorbg: #294183;
-    --headerButton: #d8e7ff;
+    --headerColorbg: #4b68be;
+    --headerButton: #0b1d3a;
     --body-bg: #a9cbff;
     --font-color: #003366;
 

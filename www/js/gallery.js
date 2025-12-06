@@ -37,9 +37,10 @@ async function get_draws() {
             link.click();
         }
 
-        DrawCard.appendChild(downloadbtn);
+        
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
+        DrawCard.appendChild(downloadbtn);
         drawlist.appendChild(DrawCard);
 
         newPicture.addEventListener('click', () => {
