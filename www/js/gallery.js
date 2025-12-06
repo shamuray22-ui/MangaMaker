@@ -116,7 +116,7 @@ async function add_draw() {
     drawListData.push(newDraw);
     
 
-    addToDrawList(drawListData);
+    await addToDrawList(drawListData);
 
 
 
@@ -125,9 +125,7 @@ async function add_draw() {
         localStorage.setItem('type', 'draw');
         window.location.href = "draw-screen.html?id=" + newDraw.id;
     });
-
-
-    //window.location.href = "draw-screen.html?id=" + newDraw.id;
+    window.location.href = "draw-screen.html?id=" + newDraw.id;
 }
 //#endregion
 

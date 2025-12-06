@@ -975,7 +975,10 @@ stage.on('mousemove touchmove', function (e) {
         return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
     }
     const pos = getGlobalMousePos();
-
+    const x = Math.min(startpos.x, pos.x);
+    const y = Math.min(startpos.y, pos.y);
+    const w = Math.abs(pos.x - startpos.x);
+    const h = Math.abs(pos.y - startpos.y);
     if (current_tool == 'pen' && TexturedLine) {
         if (!some){
             some = {x:pos.x,y:pos.y}
