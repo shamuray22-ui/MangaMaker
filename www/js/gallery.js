@@ -222,13 +222,13 @@ function loadjson() {
     input.onchange = e => {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = readerEvent => {
+        reader.onload = async function(readerEvent) {
             const content = readerEvent.target.result;
             try {
                 const data = JSON.parse(content);
                 if (data.draws && data.mangas) {
-                    localStorage.setItem('draws-saveds', JSON.stringify(data.draws));
-                    localStorage.setItem('mangas', JSON.stringify(data.mangas));
+                    await addToDrawList(data.draws);
+                    await addToMangasList(data.mangas);
                     window.location.reload();
                 } else {
                     alert('Arquivo JSON inválido.');
@@ -243,10 +243,10 @@ function loadjson() {
     input.click();
 }
 
-function savejson() {
+async function savejson() {
     const data = {
-        draws: JSON.parse(localStorage.getItem('draws-saveds')) || [],
-        mangas: JSON.parse(localStorage.getItem('mangas')) || []
+        draws: await getDrawList() || [],
+        mangas: await getMangasList() || []
     };
 
     const json = JSON.stringify(data, null, 2);
