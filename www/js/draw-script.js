@@ -82,8 +82,7 @@ let currentlayer = 0;
 function updateLayerList() {
     if (!pages['page' + currentpage]) return;
     layerList = [];
-    layerList = pages['page' + currentpage].layers;
-    
+    layerList = pages['page' + currentpage].layers; 
 }
 
 
@@ -110,7 +109,6 @@ function StartBrush(path, color) {
             tempCanvas.width = myImageObj.width;
             tempCanvas.height = myImageObj.height;
             tempCtx.drawImage(myImageObj, 0, 0, myImageObj.width * scaleTexture, myImageObj.height * scaleTexture);
-
             tempCtx.fillStyle = color;
             tempCtx.globalCompositeOperation = 'source-in';
             tempCtx.fillRect(0, 0, myImageObj.width, myImageObj.height);
@@ -344,20 +342,24 @@ async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJ
     await startSavedData();
     await StartBrush('assets/brush/default.png', '#000');
     StartInitWithType(layer, bgLayer);
+    group = pages['page' + currentpage].layers[0].draw;
     set_current_page(0);
     updateLayerList();
-    group = pages['page' + currentpage].layers[0].draw;
     trans = new Konva.Transformer();
     group.add(trans);
+    layerGrid.innerHTML = '';
+    for (let i = 0; i < layerList.length; i++) {
+        currentlayer = i;
+        createUXlayer();
+
+    }
+
 }
 
 
+//#region BOOT
 
 RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
-
-
-
-
 
 //#region  VARIAVEIS
 let isDrawing = false;
@@ -461,6 +463,7 @@ function set_current_page(index) {
     for (let i = 0; i < layerList.length - 1; i++) {
         currentlayer = i;
         createUXlayer();
+        console.log(realayers);
         
         realayers[i].show();
 
@@ -578,12 +581,6 @@ function createUXlayer() {
         
         group.draw();
     }
-}
-layerGrid.innerHTML = '';
-for (let i = 0; i < layerList.length; i++) {
-    currentlayer = i;
-    createUXlayer();
-
 }
 
 function addLayer(imagedata = '') {
@@ -1038,28 +1035,13 @@ stage.on('mousemove touchmove', function (e) {
 
 //#region MOUSE UP
 stage.on('touchend', function (e) {
-    e.evt.preventDefault();
-    isDrawing = false;
-    dragpos = null;
-    if (e.evt.touches.length < 2) {
-        lastDist = 0;
-        lastMidPoint = null;
-    }
-
-    simplifyPoints();
-
-    if (lastSelectBox) {
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-
-    }
-    if (TexturedLine){
-        TexturedLine.cache()
-    }
-    AddactionToHistory();
-    stage.batchDraw();
+    onUpKillWhatNeed(e);
 });
 stage.on('mouseup', function (e) {
+    onUpKillWhatNeed(e);
+});
+function onUpKillWhatNeed(e){
+    e.evt.preventDefault();
     isDrawing = false;
     dragpos = null;
     
@@ -1095,8 +1077,7 @@ stage.on('mouseup', function (e) {
     AddactionToHistory();
 
     stage.batchDraw();
-});
-
+}
 function cacherize(Line){
     if (Line) {
             const points = Line.attrs.points;
@@ -1176,22 +1157,21 @@ async function saveCanvas() {
 
     stage.position({ x: 0, y: 0 });
     stage.scale({ x: 1, y: 1 });
-    stage.draw();
     stage.rotation(0);
     bgLayer.draw();
     stage.draw();
 
     if (Gettype == 'draw') {
-
+        
         if (foundDraw) {
             //// guardamos a url pra mera vizualização na galeria;
-            // foundDraw.drawURL = stage.toDataURL({
-            //     mimeType: "image/png",
-            //     pixelRatio: 3,   // 3x mais nítido
-            //     width: DRAWSIZE.width,
-            //     height: DRAWSIZE.height
-            // });
-            //// aqui que guardamos grupos
+            foundDraw.drawURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio: 3,    //3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
+            // aqui que guardamos grupos
             foundDraw.layers = [];
             for (let i = 0; i <= layerList.length - 1; i++) {
 
@@ -1284,29 +1264,10 @@ function redo() {
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {
-    e.evt.preventDefault();
-    lastLine = null;
-    isDrawing = false;
-    if (e.evt.touches.length < 2) {
-        lastDist = 0;
-        lastMidPoint = null;
-    }
-    if (lastSelectBox) {
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-
-    }
-    AddactionToHistory();
+    onUpKillWhatNeed(e);
 });
 stage.on('mouseleave ', function (e) {
-    lastLine = null;
-    isDrawing = false;
-    if (lastSelectBox) {
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-
-    }
-    AddactionToHistory();
+    onUpKillWhatNeed(e);
 });
 (function () {
     const fpsDisplay = document.createElement('div');

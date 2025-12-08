@@ -2048,3 +2048,10 @@ android/app/.idea/runConfigurations.xml
 android/app/.idea/caches/deviceStreaming.xml
 android/.idea/studiobot.xml
 .github/copilot-instructions.md
+node_modules/glob/LICENSE.md
+.gitignore
+package-lock.json
+capacitor.config.json
+capacitor.config.json
+node_modules/minimatch/LICENSE.md
+capacitor.config.json
