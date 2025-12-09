@@ -927,12 +927,12 @@ function strokenize(ctx,shape){
 }
 const SpacingRange = document.getElementById('SpacingRange');
 function coisanoTextura(points,i,ctx){
-    
+    const textureScale = ctx.lineWidth;
     /////// i é ++2 e points é [x,y,x1,y1]
     ctx.drawImage(currentBrush,
-        points[i] - ctx.lineWidth/2,
-        points[i + 1] - ctx.lineWidth/2,
-        ctx.lineWidth,ctx.lineWidth
+        points[i] - textureScale/2,
+        points[i + 1] - textureScale/2,
+        textureScale,textureScale
         
     );
     let x = points[i - 2];
@@ -945,7 +945,7 @@ function coisanoTextura(points,i,ctx){
     if (result === 0){
         return;
     }
-    let space = ctx.lineWidth * Number(SpacingRange?.value);
+    let space = textureScale * Number(SpacingRange?.value);
     let step = space;
 
     let steps = Math.floor(result / step);
@@ -956,9 +956,9 @@ function coisanoTextura(points,i,ctx){
         let endInter = y + (hyp2 * st / steps);
 
         ctx.drawImage(currentBrush,
-            initInter - ctx.lineWidth/2,
-            endInter - ctx.lineWidth/2,
-            ctx.lineWidth,ctx.lineWidth
+            initInter - textureScale/2,
+            endInter - textureScale/2,
+            textureScale,textureScale
         );
 
     }
@@ -1121,7 +1121,7 @@ function cacherize(Line){
         }
 }
 
-function simplifyPoints(){
+function simplifyPoints(custom = null){
     ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
     // 296.25, 172, 307.25, 167, 311.25]
     if (!TexturedLine){return;}
@@ -1135,7 +1135,12 @@ function simplifyPoints(){
         if (result < 20){
             
             if (i > 2){
-                TexturedLine.attrs.points.splice(i,simplifyStrenght);
+                if (custom){
+                    TexturedLine.attrs.points.splice(i,custom);
+                }else{
+                    TexturedLine.attrs.points.splice(i,simplifyStrenght);
+                }
+                
             }
             
         }
