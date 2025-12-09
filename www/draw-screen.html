@@ -18,8 +18,6 @@
   <header id="toolbar">
     <button class="Generalbutton" onclick="undo()"><img src="assets/icons/undo.png" alt="Desfazer"></button>
     <button class="Generalbutton" onclick="redo()"><img src="assets/icons/redo.png" alt="Refazer"></button>
-    <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png"
-        alt="Limpar"></button>
     <button class="Generalbutton" id="sairBtn" onclick="toGallery()"><img src="assets/icons/exit.png"
         alt="Sair"></button>
     <button class="Generalbutton" onclick="callSetSizeDiv()"><img src="assets/icons/resize.png"
@@ -41,8 +39,12 @@
     <div>
       <label> Força de simplificação</label>
       <input id="strongSimply" type="range" min="0" step="2" value="0" max="8">
+      <label> Força de Estabilizador</label>
       <input id="strongStabilizador" type="range" min="0" step="0.1" value="0.0" max="0.8">
-      
+      <label> Força de Espaçamento de textura de pincel</label>
+      <input id="SpacingRange" type="range" min="0.2" step="0.2" value="0.4" max="12">
+
+      <button class="Generalbutton" onclick="removebg()">Modo sem fundo </button>
     </div>
   </div>
 
@@ -69,17 +71,28 @@
     <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/Xbrush.png')">
       <img src='assets/brush/Xbrush.png'>
     </button>
+    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/tree.png')">
+      <img src='assets/brush/tree.png'>
+    </button>
   </div>
 
   <!-- Seleção de camadas -->
-  <div id="layerListDiv">
-    <label>Layers</label>
-    <button class="Generalbutton" onclick="addLayer()"> ADD </button>
-    <label>
-      <input type="file" accept=".png, .jpg" id="referenceInput">
-    </label>
+  <div id="layerDiv">
+    <div id="layerbuttons">
+      <button class="Generalbutton" onclick="addLayer()"> ADD </button>
+      <label>
+        <input type="file" accept=".png, .jpg" id="referenceInput">
+        <img src="assets/icons/reference.png">
+      </label>
+      <button class="Generalbutton" onclick="resetRot()">
+        <img src="assets/icons/restartRot.png" alt="restartRot">
+      </button>
+      <button class="Generalbutton" id="clearBtn" onclick="clearCanvas()"><img src="assets/icons/clear.png"
+      alt="Limpar"></button>
+    </div>
 
     <div id="layerGrid">
+      
     </div>
 
   </div>
@@ -97,7 +110,7 @@
       <tr>
         <td>
           <label>
-            <input type="range" id="opacityPicker" min="1" max="30" value="100">
+            <input type="range" id="opacityPicker" min="1" max="100" value="100">
           </label>
         </td>
       </tr>
@@ -124,9 +137,7 @@
     <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn">
       <img src="assets/icons/autobrush.png" alt="Auto Brush">
     </button>
-    <button class="Generalbutton" onclick="resetRot()">
-      <img src="assets/icons/restartRot.png" alt="restartRot">
-    </button>
+
   </footer>
 
   <!-- Popup de redimensionamento -->

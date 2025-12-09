@@ -8,7 +8,7 @@ let DRAWSIZE = {
 }
 let isSaved = true;
 
-
+const MAXLAYER = 10;
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
 const layerGrid = document.getElementById('layerGrid');
@@ -31,10 +31,7 @@ const bgLayer = new Konva.Layer({ listening: false });
 const bgRect = new Konva.Rect({
     height: DRAWSIZE.height,
     width: DRAWSIZE.width,
-    stroke: 'black',
-    strokeWidth: 1,
     fill: '#ffff',
-    shadowBlur: 12,
     cornerRadius: 3,
 });
 
@@ -42,7 +39,10 @@ const bgRect = new Konva.Rect({
 const pages = {
 
 };
-
+function removebg(){
+    bgRect.fill(null);
+    bgRect.stroke('stroke');
+}
 
 
 let forgeratePageButton = null;
@@ -508,8 +508,8 @@ function createUXlayer() {
     const hide = makeButton('hidden', 'Esconder');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
-    layerCell.appendChild(ratio);
     layerCell.appendChild(label);
+    layerCell.appendChild(ratio);
     layerCell.appendChild(preview);
     layerCell.appendChild(rangevis);
     layerCell.appendChild(hide);
@@ -584,6 +584,9 @@ function createUXlayer() {
 }
 
 function addLayer(imagedata = '') {
+    if (layerList.length > MAXLAYER){
+        return;
+    }
     let konvaImage;
     let newRealLayer = new Konva.Layer();
     const newLayer = new Konva.Group();
@@ -783,6 +786,7 @@ stage.on('mousedown touchstart', function (e) {
             points: [],
             customClassName: 'ShapeLine',
             listening: false,
+            pixelRatio:1,
             sceneFunc: function (ctx, shape) {
                 //////////// grande misterio, de onde vem essa função e de que serve
                 strokenize(ctx,shape)
@@ -790,7 +794,8 @@ stage.on('mousedown touchstart', function (e) {
             }
 
         });
-        TexturedLine.opacity(opacityPicker.value / 30);
+        TexturedLine.opacity(opacityPicker.value / 100);
+        
         group.add(TexturedLine);
         stage.batchDraw();
     }else if (current_tool == 'eraser'){
@@ -920,7 +925,7 @@ function strokenize(ctx,shape){
     //ctx.fillStrokeShape(shape);
     ctx.stroke();
 }
-
+const SpacingRange = document.getElementById('SpacingRange');
 function coisanoTextura(points,i,ctx){
     
     /////// i é ++2 e points é [x,y,x1,y1]
@@ -940,9 +945,11 @@ function coisanoTextura(points,i,ctx){
     if (result === 0){
         return;
     }
-    let step = ctx.lineWidth * 0.3;
-    
+    let space = ctx.lineWidth * Number(SpacingRange?.value);
+    let step = space;
+
     let steps = Math.floor(result / step);
+
     steps = Math.min(steps,30);
     for (let st = 0; st<= steps; st++){
         let initInter = x + (hyp1 * st / steps);
@@ -1160,7 +1167,7 @@ async function saveCanvas() {
     stage.rotation(0);
     bgLayer.draw();
     stage.draw();
-
+    bgRect.stroke(null);
     if (Gettype == 'draw') {
         
         if (foundDraw) {
@@ -1210,6 +1217,7 @@ async function saveCanvas() {
     stage.scale({ x: lascale, y: lascale });
     layer.draw();
     stage.rotation(lasrotation);
+    bgRect.stroke('black')
     bgLayer.draw();
     group.draw();
 }

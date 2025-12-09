@@ -16,7 +16,7 @@ selectBrushDiv.style.display = 'none';
 const toolsdiv = document.getElementById('toolsdiv');
 toolsdiv.style.display = 'none';
 
-const layerListDiv = document.getElementById('layerListDiv');
+const layerListDiv = document.getElementById('layerDiv');
 layerListDiv.style.display = 'none';
 //#endregion
 
