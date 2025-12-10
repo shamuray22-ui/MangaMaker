@@ -326,10 +326,12 @@ function StartInitWithType(layer, bgLayer) {
 
     }
 }
+let startlayer = new Konva.Layer();
+let realayers = [];
+realayers.push(startlayer);
+currentlayer = realayers[0];
+let layer = currentlayer;
 
-let layer = new Konva.Layer();
-let realayers = []
-realayers.push(layer)
 
 stage.add(bgLayer);
 stage.add(layer);
@@ -436,7 +438,7 @@ function set_current_page(index) {
     currentlayer = 0;
     currentpage = index;
     
-    for (let i = 0; i < pagesDiv.children.length; i++) {
+    for (let i = 0; i < pagesDiv.children.length - 1; i++) {
         //////// escodende geral antes de mostrar a page selecionada
         
         if (pages['page' + i].background){
@@ -672,79 +674,73 @@ stage.container().addEventListener('wheel', function (e) {
 
 }, { passive: false });
 
-
 //#region TOUCHZOOM
 let lastDist = 0;
 let lastMidPoint = null;
 let lastAngle = 0;
-
 stage.container().addEventListener('touchmove', function (e) {
     if (e.touches.length === 2) {
         isDrawing = false;
         e.preventDefault();
-
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
-
         const dx = touch2.clientX - touch1.clientX;
         const dy = touch2.clientY - touch1.clientY;
         const dist = Math.hypot(dx, dy);
-
         const midPoint = {
             x: (touch1.clientX + touch2.clientX) / 2,
             y: (touch1.clientY + touch2.clientY) / 2
         };
-
         const angle = Math.atan2(dy, dx);
-
         if (!lastDist) {
             lastDist = dist;
             lastMidPoint = midPoint;
             lastAngle = angle;
             return;
         }
-
         const oldScale = stage.scaleX();
         const scaleBy = dist / lastDist;
         const newScale = Math.max(0.1, Math.min(60, oldScale * scaleBy));
-
         const angleDiff = angle - lastAngle;
         const newRotation = stage.rotation() + (angleDiff * 180 / Math.PI);
-
+        
         // movimento do ponto médio (pan)
         const dxMid = midPoint.x - lastMidPoint.x;
         const dyMid = midPoint.y - lastMidPoint.y;
-
+        
         // CORREÇÃO: Calcula o ponto no espaço do stage ANTES das transformações
         const stagePoint = {
             x: (midPoint.x - stage.x()) / oldScale,
             y: (midPoint.y - stage.y()) / oldScale
         };
-
-        // Aplica escala e rotação
+        
+        // CORREÇÃO 1: Rotação do ponto de referência usando radianos (consistente com angleDiff)
+        const rotatedPoint = {
+            x: stagePoint.x * Math.cos(angleDiff) - stagePoint.y * Math.sin(angleDiff),
+            y: stagePoint.x * Math.sin(angleDiff) + stagePoint.y * Math.cos(angleDiff)
+        };
+        
+        // CORREÇÃO 2: Rotaciona também o vetor de pan para acompanhar a rotação do stage
+        const panRotated = {
+            x: dxMid * Math.cos(angleDiff) - dyMid * Math.sin(angleDiff),
+            y: dxMid * Math.sin(angleDiff) + dyMid * Math.cos(angleDiff)
+        };
+        
+        // CORREÇÃO 3: Aplica todas as transformações de uma vez, na ordem correta
         stage.scale({ x: newScale, y: newScale });
         stage.rotation(newRotation);
-
-        // CORREÇÃO: Rotaciona o ponto de referência pelo ângulo aplicado
-        const rad = angleDiff;
-        const rotatedPoint = {
-            x: stagePoint.x * Math.cos(rad) - stagePoint.y * Math.sin(rad),
-            y: stagePoint.x * Math.sin(rad) + stagePoint.y * Math.cos(rad)
-        };
-
-        // Calcula a nova posição considerando a rotação do ponto de referência
         stage.position({
-            x: midPoint.x - rotatedPoint.x * newScale + dxMid,
-            y: midPoint.y - rotatedPoint.y * newScale + dyMid
+            x: midPoint.x - rotatedPoint.x * newScale + panRotated.x,
+            y: midPoint.y - rotatedPoint.y * newScale + panRotated.y
         });
-
         stage.batchDraw();
-
+        
         lastDist = dist;
         lastMidPoint = midPoint;
         lastAngle = angle;
     }
 }, { passive: false });
+//#endregion
 
 
 window.addEventListener('resize', () => {
@@ -1051,7 +1047,9 @@ function onUpKillWhatNeed(e){
     e.evt.preventDefault();
     isDrawing = false;
     dragpos = null;
-    
+    lastDist = 0;
+    lastMidPoint = null;
+    lastAngle = 0;
     console.log(undoHistory.length);
     
     simplifyPoints();
