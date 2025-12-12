@@ -417,6 +417,8 @@ function getGlobalMousePos() {
         y: x * sin + y * cos
     };
 }
+
+//#region SET CURRENT TOOL
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
     const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text','transform'];
@@ -678,6 +680,7 @@ stage.container().addEventListener('wheel', function (e) {
 let lastDist = 0;
 let lastMidPoint = null;
 let lastAngle = 0;
+
 stage.container().addEventListener('touchmove', function (e) {
     if (e.touches.length === 2) {
         isDrawing = false;
@@ -741,7 +744,6 @@ stage.container().addEventListener('touchmove', function (e) {
     }
 }, { passive: false });
 //#endregion
-
 
 window.addEventListener('resize', () => {
     if (drawContainer) {
@@ -819,16 +821,10 @@ stage.on('mousedown touchstart', function (e) {
             y: startpos.y,
             width: 0,
             height: 0,
-            fill: '#ffff', // transparente por padrão
+            fill: null, // transparente por padrão
             stroke: 'black'
         });
-        let newclipgroup = new Konva.Group({
-            clip:{
-
-            }
-        })
-        newclipgroup.add(lastRect)
-        group.add(newclipgroup);
+        group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
     } else if (current_tool == 'circle') {
         lastCicle = new Konva.Ellipse({
@@ -855,7 +851,7 @@ stage.on('mousedown touchstart', function (e) {
             listening: false
         });
         dragpos = pos;
-        group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
+        //group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
         lastSelectBox.moveToTop();
     }
     else if (current_tool == 'line') {
@@ -891,6 +887,7 @@ stage.on('mousedown touchstart', function (e) {
     }
 });
 //#region coisanoTextura
+
 function strokenize(ctx,shape){
     ctx.beginPath();
     // Aplica a opacidade do shape ao contexto do canvas
@@ -921,51 +918,75 @@ function strokenize(ctx,shape){
     //ctx.fillStrokeShape(shape);
     ctx.stroke();
 }
-const SpacingRange = document.getElementById('SpacingRange');
-function coisanoTextura(points,i,ctx){
-    const textureScale = ctx.lineWidth;
-    /////// i é ++2 e points é [x,y,x1,y1]
-    ctx.drawImage(currentBrush,
-        points[i] - textureScale/2,
-        points[i + 1] - textureScale/2,
-        textureScale,textureScale
-        
-    );
+const SpacingRange = document.getElementById('SpacingRange'); // Assume-se que esta variável existe e funciona
+function coisanoTextura(points, i, ctx) {
+    const baseTextureScale = ctx.lineWidth;
+
+    // 1. Obter os pontos e calcular a distância (velocidade)
     let x = points[i - 2];
     let y = points[i - 1];
     let x1 = points[i];
     let y1 = points[i + 1];
+
     let hyp1 = x1 - x;
     let hyp2 = y1 - y;
-    let result = Math.sqrt(hyp1*hyp1+hyp2*hyp2);
-    if (result === 0){
+    let result = Math.sqrt(hyp1 * hyp1 + hyp2 * hyp2);
+
+    if (result === 0) {
+        ctx.drawImage(currentBrush,
+            points[i] - baseTextureScale / 2,
+            points[i + 1] - baseTextureScale / 2,
+            baseTextureScale, baseTextureScale
+        );
         return;
     }
-    let space = textureScale * Number(SpacingRange?.value);
-    let step = space;
+
+    // --- LÓGICA DE PRESSÃO FALSA (FAKE PRESSURE) ---
+    const MAX_VELOCITY_FOR_PRESSURE = 20; 
+    const MIN_SCALE_FACTOR = 0.5; 
+    
+    let speedNormalized = Math.min(result, MAX_VELOCITY_FOR_PRESSURE) / MAX_VELOCITY_FOR_PRESSURE;
+    let fakePressure = 1 - speedNormalized;
+    
+    // Calcula o fator de escala (entre MIN_SCALE_FACTOR e 1)
+    let pressureFactor = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * fakePressure;
+    
+    // O tamanho da textura é ajustado pela pressão
+    const textureScale = baseTextureScale * pressureFactor;
+    // --- FIM DA LÓGICA DE PRESSÃO FALSA ---
+
+    // 3. Desenhar o ponto de destino (com a nova escala)
+    ctx.drawImage(currentBrush,
+        points[i] - textureScale / 2,
+        points[i + 1] - textureScale / 2,
+        textureScale, textureScale
+    );
+
+    // 4. Calcular e desenhar os passos intermediários (interpolação)
+    
+    let space = textureScale * Number(SpacingRange?.value); 
+    let step = space; 
 
     let steps = Math.floor(result / step);
-
-    steps = Math.min(steps,30);
-    for (let st = 0; st<= steps; st++){
+    steps = Math.min(steps, 30);
+    
+    for (let st = 0; st <= steps; st++) {
         let initInter = x + (hyp1 * st / steps);
         let endInter = y + (hyp2 * st / steps);
 
+        // Desenhar carimbo intermediário com a 'textureScale' calculada
         ctx.drawImage(currentBrush,
-            initInter - textureScale/2,
-            endInter - textureScale/2,
-            textureScale,textureScale
+            initInter - textureScale / 2,
+            endInter - textureScale / 2,
+            textureScale, textureScale
         );
-
     }
-    //console.log(result);
-    
-
 }
 
 //#region MOUSE TOUCH MOVE AGAIN
 let some = null
 let strongStabilizador = document.getElementById('strongStabilizador');
+
 stage.on('mousemove touchmove', function (e) {
     e.evt.preventDefault();
     if (!isDrawing) {
@@ -1043,6 +1064,9 @@ stage.on('touchend', function (e) {
 stage.on('mouseup', function (e) {
     onUpKillWhatNeed(e);
 });
+let quadlist = [null];
+let newClipgroupQuad = quadlist[0];
+
 function onUpKillWhatNeed(e){
     e.evt.preventDefault();
     isDrawing = false;
@@ -1054,7 +1078,26 @@ function onUpKillWhatNeed(e){
     
     simplifyPoints();
     some = null
-    
+    if (lastRect){
+
+        newClipgroupQuad = new Konva.Group({
+            clipFunc:function(ctx){
+                ctx.beginPath();
+                ctx.rect(lastRect.attrs.x,lastRect.attrs.y,lastRect.attrs.width,lastRect.attrs.height);
+                ctx.closePath();
+                ctx.clip();
+                
+            }
+        })
+        if (!TexturedLine){
+            return;
+        }
+        let newLine = TexturedLine;
+        newClipgroupQuad.add(newLine);
+        group.add(newClipgroupQuad);
+        quadlist.push(newClipgroupQuad);
+
+    }
     if (lastSelectBox) {
         const selectionRect = lastSelectBox.getClientRect();
         const selectedNodes = [];
@@ -1083,6 +1126,7 @@ function onUpKillWhatNeed(e){
 
     stage.batchDraw();
 }
+
 function cacherize(Line){
     if (Line) {
             const points = Line.attrs.points;
@@ -1153,7 +1197,6 @@ function clearCanvas() {
     group.destroyChildren(); // Remove todas as linhas do grupo
 }
 
-
 //#region SAVE
 async function saveCanvas() {
     isSaved = true;
@@ -1171,6 +1214,7 @@ async function saveCanvas() {
     bgLayer.draw();
     stage.draw();
     bgRect.stroke(null);
+
     if (Gettype == 'draw') {
         
         if (foundDraw) {
@@ -1224,6 +1268,7 @@ async function saveCanvas() {
     bgLayer.draw();
     group.draw();
 }
+
 //#region ADD TO HISTORY
 function AddactionToHistory() {
     if (TexturedLine) {
