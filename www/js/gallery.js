@@ -29,18 +29,43 @@ async function get_draws() {
         nameDraw.textContent = draw.nameDraw;
 
         downloadbtn.textContent = 'baixar';
+        const deletebtn = document.createElement('button');
+        deletebtn.textContent = 'excluir';
+        deletebtn.style.backgroundColor = '#ff6b6b';
+        deletebtn.style.color = 'white';
 
         downloadbtn.onclick = () => {
-            const link = document.createElement('a');
-            link.href = draw.drawURL;
-            link.download = draw.nameDraw;
-            link.click();
+            // Converte data URL para blob para funcionar em mobile
+            if (draw.drawURL) {
+                fetch(draw.drawURL)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = draw.nameDraw + '.png';
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    })
+                    .catch(() => {
+                        alert('Erro ao baixar o desenho. Σ(っ °Д °;)っ');
+                    });
+            } else {
+                alert('Este desenho ainda não foi salvo. Σ(っ °Д °;)っ');
+            }
+        }
+
+        deletebtn.onclick = () => {
+            if (confirm('Tem certeza que deseja excluir "' + draw.nameDraw + '"?')) {
+                deleteDraw(draw.id);
+            }
         }
 
         
         DrawCard.appendChild(newPicture);
         DrawCard.appendChild(nameDraw);
         DrawCard.appendChild(downloadbtn);
+        DrawCard.appendChild(deletebtn);
         drawlist.appendChild(DrawCard);
 
         newPicture.addEventListener('click', () => {
@@ -60,6 +85,10 @@ async function get_draws() {
         const newPicture = document.createElement('img');
         const downloadMangaBtn = document.createElement('button');
         downloadMangaBtn.textContent = 'Baixar Manga';
+        const deleteMangaBtn = document.createElement('button');
+        deleteMangaBtn.textContent = 'excluir';
+        deleteMangaBtn.style.backgroundColor = '#ff6b6b';
+        deleteMangaBtn.style.color = 'white';
         const nameDraw = document.createElement('h1');
         newPicture.src = 'assets/HQIcon.png';
         nameDraw.textContent = manga.name;
@@ -67,6 +96,7 @@ async function get_draws() {
         MangaCard.appendChild(newPicture);
         MangaCard.appendChild(nameDraw);
         MangaCard.append(downloadMangaBtn);
+        MangaCard.append(deleteMangaBtn);
         drawlist.appendChild(MangaCard);
 
         newPicture.addEventListener('click', function () {
@@ -75,6 +105,12 @@ async function get_draws() {
         });
         downloadMangaBtn.onclick = () =>{
             downloadManga(manga);
+        }
+
+        deleteMangaBtn.onclick = () => {
+            if (confirm('Tem certeza que deseja excluir "' + manga.name + '"?')) {
+                deleteManga(manga.id);
+            }
         }
 
         createMangaDiv.style.visibility = 'hidden';
@@ -193,22 +229,37 @@ async function createManga() {
 
 }
 
-function downloadManga(manga) {
+async function downloadManga(manga) {
 
-    let getMangaList = JSON.parse(localStorage.getItem('mangas')) || [];
+    let getMangaList = await getMangasList() || [];
     let getrightmanga = getMangaList.find(current => current.id === manga.id);
-
+    console.log(getrightmanga);
     if (getrightmanga) {
+        
         getrightmanga.chapters.forEach(chap => {
             console.log(chap);
             
-            chap.pages?.forEach(page => {
-                const link = document.createElement('a');
-                link.href = page.PageURL;
-                link.download = chap.title + ' '+chap.pagesCount;
-                link.click();
-
-            });
+            // Itera sobre o número de páginas, não apenas as que têm PageURL
+            for (let i = 0; i < chap.pagesCount; i++) {
+                if (chap.pages && chap.pages[i] && chap.pages[i].PageURL) {
+                    const link = document.createElement('a');
+                    link.href = chap.pages[i].PageURL;
+                    link.download = chap.title + ' - Página ' + (i + 1);
+                    
+                    // Usa fetch + blob para compatibilidade com mobile
+                    fetch(link.href)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const url = URL.createObjectURL(blob);
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = url;
+                            downloadLink.download = link.download + '.png';
+                            downloadLink.click();
+                            URL.revokeObjectURL(url);
+                        })
+                        .catch(err => console.error('Erro ao baixar página:', err));
+                }
+            }
         });
     }
 }
@@ -262,6 +313,36 @@ async function savejson() {
 
 function cancelCreateManga() {
     createMangaDiv.style.visibility = 'hidden';
+}
+
+async function deleteDraw(drawId) {
+    let drawList = await getDrawList() || [];
+    const index = drawList.findIndex(d => d.id === drawId);
+    
+    if (index !== -1) {
+        drawList.splice(index, 1);
+        // Reajusta os IDs dos draws restantes
+        drawList.forEach((draw, idx) => {
+            draw.id = idx;
+        });
+        await addToDrawList(drawList);
+        get_draws(); // Recarrega a galeria
+    }
+}
+
+async function deleteManga(mangaId) {
+    let mangaList = await getMangasList() || [];
+    const index = mangaList.findIndex(m => m.id === mangaId);
+    
+    if (index !== -1) {
+        mangaList.splice(index, 1);
+        // Reajusta os IDs dos mangas restantes
+        mangaList.forEach((manga, idx) => {
+            manga.id = idx;
+        });
+        await addToMangasList(mangaList);
+        get_draws(); // Recarrega a galeria
+    }
 }
 //#endregion
 

@@ -534,18 +534,17 @@ function createUXlayer() {
     
     layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
-        ratio.dispatchEvent(new Event('change'));
-    });
-    layerCell.click();
-    
-    ratio.addEventListener('change', (event) => {
-        const num = Number(event.target.value);
-        console.log(num);
+        const num = Number(ratio.value);
         group = pages['page' + currentpage].layers[num].draw;
-        console.log(pages['page' + currentpage].layers[num]);
+        console.log('pressionado o radio da layer ',num);
         
         checkimage(num);
+        ratio.dispatchEvent(new Event('change'));
+        console.log('Arrisco a dizer que clicou na layer ', currentlayer);
+        
     });
+    layerCell.click();
+
     hide.onclick = () => {
         if (group.attrs.visible){
             group.hide();
@@ -582,6 +581,8 @@ function createUXlayer() {
 let imgReference = null;
 let LastimgReferenceOnLastLayer = null;
 function checkimage(number){
+    console.log('rapaiz o negoço começou e tava desse jeito aqui, se vira ai pra descobrir > ',imgReference);
+
     console.log(LastimgReferenceOnLastLayer);
     
     if (pages['page' + currentpage].layers[number].hasimage != null){
@@ -604,7 +605,7 @@ function checkimage(number){
 
         trans.nodes([]);
     }
-    group.draw();
+    
 
 }
 function addLayer(imagedata = '') {
@@ -1407,7 +1408,21 @@ function redo() {
         stage.batchDraw();
     }
 }
+//////#region SAVE AUTO
+function autosave() {
+    saveCanvas();
+    console.log("O tempo acabou! Função chamada! (✿◕‿◕)");
+    iniciarTimer(); // reinicia o timer automaticamente
+}
 
+function iniciarTimer() {
+    const umMinutos = 1 * 60 * 1000;
+    console.log("Timer iniciado! Mais 1 minutos de agonia... (⁄ ⁄•⁄ω⁄•⁄ ⁄)");
+    setTimeout(autosave, umMinutos);
+}
+
+// Começa a tortura
+iniciarTimer();
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {

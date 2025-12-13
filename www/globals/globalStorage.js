@@ -21,12 +21,6 @@ async function getDrawList(){
     }
 }
 
-async function removeFromMangasList(){
-
-}
-async function removeFromDrawList(){
-
-}
 
 async function addToMangasList(whatNeedReWrite){
     try{
