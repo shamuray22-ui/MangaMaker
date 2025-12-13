@@ -338,7 +338,15 @@ stage.add(layer);
 
 let group;
 
-let trans;
+let trans = null;
+
+function updateLayerUI() {
+    layerGrid.innerHTML = ''; // Limpa a grid
+    for (let i = 0; i < layerList.length; i++) {
+        currentlayer = i; // Define o índice atual
+        createUXlayer(); // Recria cada elemento
+    }
+}
 
 async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer){
     await startSavedData();
@@ -349,12 +357,7 @@ async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJ
     updateLayerList();
     trans = new Konva.Transformer();
     group.add(trans);
-    layerGrid.innerHTML = '';
-    for (let i = 0; i < layerList.length; i++) {
-        currentlayer = i;
-        createUXlayer();
-
-    }
+    updateLayerUI();
 
 }
 
@@ -388,7 +391,15 @@ let lastSelectBox = null;
 let lastLineTool = null;
 let lastText = null;
 
-let imgReference
+// ===== VARIÁVEIS PARA O SISTEMA DE SELEÇÃO =====
+// Array que armazena todos os nós (elementos) atualmente selecionados
+let selectedNodes = [];
+// Transformer que permite manipular múltiplos nós selecionados simultaneamente
+let selectionTransformer = null;
+// Cores para destacar os nós selecionados
+const SELECTION_STROKE_COLOR = '#00AAFF';
+const SELECTION_STROKE_WIDTH = 2;
+
 let draggingText = false;
 let endline = 0;
 
@@ -519,21 +530,19 @@ function createUXlayer() {
     layerCell.appendChild(hide);
     layerCell.appendChild(del);
 
-    //ratio.checked = true;
-    //ratio.dispatchEvent(new Event('change'));
-    // e finalmente coloca no grid
-    
     layerGrid.appendChild(layerCell);
+    
     layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
         ratio.dispatchEvent(new Event('change'));
     });
     layerCell.click();
+    
     ratio.addEventListener('change', (event) => {
         const num = Number(event.target.value);
         console.log(num);
         group = pages['page' + currentpage].layers[num].draw;
-        ///
+        console.log(pages['page' + currentpage].layers[num]);
         
         checkimage(num);
     });
@@ -559,39 +568,51 @@ function createUXlayer() {
         pages['page' + currentpage].layers[currentlayer].draw.remove();
         layerList.splice(currentlayer,1);
         updateLayerList();
-        currentlayer -= 1;
-        ratio.value = (currentlayer);
-        group = pages['page' + currentpage].layers[currentlayer].draw;
-        checkimage(currentlayer);
-        layerGrid.removeChild(layerCell);
-
-    }
-    function checkimage(number){
-        let LocalimgReference = pages['page' + currentpage].layers[number].hasimage;
-        if (pages['page' + currentpage].layers[number].hasimage){
-            imgReference = pages['page' + currentpage].layers[number].hasimage;
+        if (currentlayer >= layerList.length) {
+            currentlayer = layerList.length - 1; // Garante índice válido
         }
-        
-        if(LocalimgReference){
-            LocalimgReference.draggable(true)
-            trans.nodes([LocalimgReference]);
-        }else{
-            if (imgReference == null){return}
-            set_current_tool('pen');
-            imgReference.draggable(false);
-            trans.nodes([]);
+        if (layerList.length > 0) {
+            group = pages['page' + currentpage].layers[currentlayer].draw;
         }
-
-        
-        group.draw();
+        updateLayerUI();
     }
+
 }
+//#region CHECK IMAGE
+let imgReference = null;
+let LastimgReferenceOnLastLayer = null;
+function checkimage(number){
+    console.log(LastimgReferenceOnLastLayer);
+    
+    if (pages['page' + currentpage].layers[number].hasimage != null){
+        imgReference = pages['page' + currentpage].layers[number].hasimage;
+        LastimgReferenceOnLastLayer = imgReference;
+    }else{
+        imgReference = null;
+    }
+    console.log('img reference', 'local >>',);
+    
+    if(imgReference != null){
+        LastimgReferenceOnLastLayer.draggable(true)
+        trans.nodes([LastimgReferenceOnLastLayer]);
+        set_current_tool('transform');
+    }else{
+        console.log('no has porra nenhuma!');
+        set_current_tool('pen');
+        LastimgReferenceOnLastLayer.draggable(false);
+        LastimgReferenceOnLastLayer = null;
 
+        trans.nodes([]);
+    }
+    group.draw();
+
+}
 function addLayer(imagedata = '') {
     if (layerList.length > MAXLAYER){
         return;
     }
-    let konvaImage;
+    trans.nodes([]);
+
     let newRealLayer = new Konva.Layer();
     const newLayer = new Konva.Group();
     set_current_tool('pen')
@@ -609,7 +630,7 @@ function addLayer(imagedata = '') {
         const img = new Image();
         img.src = url;
         img.onload = function() {
-            konvaImage = new Konva.Image({
+            let konvaImage = new Konva.Image({
                 x: 50,
                 y: 50,
                 image: img,
@@ -624,10 +645,9 @@ function addLayer(imagedata = '') {
             newRealLayer.add(newLayer);
             stage.add(newRealLayer);
             realayers.push(newRealLayer);
-            currentlayer = layerList.length - 1;
             group = pages['page' + currentpage].layers[currentlayer].draw;
             updateLayerList();
-            createUXlayer();
+            updateLayerUI();
         }
 
     } else{
@@ -635,10 +655,10 @@ function addLayer(imagedata = '') {
         newRealLayer.add(newLayer);
         stage.add(newRealLayer);
         realayers.push(newRealLayer);
-        currentlayer = layerList.length - 1;
         group = pages['page' + currentpage].layers[currentlayer].draw;
         updateLayerList();
         createUXlayer();
+        updateLayerUI();
     }
 }
 
@@ -762,7 +782,9 @@ stage.on('mousedown touchstart', function (e) {
     if (e.evt.touches && e.evt.touches.length > 1) {
         return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
     }
-
+    if (e.evt.touches && e.evt.touches.length > 2) {
+        return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
+    }
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
@@ -793,9 +815,11 @@ stage.on('mousedown touchstart', function (e) {
 
         });
         TexturedLine.opacity(opacityPicker.value / 100);
-        
+        TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
         group.add(TexturedLine);
+        
         stage.batchDraw();
+        
     }else if (current_tool == 'eraser'){
         // Cria o traço de borracha (LineEraser)
         let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
@@ -810,9 +834,10 @@ stage.on('mousedown touchstart', function (e) {
             listening: false,
             customClassName: 'LineEraser'
         });
-        LineEraser.opacity(opacityPicker.value / 30);
+        LineEraser.opacity(opacityPicker.value / 100);
         group.add(LineEraser);
         stage.batchDraw();
+        LineEraser.points([startpos.x, startpos.y]);
     }
     else if (current_tool == 'rectangle') {
         // iniciar com x/y no ponto de início e tamanho 0
@@ -821,7 +846,7 @@ stage.on('mousedown touchstart', function (e) {
             y: startpos.y,
             width: 0,
             height: 0,
-            fill: null, // transparente por padrão
+            fill: '#ffff', // transparente por padrão
             stroke: 'black'
         });
         group.add(lastRect);
@@ -851,7 +876,7 @@ stage.on('mousedown touchstart', function (e) {
             listening: false
         });
         dragpos = pos;
-        //group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
+        group.add(lastSelectBox); // Adiciona ao mesmo grupo dos desenhos
         lastSelectBox.moveToTop();
     }
     else if (current_tool == 'line') {
@@ -861,7 +886,9 @@ stage.on('mousedown touchstart', function (e) {
             globalCompositeOperation: composite,
             points: [startpos.x, startpos.y, startpos.x, startpos.y],
             lineCap: 'round',
-            lineJoin: 'round'
+            lineJoin: 'round',
+            pixelRatio:1,
+            listening: false
         });
         group.add(lastLineTool);
     }
@@ -1098,26 +1125,88 @@ function onUpKillWhatNeed(e){
         quadlist.push(newClipgroupQuad);
 
     }
+    // ===== PROCESSAMENTO DA SELEÇÃO =====
     if (lastSelectBox) {
+        // Obter o retângulo de seleção em coordenadas de tela
         const selectionRect = lastSelectBox.getClientRect();
-        const selectedNodes = [];
+        // Array local para armazenar nós detectados nesta seleção
+        const detectedNodes = [];
 
+        // Iterar sobre todos os filhos do grupo de desenho
         group.children.forEach(element => {
+            // Ignorar o próprio retângulo de seleção
             if (element === lastSelectBox) return;
+            // Ignorar o transformer (se existir)
+            if (element === selectionTransformer) return;
 
-            // Verifica se o elemento está dentro da área de seleção
+            // Verificar se o elemento tem interseção com a área de seleção
+            // haveIntersection retorna true se os dois retângulos se sobrepõem
             if (Konva.Util.haveIntersection(selectionRect, element.getClientRect())) {
-                selectedNodes.push(element);
+                detectedNodes.push(element);
             }
         });
 
-        // Agora você tem os 'selectedNodes' para fazer o que precisar (ex: mover, deletar, etc)
-        // Por enquanto, vamos apenas pintá-los de vermelho para confirmar
+        // ===== ATUALIZAR OS NÓS SELECIONADOS =====
+        // Remover destaque dos nós que NÃO estão mais selecionados
         selectedNodes.forEach(node => {
-            node.stroke('red');
+            if (!detectedNodes.includes(node)) {
+                // Se tinha stroke azul (de seleção), remover
+                if (node.attrs.oldStroke === undefined) {
+                    node.stroke(null);
+                } else {
+                    // Restaurar stroke original
+                    node.stroke(node.attrs.oldStroke);
+                }
+                node.strokeWidth(node.attrs.oldStrokeWidth || 1);
+            }
         });
 
+        // Adicionar destaque aos novos nós selecionados
+        detectedNodes.forEach(node => {
+            // Armazenar stroke original para poder restaurar depois
+            if (node.attrs.oldStroke === undefined) {
+                node.attrs.oldStroke = node.stroke();
+                node.attrs.oldStrokeWidth = node.strokeWidth() || 1;
+            }
+            // Aplicar destaque com cor azul
+            node.stroke(SELECTION_STROKE_COLOR);
+            node.strokeWidth(SELECTION_STROKE_WIDTH);
+        });
 
+        // Atualizar a lista global de nós selecionados
+        selectedNodes = detectedNodes;
+
+        // ===== ATUALIZAR O TRANSFORMER =====
+        // Se houver nós selecionados, adicionar transformer para manipulá-los
+        if (selectedNodes.length > 0) {
+            // Remover transformer anterior se existir
+            if (selectionTransformer) {
+                selectionTransformer.detach();
+                selectionTransformer.destroy();
+            }
+            // Criar novo transformer attachado aos nós selecionados
+            selectionTransformer = new Konva.Transformer({
+                enabledAnchors: ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'],
+                rotateEnabled: true,
+                borderStroke: SELECTION_STROKE_COLOR,
+                borderStrokeWidth: 2,
+                anchorSize: 8,
+                anchorCornerRadius: 4,
+                padding: 5
+            });
+            group.add(selectionTransformer);
+            selectionTransformer.nodes(selectedNodes);
+        } else {
+            // Se nenhum nó foi selecionado, remover transformer
+            if (selectionTransformer) {
+                selectionTransformer.detach();
+                selectionTransformer.destroy();
+                selectionTransformer = null;
+            }
+        }
+
+        // ===== LIMPAR O RETÂNGULO DE SELEÇÃO =====
+        // Destruir o retângulo de seleção após processar
         lastSelectBox.destroy();
         lastSelectBox = null;
     }
