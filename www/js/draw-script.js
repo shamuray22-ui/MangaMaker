@@ -1324,10 +1324,10 @@ async function saveCanvas() {
             }
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
+            
+            // Atualiza apenas o draw específico ao invés da lista toda
+            await updateDrawById(foundDraw.id, foundDraw);
         }
-        
-        
-        await addToDrawList(drawlist);
 
     } else if (Gettype == 'manga') {
         const getPages = [];
@@ -1346,7 +1346,9 @@ async function saveCanvas() {
         
 
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-        addToMangasList(mangaList);
+        
+        // Atualiza apenas o manga específico ao invés da lista toda
+        await updateMangaById(getManga.id, getManga);
     }
     //////// resturando as cordenadas da tela
     stage.position(laspos);
