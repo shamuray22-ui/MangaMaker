@@ -783,9 +783,6 @@ stage.on('mousedown touchstart', function (e) {
     if (e.evt.touches && e.evt.touches.length > 1) {
         return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
     }
-    if (e.evt.touches && e.evt.touches.length > 2) {
-        return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
-    }
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
@@ -914,8 +911,8 @@ stage.on('mousedown touchstart', function (e) {
         });
     }
 });
-//#region coisanoTextura
 
+//#region strokenize
 function strokenize(ctx,shape){
     ctx.beginPath();
     // Aplica a opacidade do shape ao contexto do canvas
@@ -946,6 +943,7 @@ function strokenize(ctx,shape){
     //ctx.fillStrokeShape(shape);
     ctx.stroke();
 }
+//#region coisanoTextura
 const SpacingRange = document.getElementById('SpacingRange'); // Assume-se que esta variável existe e funciona
 function coisanoTextura(points, i, ctx) {
     const baseTextureScale = ctx.lineWidth;
@@ -1092,6 +1090,8 @@ stage.on('touchend', function (e) {
 stage.on('mouseup', function (e) {
     onUpKillWhatNeed(e);
 });
+
+//#region onUpKillWhatNeed
 let quadlist = [null];
 let newClipgroupQuad = quadlist[0];
 
@@ -1289,6 +1289,7 @@ function clearCanvas() {
 
 //#region SAVE
 async function saveCanvas() {
+    isDrawing = false;
     isSaved = true;
     ////// salvando as coordenadas da tela
     const laspos = stage.position();

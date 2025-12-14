@@ -15,13 +15,20 @@
     </header>
 
     <main>
+        <div class="chapter-selector-container">
+            <label for="chapter-select">Escolha o Capítulo:</label>
+            <select id="chapter-select" onchange="changeChapter()">
+                <option value="">Carregando capítulos...</option>
+            </select>
+        </div>
+
         <div id="manga-preview-container">
             <!-- As páginas do mangá serão carregadas aqui -->
         </div>
         <div class="manga-navigation">
-            <button onclick="prevPage()">Anterior</button>
+            <button onclick="prevPage()">← Anterior</button>
             <span id="page-info">Página 1 de 1</span>
-            <button onclick="nextPage()">Próxima</button>
+            <button onclick="nextPage()">Próxima →</button>
         </div>
         <button onclick="backToGallery()">Voltar para a Galeria</button>
     </main>
@@ -30,7 +37,7 @@
         <p>&copy; essa é uma demontração de como ficara sua hq </p>
     </footer>
 
-    <script src="globals/globalDebug.js"></script>
+    <script src="globals/globalStorage.js"></script>
     <script src="js/manga-preview.js"></script>
 </body>
 

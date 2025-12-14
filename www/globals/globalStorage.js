@@ -5,7 +5,7 @@ async function getMangasList(){
         let readjson = JSON.parse(json);
         return readjson;
     }catch (erro) {
-        alert('Erro ao pegar draw list Σ(っ °Д °;)っ error >', erro);
+        alert('Erro ao pegar manga list Σ(っ °Д °;)っ error >', erro);
         return null;
     }
 }

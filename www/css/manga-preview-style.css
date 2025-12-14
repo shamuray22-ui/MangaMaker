@@ -1,0 +1,218 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.chapter-selector-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.chapter-selector-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+#chapter-select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #667eea;
+    border-radius: 6px;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#chapter-select:hover {
+    border-color: #764ba2;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+#chapter-select:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
+
+.header {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#manga-preview-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#manga-preview-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+#manga-preview-container p {
+    color: #999;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.manga-navigation {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.manga-navigation button {
+    padding: 12px 30px;
+    font-size: 1rem;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.manga-navigation button:hover {
+    background-color: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.manga-navigation button:active {
+    transform: translateY(0);
+}
+
+#page-info {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 20px;
+    min-width: 150px;
+    text-align: center;
+}
+
+main > button {
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+    max-width: 400px;
+}
+
+main > button:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+main > button:active {
+    transform: translateY(0);
+}
+
+.footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    margin-top: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+}
+
+.footer p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .chapter-selector-container {
+        padding: 15px;
+    }
+    
+    .chapter-selector-container label {
+        font-size: 1rem;
+    }
+    
+    #chapter-select {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+    
+    #page-info {
+        font-size: 1rem;
+        min-width: 130px;
+    }
+    
+    .manga-navigation button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    main > button {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
