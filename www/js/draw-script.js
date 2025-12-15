@@ -349,9 +349,11 @@ function updateLayerUI() {
 }
 
 async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer){
+    
     await startSavedData();
     await StartBrush('assets/brush/default.png', '#000');
     StartInitWithType(layer, bgLayer);
+
     group = pages['page' + currentpage].layers[0].draw;
     set_current_page(0);
     updateLayerList();
@@ -363,8 +365,9 @@ async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJ
 
 
 //#region BOOT
-
-RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
+withLoadScreen(async () => {
+    await RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
+});
 
 //#region  VARIAVEIS
 let isDrawing = false;
@@ -1305,7 +1308,21 @@ async function saveCanvas() {
     bgLayer.draw();
     stage.draw();
     bgRect.stroke(null);
+    withLoadScreen(async () =>{
+        await saveAsImage();
+    });
+    
 
+    //////// resturando as cordenadas da tela
+    stage.position(laspos);
+    stage.scale({ x: lascale, y: lascale });
+    layer.draw();
+    stage.rotation(lasrotation);
+    bgRect.stroke('black')
+    bgLayer.draw();
+    group.draw();
+}
+async function saveAsImage(){
     if (Gettype == 'draw') {
         
         if (foundDraw) {
@@ -1333,9 +1350,14 @@ async function saveCanvas() {
 
     } else if (Gettype == 'manga') {
         const getPages = [];
+        const originalPage = currentpage; // Salva a página atual para restaurar depois
 
-     
         for (let i = 0; i <= pagenumbers; i++) {
+            // Mostra apenas a página i no stage
+            set_current_page(i);
+            stage.batchDraw();
+            
+            // Captura a imagem da página i
             pages['page' + i].PageURL = stage.toDataURL({
                 mimeType: "image/png",
                 pixelRatio: 3,   // 3x mais nítido
@@ -1346,20 +1368,14 @@ async function saveCanvas() {
             getPages.push(pages['page' + i]);
         }
         
+        // Restaura a página que estava sendo exibida
+        set_current_page(originalPage);
 
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
         
         // Atualiza apenas o manga específico ao invés da lista toda
         await updateMangaById(getManga.id, getManga);
     }
-    //////// resturando as cordenadas da tela
-    stage.position(laspos);
-    stage.scale({ x: lascale, y: lascale });
-    layer.draw();
-    stage.rotation(lasrotation);
-    bgRect.stroke('black')
-    bgLayer.draw();
-    group.draw();
 }
 
 //#region ADD TO HISTORY

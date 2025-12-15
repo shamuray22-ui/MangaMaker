@@ -3,7 +3,9 @@ const drawlist = document.getElementById('drawlist');
 
 window.onload = function () {
     localStorage.setItem('type', 'draw');
-    get_draws();
+    withLoadScreen(async () =>{
+        await get_draws();
+    });
     
 }
 

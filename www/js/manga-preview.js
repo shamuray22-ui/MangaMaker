@@ -1,99 +1,42 @@
-let mangaPages = [];
-let currentPage = 0;
-let selectedManga = null;
-let selectedChapter = null;
-let allMangaList = [];
-let allDrawList = [];
-
-const container = document.getElementById("manga-preview-container");
-const pageInfo = document.getElementById("page-info");
-const chapterSelect = document.getElementById("chapter-select");
+let currentChap = 0;
 const search = new URLSearchParams(window.location.search);
-const id = search.get('id');
-
-async function loadAllData() {
-    try {
-        allMangaList = await getMangasList();
-        console.log(allMangaList);
-        
-        if (!allMangaList) allMangaList = [];
-        
-        selectedManga = allMangaList.find(m => m.id === Number(id));
-        
-        if (selectedManga && selectedManga.chapters) {
-            populateChapterSelect();
-            if (selectedManga.chapters.length > 0) {
-                selectChapter(0);
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-    }
-}
-
-function populateChapterSelect() {
+let id = search.get("id");
+let mangapreviewcontainer = document.getElementById("manga-preview-container");
+let chapterSelect = document.getElementById("chapterSelect");
+async function renderPage(){
+    let mangalist = await getMangasList();
+    let Locakmanga = mangalist.find(manga => manga.id === Number(id));
     chapterSelect.innerHTML = '';
-    
-    if (!selectedManga || !selectedManga.chapters) {
-        chapterSelect.innerHTML = '<option>Nenhum capítulo disponível</option>';
-        return;
-    }
-    
-    selectedManga.chapters.forEach((chapter, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = `Capítulo ${chapter.number} - ${chapter.title}`;
+    mangapreviewcontainer.innerHTML = '';
+    Locakmanga.chapters.forEach(element => {
+        let option = document.createElement("option");
+        option.value = element.number;
+        option.text = element.title;
+        currentChap = element.number;
         chapterSelect.appendChild(option);
-    });
-}
-
-function changeChapter() {
-    const selectedIndex = parseInt(chapterSelect.value);
-    selectChapter(selectedIndex);
-}
-
-function selectChapter(chapterIndex) {
-    if (!selectedManga || !selectedManga.chapters[chapterIndex]) return;
-    
-    selectedChapter = selectedManga.chapters[chapterIndex];
-    mangaPages = [];
-    
-    if (selectedChapter.pages && selectedChapter.pages.length > 0) {
-        selectedChapter.pages.forEach(page => {
-            if (page.drawId) {
-                const draw = allDrawList.find(d => d.id === page.drawId);
-                if (draw && draw.thumbnail) {
-                    mangaPages.push(draw.thumbnail);
-                } else if (draw && draw.PageURL) {
-                    mangaPages.push(draw.PageURL);
-                }
-            }
+        element.pages.forEach(page => {
+            let img = new Image();
+            img.alt = 'Manga Page';
+            img.src = page.PageURL || 'assets/drawing.png';
+            
+            mangapreviewcontainer.appendChild(img);
+            
         });
-    }
+        
+    });
     
-    currentPage = 0;
-    renderPage();
+    
+
 }
 
-function renderPage() {
-    container.innerHTML = "";
+async function boot(){
+    withLoadScreen(async () =>{
+        await renderPage();
+    });
     
-    if (mangaPages.length === 0) {
-        container.innerHTML = "<p>Nenhuma página disponível neste capítulo</p>";
-        pageInfo.textContent = "Sem páginas";
-        return;
-    }
-    
-    const img = document.createElement("img");
-    img.src = mangaPages[currentPage];
-    img.alt = `Página ${currentPage + 1}`;
-    img.style.width = "100%";
-    img.style.maxHeight = "600px";
-    img.style.objectFit = "contain";
-    
-    container.appendChild(img);
-    pageInfo.textContent = `Página ${currentPage + 1} de ${mangaPages.length}`;
 }
+
+boot();
 
 function prevPage() {
     if (currentPage > 0) {
@@ -109,10 +52,10 @@ function nextPage() {
     }
 }
 
-function backToGallery() {
-    window.location.href = "index.html";
+function changeChapter(){
+
 }
 
-window.onload = async function() {
-    await loadAllData();
-};
+function backToGallery() {
+    window.location.href = "manga-screen.html?id=" + id;
+}

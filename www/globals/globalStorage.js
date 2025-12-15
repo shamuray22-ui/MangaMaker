@@ -1,3 +1,24 @@
+// Cria a tela de load imediatamente quando o script carrega
+(function() {
+    if (!document.getElementById('loadScreenOverlay')) {
+        const loadScreen = document.createElement('div');
+        loadScreen.id = 'loadScreenOverlay';
+        loadScreen.style.position = 'fixed';
+        loadScreen.style.top = '0';
+        loadScreen.style.left = '0';
+        loadScreen.style.width = '100%';
+        loadScreen.style.height = '100%';
+        loadScreen.style.background = '#1111116f';
+        loadScreen.style.display = 'none';
+        loadScreen.style.flexDirection = 'column';
+        loadScreen.style.alignItems = 'center';
+        loadScreen.style.justifyContent = 'center';
+        loadScreen.style.zIndex = '9999';
+        loadScreen.style.fontFamily = 'Arial, sans-serif';
+        loadScreen.innerHTML = '<h1 style="color: #eee; margin: 0; font-family: Arial, sans-serif; font-size: 24px;">Carregando...</h1><h1 style="color: #eee; margin: 0; font-family: Arial, sans-serif; font-size: 12px">desculpe a demora (～￣▽￣)～</h1>';
+        document.body.appendChild(loadScreen);
+    }
+})();
 
 async function getMangasList(){
     try{
@@ -65,5 +86,33 @@ async function updateMangaById(mangaId, updatedManga){
         }
     }catch(erro){
         alert('Erro ao atualizar manga (┬┬﹏┬┬) error >', erro);
+    }
+}
+
+// Funções para controlar a tela de load
+function showLoadScreen() {
+    let loadScreen = document.getElementById('loadScreenOverlay');
+    if (loadScreen) {
+        loadScreen.style.display = 'flex';
+    }
+}
+
+function hideLoadScreen() {
+    let loadScreen = document.getElementById('loadScreenOverlay');
+    if (loadScreen) {
+        loadScreen.style.display = 'none';
+    }
+}
+
+// Função auxiliar que mostra load, executa uma ação e esconde
+async function withLoadScreen(asyncFunction) {
+    showLoadScreen();
+    try {
+        const result = await asyncFunction();
+        hideLoadScreen();
+        return result;
+    } catch (error) {
+        hideLoadScreen();
+        throw error;
     }
 }

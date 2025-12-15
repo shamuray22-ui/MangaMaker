@@ -19,8 +19,10 @@ async function boot(){
     await startSavedData();
     loadChapterList();
 }
+withLoadScreen(async () =>{
+    await boot();
+});
 
-boot();
 // Função que carrega a lista de capítulos (depois você conecta com localStorage)
 function loadChapterList(){
 
@@ -137,6 +139,6 @@ function returnToGallery(){
 }
 
 function enterPreview(){
-    document.location = 'mangaPreviwe.html?id=' + id;
+    window.location.href = 'mangaPreviwe.html?id=' + id;
 }
 //#endregion
