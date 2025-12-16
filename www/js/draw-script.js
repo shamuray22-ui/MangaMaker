@@ -777,20 +777,47 @@ window.addEventListener('resize', () => {
     }
 });
 //#region START TOUCH OR MOUSE
-stage.on('mousedown touchstart', function (e) {
+let touchTimer = null;
+stage.on('touchstart', function(e){
     e.evt.preventDefault();
     if (e.target.className === 'Text') {
         return; // só deixa o Konva lidar com o drag
     }
     // Verifica se é um evento de toque e se há mais de um dedo na tela
     if (e.evt.touches && e.evt.touches.length > 1) {
+        isDrawing = false; // Reseta o flag de desenho para zoom
+        lastDist = 0; // Reseta também a distância do zoom anterior
+        lastMidPoint = null;
+        
         return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
+    }
+    isDrawing = false;
+
+    touchTimer = setTimeout(() => {
+        // se ainda for 1 dedo depois do delay, aí sim desenha
+        if (e.evt.touches && e.evt.touches.length === 1) {
+            isDrawing = true;
+        }
+    }, 40); // 30–50ms já resolve
+    
+    const pos = getGlobalMousePos();
+    startpos = pos;
+
+    firstStartTools()
+});
+stage.on('mousedown', function (e) {
+    e.evt.preventDefault();
+    if (e.target.className === 'Text') {
+        return; // só deixa o Konva lidar com o drag
     }
     isDrawing = true;
     const pos = getGlobalMousePos();
     startpos = pos;
 
+    firstStartTools()
+});
 
+function firstStartTools(e){
     if (current_tool == 'pen') {
         isSaved = false
         let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
@@ -816,7 +843,8 @@ stage.on('mousedown touchstart', function (e) {
 
         });
         TexturedLine.opacity(opacityPicker.value / 100);
-        TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
+        //TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
+        
         group.add(TexturedLine);
         
         stage.batchDraw();
@@ -913,8 +941,7 @@ stage.on('mousedown touchstart', function (e) {
             draggingText = false;
         });
     }
-});
-
+}
 //#region strokenize
 function strokenize(ctx,shape){
     ctx.beginPath();
@@ -1018,11 +1045,12 @@ let strongStabilizador = document.getElementById('strongStabilizador');
 
 stage.on('mousemove touchmove', function (e) {
     e.evt.preventDefault();
-    if (!isDrawing) {
+    if (e.evt.touches && e.evt.touches.length > 1){
+        console.log("daqui não passou chefe!");
         return;
     }
-    if (e.evt.touches && e.evt.touches.length > 1) {
-        return; // Não inicia o desenho se for um gesto de múltiplos toques (como pinch-to-zoom)
+    if (!isDrawing) {
+        return;
     }
     const pos = getGlobalMousePos();
     const x = Math.min(startpos.x, pos.x);
@@ -1099,6 +1127,8 @@ let quadlist = [null];
 let newClipgroupQuad = quadlist[0];
 
 function onUpKillWhatNeed(e){
+    clearTimeout(touchTimer);
+    touchTimer = null;
     e.evt.preventDefault();
     isDrawing = false;
     dragpos = null;
@@ -1498,4 +1528,97 @@ stage.on('mouseleave ', function (e) {
 
     // Inicia o loop de cálculo de FPS
     requestAnimationFrame(calculateFPS);
+})();
+/**
+ * Cria um painel flutuante no canto inferior direito para exibir logs do console
+ * em tempo real, interceptando as funções originais do console.
+ */
+(function () {
+    // 1. Criação e Estilização do Painel de Log
+    const logContainer = document.createElement('div');
+    logContainer.id = 'browser-log-display';
+    logContainer.style.position = 'fixed';
+    logContainer.style.top = '40px';
+    logContainer.style.left = '10px';
+    logContainer.style.width = '200px';
+    logContainer.style.maxHeight = '200px';
+    logContainer.style.overflowY = 'auto'; // Habilita scroll
+    logContainer.style.padding = '5px';
+    logContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.52)'; // Fundo escuro
+    logContainer.style.color = '#4ec62dff';
+    logContainer.style.fontFamily = 'monospace';
+    logContainer.style.fontSize = '10px';
+    logContainer.style.zIndex = '10000';
+    logContainer.style.borderRadius = '4px';
+    logContainer.style.border = '1px solid #285718ff';
+
+    document.body.appendChild(logContainer);
+
+    // 2. Armazena as funções originais do console
+    const originalConsole = {
+        log: console.log,
+        warn: console.warn,
+        error: console.error
+    };
+
+    /**
+     * Função auxiliar para formatar a mensagem e adicionar ao painel.
+     * @param {string} type - Tipo de log ('LOG', 'WARN', 'ERROR').
+     * @param {Array} args - Argumentos passados para a função console original.
+     */
+    function appendLog(type, args) {
+        // Converte os argumentos (objetos, strings, etc.) para uma string legível
+        const message = Array.from(args).map(arg => {
+            if (typeof arg === 'object' && arg !== null) {
+                try {
+                    return JSON.stringify(arg);
+                } catch {
+                    return String(arg); // fallback para objetos complexos
+                }
+            }
+            return String(arg);
+        }).join(' ');
+        
+        // Cria o elemento da mensagem
+        const logEntry = document.createElement('div');
+        logEntry.style.wordBreak = 'break-all'; // Quebra linhas longas
+        logEntry.style.padding = '2px 0';
+        
+        let color = '#FFFFFF'; // Cor padrão (LOG)
+        if (type === 'WARN') {
+            color = '#FFD700'; // Amarelo para warning
+        } else if (type === 'ERROR') {
+            color = '#FF4500'; // Vermelho/Laranja para erro
+        }
+        
+        // Aplica a cor e o prefixo
+        logEntry.innerHTML = `<span style="color:${color};">[${type}]</span>: ${message}`;
+
+        // Adiciona ao topo do contêiner (para ver o mais recente primeiro)
+        logContainer.prepend(logEntry);
+
+        // Limita o número de logs para evitar sobrecarga (ex: 50 mensagens)
+        if (logContainer.children.length > 50) {
+            logContainer.removeChild(logContainer.lastChild);
+        }
+    }
+
+    // 3. Sobrescreve as funções do console
+    console.log = function(...args) {
+        originalConsole.log.apply(console, args); // Chama a função original (para o console devtools)
+        appendLog('LOG', args); // Adiciona ao painel personalizado
+    };
+
+    console.warn = function(...args) {
+        originalConsole.warn.apply(console, args);
+        appendLog('WARN', args);
+    };
+
+    console.error = function(...args) {
+        originalConsole.error.apply(console, args);
+        appendLog('ERROR', args);
+    };
+
+    // Mensagem de confirmação no painel
+    appendLog('INFO', ['Live Browser Log iniciado com sucesso.']);
 })();
