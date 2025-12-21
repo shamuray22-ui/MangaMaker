@@ -51,6 +51,7 @@ function showDivText() {
     if (!lastText) {
         return;
     }
+    
 }
 
 
@@ -78,6 +79,10 @@ function saveText() {
     }
     const text = editText.value;
     lastText.text(text);
+    lastText.listening(false);
+    draggingText = false;
+    trans.nodes([]);
+    lastText.draggable(false);
     layer.draw();
     textEditorDiv.style.visibility = 'hidden';
     editText.value = '';
@@ -90,7 +95,10 @@ function cancelEdit() {
     textEditorDiv.style.visibility = 'hidden';
     undo();
     editText.value = '';
-
+    
+    draggingText = false;
+    trans.nodes([]);
+    lastText.draggable(false);
 }
 //#endregion
 

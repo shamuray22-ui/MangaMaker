@@ -2,6 +2,7 @@
 ////////// talve ainda não ficou perceptvel que erros de digitção e gramatica são comuns por aqui.
 ////////////////////////
 
+
 let DRAWSIZE = {
     width: 600,
     height: 800
@@ -410,7 +411,35 @@ let posing = false;
 
 const opacityPicker = document.getElementById('opacityPicker');
 const colorPicker = document.getElementById('colorPicker');
-const sizePicker = document.getElementById('sizePicker');
+const colorPickerPanel = document.getElementById('pickerContainer');
+colorPickerPanel.style.display = 'none'
+const colorPickerLib = new iro.ColorPicker("#pickerContainer", {
+    width: 132,
+    color: "#000000ff", // Puxa o valor inicial do seu input antigo
+    layout: [
+        { component: iro.ui.Wheel },
+        { component: iro.ui.Slider, options: { sliderType: 'value' } }
+    ]
+});
+
+colorPickerLib.on('color:change',(e) =>{
+    colorPicker.style.background = e.hexString;
+});
+
+colorPicker.addEventListener('click',() =>{
+    if (colorPickerPanel.style.display == 'flex'){
+        colorPickerPanel.style.display = 'none'
+    }else{
+        colorPickerPanel.style.display = 'flex'
+    }
+})
+colorPickerPanel.addEventListener("mouseleave",() =>{
+    colorPickerPanel.style.display = 'none'
+})
+let colopickpanelSize = {
+    width: colorPickerPanel.style.width,
+    height: colorPickerPanel.style.height
+};
 
 function getGlobalMousePos() {
     const mousePos = stage.getPointerPosition();
@@ -800,9 +829,6 @@ stage.on('touchstart', function(e){
         }
     }, 40); // 30–50ms já resolve
     
-    const pos = getGlobalMousePos();
-    startpos = pos;
-
     firstStartTools()
 });
 stage.on('mousedown', function (e) {
@@ -811,22 +837,21 @@ stage.on('mousedown', function (e) {
         return; // só deixa o Konva lidar com o drag
     }
     isDrawing = true;
-    const pos = getGlobalMousePos();
-    startpos = pos;
-
     firstStartTools()
 });
-
+//#region FIRST START TOOLS
 function firstStartTools(e){
+    const pos = getGlobalMousePos();
+    startpos = pos;
     if (current_tool == 'pen') {
         isSaved = false
         let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
-        let color = colorPicker.value
+        
+        let color = colorPickerLib.color.hexString;
         TexturedLine = new Konva.Shape({
             strokeColor: color,
             lineWidth: scaletexture,
             globalCompositeOperation: composite,
-            //opacity: (opacityPicker.value / 30), // Multiplica a opacidade do pincel pela da camada
             lineCap: 'round',
             lineJoin: 'round',
             customTexture: currentBrush,
@@ -843,7 +868,9 @@ function firstStartTools(e){
 
         });
         TexturedLine.opacity(opacityPicker.value / 100);
-        //TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
+        if (isDrawing === true){
+            TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
+        }
         
         group.add(TexturedLine);
         
@@ -861,8 +888,10 @@ function firstStartTools(e){
             lineJoin: 'round',
             points: [pos.x, pos.y],
             listening: false,
-            customClassName: 'LineEraser'
+            customClassName: 'LineEraser',
+            pixelRatio:1
         });
+        
         LineEraser.opacity(opacityPicker.value / 100);
         group.add(LineEraser);
         stage.batchDraw();
@@ -888,6 +917,7 @@ function firstStartTools(e){
             radiusY: 0,
             fill: '#ffff',
             stroke: 'black'
+            
         });
         group.add(lastCicle);
 
@@ -926,6 +956,10 @@ function firstStartTools(e){
             x: startpos.x,
             y: startpos.y,
             text: 'New text',
+            width: 200,
+            height: 100,
+            fill: colorPicker.value,
+            align:'center',
             fontSize: 12,
             draggable: true
         });
@@ -935,12 +969,20 @@ function firstStartTools(e){
 
         // Adiciona os eventos de drag aqui
         lastText.on('dragstart', function () {
-            draggingText = true;
+            console.log("oxente!");
+            trans.nodes([lastText]);
+            
         });
         lastText.on('dragend', function () {
-            draggingText = false;
+            if (!trans){
+                trans.nodes([]);
+            }
+            
         });
+        
+        draggingText = true;
     }
+    
 }
 //#region strokenize
 function strokenize(ctx,shape){
@@ -1046,9 +1088,9 @@ let strongStabilizador = document.getElementById('strongStabilizador');
 stage.on('mousemove touchmove', function (e) {
     e.evt.preventDefault();
     if (e.evt.touches && e.evt.touches.length > 1){
-        console.log("daqui não passou chefe!");
         return;
     }
+    
     if (!isDrawing) {
         return;
     }
@@ -1057,6 +1099,9 @@ stage.on('mousemove touchmove', function (e) {
     const y = Math.min(startpos.y, pos.y);
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
+    if (current_tool == 'transform'){
+
+    }
     if (current_tool == 'pen' && TexturedLine) {
         if (!some){
             some = {x:pos.x,y:pos.y}
@@ -1095,7 +1140,7 @@ stage.on('mousemove touchmove', function (e) {
         lastRect.y(y);
         lastRect.width(w);
         lastRect.height(h);
-
+        
 
     }
     else if (current_tool == 'select' && lastSelectBox) {
@@ -1111,7 +1156,7 @@ stage.on('mousemove touchmove', function (e) {
         lastLineTool.points([startpos.x, startpos.y, pos.x, pos.y]);
 
     }
-
+    
 });
 
 //#region MOUSE UP
@@ -1123,8 +1168,6 @@ stage.on('mouseup', function (e) {
 });
 
 //#region onUpKillWhatNeed
-let quadlist = [null];
-let newClipgroupQuad = quadlist[0];
 
 function onUpKillWhatNeed(e){
     clearTimeout(touchTimer);
@@ -1138,27 +1181,7 @@ function onUpKillWhatNeed(e){
     console.log(undoHistory.length);
     
     simplifyPoints();
-    some = null
-    if (lastRect){
-
-        newClipgroupQuad = new Konva.Group({
-            clipFunc:function(ctx){
-                ctx.beginPath();
-                ctx.rect(lastRect.attrs.x,lastRect.attrs.y,lastRect.attrs.width,lastRect.attrs.height);
-                ctx.closePath();
-                ctx.clip();
-                
-            }
-        })
-        if (!TexturedLine){
-            return;
-        }
-        let newLine = TexturedLine;
-        newClipgroupQuad.add(newLine);
-        group.add(newClipgroupQuad);
-        quadlist.push(newClipgroupQuad);
-
-    }
+    some = null;
     // ===== PROCESSAMENTO DA SELEÇÃO =====
     if (lastSelectBox) {
         // Obter o retângulo de seleção em coordenadas de tela
@@ -1246,8 +1269,10 @@ function onUpKillWhatNeed(e){
     }
     cacherize(TexturedLine);
     AddactionToHistory();
-
+    
     stage.batchDraw();
+
+    
 }
 
 function cacherize(Line){
@@ -1279,7 +1304,7 @@ function cacherize(Line){
                     // A largura/altura precisa ser a distância total (max - min) + a largura do stroke (lw)
                     width: maxX - minX + lw, 
                     height: maxY - minY + lw,
-                    pixelRatio:3,
+                    pixelRatio:1,
                     hitGraphEnabled: false
                 });
             }
@@ -1366,10 +1391,7 @@ async function saveAsImage(){
             // aqui que guardamos grupos
             foundDraw.layers = [];
             for (let i = 0; i <= layerList.length - 1; i++) {
-
                 foundDraw.layers.push(pages['page' + currentpage].layers[i].draw.toJSON());
-
-
             }
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
@@ -1418,13 +1440,18 @@ function AddactionToHistory() {
         LineEraser = null;
     } else if (lastRect) {
         undoHistory.push(lastRect);
-        lastRect = null;
+        selectorDeNodes(lastRect);
+        set_current_tool('transform')
+        ///lastRect = null;
     } else if (lastCicle) {
         undoHistory.push(lastCicle);
-        lastCicle = null;
+        selectorDeNodes(lastCicle);
+        set_current_tool('transform')
+        //lastCicle = null;
     } else if (lastLineTool) {
         undoHistory.push(lastLineTool);
-        lastLineTool = null;
+
+        //lastLineTool = null;
     } else if (lastText) {
         undoHistory.push(lastText);
         // lastText não é resetado aqui, pois o editor pode continuar ativo
@@ -1434,8 +1461,6 @@ function AddactionToHistory() {
 //#region UNDO
 function undo() {
     const lastAction = undoHistory.pop();
-
-
     if (lastAction) {
         lastAction.remove(); // Remove a última linha do grupo
         redoHistory.push(lastAction); // Adiciona a ação removida ao histórico de refazer
@@ -1455,7 +1480,33 @@ function redo() {
         stage.batchDraw();
     }
 }
-//////#region SAVE AUTO
+//#region SelectDeNodes
+
+
+function selectorDeNodes(node){
+    //node.draggable(true);
+    trans.nodes([]);
+    trans.moveToTop();
+    trans.on("click tap", (e) =>{
+        trans.nodes([node]);
+        node.draggable(true);
+    })
+    trans.on("dragend",(e) => {
+        node.draggable(false);
+        trans.nodes([]);
+    })
+    stage.on('click tap', (e) => {
+    if (e.target === stage) {
+        trans.nodes([]);
+    }
+    });
+    trans.nodes([node]);
+    console.log("Tinha uma porra aqui");
+    layer.draw();
+
+}
+
+//#region SAVE AUTO
 function autosave() {
     saveCanvas();
     console.log("O tempo acabou! Função chamada! (✿◕‿◕)");
@@ -1469,7 +1520,7 @@ function iniciarTimer() {
 }
 
 // Começa a tortura
-iniciarTimer();
+//iniciarTimer();
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {
@@ -1478,6 +1529,18 @@ stage.on('touchcancel', function (e) {
 stage.on('mouseleave ', function (e) {
     onUpKillWhatNeed(e);
 });
+//#region END OF SCRIPT
+
+
+
+
+
+
+
+
+
+
+//#region  DEBUG 
 (function () {
     const fpsDisplay = document.createElement('div');
     fpsDisplay.style.position = 'fixed';

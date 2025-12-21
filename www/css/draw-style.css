@@ -19,8 +19,8 @@ body {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   background-color: var(--button-bg);
   border: 1px solid var(--button-border);
   border-radius: 10px;
@@ -38,8 +38,8 @@ body {
 }
 
 .Generalbutton img {
-  max-width: 24px;
-  max-height: 24px;
+  max-width: 22px;
+  max-height: 22px;
 }
 
 /* ======== TOOLS ENGAVETADO ======== */
@@ -94,7 +94,7 @@ body {
   background: var(--bottom-bg);
   color: var(--toolbar-color);
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 2vw;
@@ -104,6 +104,17 @@ body {
   border-radius: 20px 20px 0 0;
 }
 
+#ranges{
+  display: flex;
+  flex-direction: column;
+}#ranges label input{
+  width: 350px;
+}
+#buttonstools{
+  display: flex;
+  flex-direction: row;
+  gap: 2vw;
+}
 /* ======== POPUPS E DIVS ======== */
 #setSizeDiv {
   position: absolute;
@@ -197,8 +208,8 @@ body {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   background-color: var(--button-bg);
   border: 1px solid var(--button-border);
   border-radius: 10px;
@@ -272,4 +283,27 @@ body {
   flex-direction: column;
   gap: 10px;
   border-radius: 10px;
+}
+#colorPicker{
+  gap: 8px;
+  width: 48px;
+  height: 48px;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  border-radius: 10px;
+  color: var(--font-color);
+  box-shadow: 0 3px 2px var(--button-shadow);
+  cursor: pointer;
+  transform: scale(0.97);
+  transition: all 0.2s ease;
+}
+#pickerContainer{
+  display: flex;
+  width: 132px;
+  height: 160px;
+  background-color: #444;
+  padding: 70px;
+  position: fixed;
+  top:50%;
+  box-shadow: 0px 22px 32px rgb(0, 0, 0);
 }

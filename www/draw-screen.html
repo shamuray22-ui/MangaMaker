@@ -38,11 +38,11 @@
     </label>
     <div>
       <label> Força de simplificação</label>
-      <input id="strongSimply" type="range" min="0" step="2" value="2" max="8">
+      <input id="strongSimply" type="range" min="0" step="2" value="0" max="8">
       <label> Força de Estabilizador</label>
-      <input id="strongStabilizador" type="range" min="0" step="0.1" value="0.0" max="0.8">
+      <input id="strongStabilizador" type="range" min="0" step="0.3" value="0.0" max="0.8">
       <label> Força de Espaçamento de textura de pincel</label>
-      <input id="SpacingRange" type="range" min="0.2" step="0.2" value="0.4" max="12">
+      <input id="SpacingRange" type="range" min="0.2" step="0.2" value="0.2" max="12">
 
       <button class="Generalbutton" onclick="removebg()">Modo sem fundo </button>
     </div>
@@ -58,8 +58,8 @@
         alt="Linha"></button>
     <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png"
         alt="Texto"></button>
-    <button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png"
-        alt="Selecionar"></button>
+    <!--<button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png"
+        alt="Selecionar"></button> -->
   </div>
 
   <!-- Seleção de pincel -->
@@ -107,44 +107,40 @@
 
   <!-- Barra inferior -->
   <footer id="bottom-tools">
-    <table>
-      <tr>
-        <td>
-          <label>
-            <input type="range" id="sizePicker" min="1" max="30" value="1">
-          </label>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label>
-            <input type="range" id="opacityPicker" min="1" max="100" value="100">
-          </label>
-        </td>
-      </tr>
-    </table>
+    <div id="ranges">
+      <label>
+        <input type="range" id="sizePicker" min="1" max="100" value="1">
+      </label>
 
-    <button class="Generalbutton" onclick="toggleToolsDiv()">
-      <img src="assets/icons/tools.png" alt="Formas">
-    </button>
-    <button class="Generalbutton" onclick="set_current_tool('pen')">
-      <img src="assets/icons/pen.png" alt="Caneta">
-    </button>
-    <button class="Generalbutton" onclick="showSelectBrushDiv()">
-      <img src="assets/brush/default.png" alt="Textura">
-    </button>
-    <button class="Generalbutton" onclick="set_current_tool('eraser')">
-      <img src="assets/icons/eraser.png" alt="Borracha">
-    </button>
-    <label>
-      <input type="color" id="colorPicker" value="#000000">
-    </label>
-    <button class="Generalbutton" onclick="showLayerListDiv()">
-      <img src="assets/icons/layers.png" alt="LayerImg">
-    </button>
-    <button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn">
+      <label>
+          <input type="range" id="opacityPicker" min="1" max="100" value="100">
+      </label>
+    </div>
+    <div id="buttonstools">
+      <button class="Generalbutton" onclick="toggleToolsDiv()">
+        <img src="assets/icons/tools.png" alt="Formas">
+      </button>
+      <button class="Generalbutton" onclick="set_current_tool('pen')">
+        <img src="assets/icons/pen.png" alt="Caneta">
+      </button>
+      <button class="Generalbutton" onclick="showSelectBrushDiv()">
+        <img src="assets/brush/default.png" alt="Textura">
+      </button>
+      <button class="Generalbutton" onclick="set_current_tool('eraser')">
+        <img src="assets/icons/eraser.png" alt="Borracha">
+      </button>
+      <label>
+        <button id="colorPicker"></button>
+      </label>
+      <div id="pickerContainer"></div>
+      <button class="Generalbutton" onclick="showLayerListDiv()">
+        <img src="assets/icons/layers.png" alt="LayerImg">
+      </button>
+    </div>
+
+    <!--<button class="Generalbutton" onclick="setAutoSize()" id="autoSizeBtn">
       <img src="assets/icons/autobrush.png" alt="Auto Brush">
-    </button>
+    </button>-->
 
   </footer>
 
@@ -174,7 +170,7 @@
   </section>
 
   <!-- Scripts -->
-  
+  <script src="globals/iro@5.js"></script>
   <script src="globals/localforage.min.js"></script>
   <script src="globals/globalDebug.js"></script>
   <script src="globals/konva.min.js"></script>
