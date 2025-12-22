@@ -2,10 +2,10 @@
 ////////// talve ainda não ficou perceptvel que erros de digitção e gramatica são comuns por aqui.
 ////////////////////////
 
-
 let DRAWSIZE = {
     width: 600,
-    height: 800
+    height: 800,
+    PIXELQUALITY: 1
 }
 let isSaved = true;
 
@@ -23,7 +23,9 @@ const pagesDiv = document.getElementById('pagesDiv');
 const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
     width: drawContainer.offsetWidth,
-    height: drawContainer.offsetHeight
+    height: drawContainer.offsetHeight,
+    listening:false
+    
 });
 
 stage.container().style.background = '#868686ff';
@@ -840,12 +842,14 @@ stage.on('mousedown', function (e) {
     firstStartTools()
 });
 //#region FIRST START TOOLS
-function firstStartTools(e){
+ function firstStartTools(e){
     const pos = getGlobalMousePos();
     startpos = pos;
     if (current_tool == 'pen') {
         isSaved = false
-        let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
+              
+        //let scaletexture = autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value;
+        let scaletexture = sizePicker.value;
         
         let color = colorPickerLib.color.hexString;
         TexturedLine = new Konva.Shape({
@@ -859,13 +863,12 @@ function firstStartTools(e){
             points: [],
             customClassName: 'ShapeLine',
             listening: false,
-            pixelRatio:1,
+            pixelRatio:DRAWSIZE.PIXELQUALITY,
             sceneFunc: function (ctx, shape) {
                 //////////// grande misterio, de onde vem essa função e de que serve
                 strokenize(ctx,shape)
 
             }
-
         });
         TexturedLine.opacity(opacityPicker.value / 100);
         if (isDrawing === true){
@@ -889,13 +892,13 @@ function firstStartTools(e){
             points: [pos.x, pos.y],
             listening: false,
             customClassName: 'LineEraser',
-            pixelRatio:1
+            pixelRatio:DRAWSIZE.PIXELQUALITY
         });
         
         LineEraser.opacity(opacityPicker.value / 100);
         group.add(LineEraser);
         stage.batchDraw();
-        LineEraser.points([startpos.x, startpos.y]);
+        //LineEraser.points([startpos.x, startpos.y]);
     }
     else if (current_tool == 'rectangle') {
         // iniciar com x/y no ponto de início e tamanho 0
@@ -946,7 +949,7 @@ function firstStartTools(e){
             points: [startpos.x, startpos.y, startpos.x, startpos.y],
             lineCap: 'round',
             lineJoin: 'round',
-            pixelRatio:1,
+            pixelRatio:DRAWSIZE.PIXELQUALITY,
             listening: false
         });
         group.add(lastLineTool);
@@ -1002,7 +1005,7 @@ function strokenize(ctx,shape){
     brushct.globalCompositeOperation = 'source-over';
 
     const points = shape.attrs.points;
-
+    
     if (points.length >= 2) { // precisa de pelo menos x,y
         //ctx.moveTo(points[0], points[1]); // primeiro ponto
         for (let i = 2; i < points.length; i += 2) { // pula de 2 em 2
@@ -1016,8 +1019,10 @@ function strokenize(ctx,shape){
     ctx.stroke();
 }
 //#region coisanoTextura
+let textureScale = 0;
 const SpacingRange = document.getElementById('SpacingRange'); // Assume-se que esta variável existe e funciona
 function coisanoTextura(points, i, ctx) {
+
     const baseTextureScale = ctx.lineWidth;
 
     // 1. Obter os pontos e calcular a distância (velocidade)
@@ -1039,28 +1044,28 @@ function coisanoTextura(points, i, ctx) {
         return;
     }
 
-    // --- LÓGICA DE PRESSÃO FALSA (FAKE PRESSURE) ---
-    const MAX_VELOCITY_FOR_PRESSURE = 20; 
-    const MIN_SCALE_FACTOR = 0.5; 
+    // // --- LÓGICA DE PRESSÃO FALSA (FAKE PRESSURE) ---
+     const MAX_VELOCITY_FOR_PRESSURE = 20; 
+     const MIN_SCALE_FACTOR = 3; 
     
-    let speedNormalized = Math.min(result, MAX_VELOCITY_FOR_PRESSURE) / MAX_VELOCITY_FOR_PRESSURE;
-    let fakePressure = 1 - speedNormalized;
+     let speedNormalized = Math.min(result, MAX_VELOCITY_FOR_PRESSURE) / MAX_VELOCITY_FOR_PRESSURE;
+     let fakePressure = 1 - speedNormalized;
     
-    // Calcula o fator de escala (entre MIN_SCALE_FACTOR e 1)
-    let pressureFactor = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * fakePressure;
+      //Calcula o fator de escala (entre MIN_SCALE_FACTOR e 1)
+     let pressureFactor = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * fakePressure;
     
-    // O tamanho da textura é ajustado pela pressão
-    const textureScale = baseTextureScale * pressureFactor;
-    // --- FIM DA LÓGICA DE PRESSÃO FALSA ---
+     // O tamanho da textura é ajustado pela pressão
+      textureScale = baseTextureScale * pressureFactor;
+      //--- FIM DA LÓGICA DE PRESSÃO FALSA ---
 
-    // 3. Desenhar o ponto de destino (com a nova escala)
-    ctx.drawImage(currentBrush,
-        points[i] - textureScale / 2,
-        points[i + 1] - textureScale / 2,
-        textureScale, textureScale
-    );
+      //3. Desenhar o ponto de destino (com a nova escala)
+     ctx.drawImage(currentBrush,
+         points[i] - textureScale / 2,
+         points[i + 1] - textureScale / 2,
+         textureScale, textureScale
+     );
 
-    // 4. Calcular e desenhar os passos intermediários (interpolação)
+     //4. Calcular e desenhar os passos intermediários (interpolação)
     
     let space = textureScale * Number(SpacingRange?.value); 
     let step = space; 
@@ -1071,7 +1076,7 @@ function coisanoTextura(points, i, ctx) {
     for (let st = 0; st <= steps; st++) {
         let initInter = x + (hyp1 * st / steps);
         let endInter = y + (hyp2 * st / steps);
-
+        
         // Desenhar carimbo intermediário com a 'textureScale' calculada
         ctx.drawImage(currentBrush,
             initInter - textureScale / 2,
@@ -1179,7 +1184,6 @@ function onUpKillWhatNeed(e){
     lastMidPoint = null;
     lastAngle = 0;
     console.log(undoHistory.length);
-    
     simplifyPoints();
     some = null;
     // ===== PROCESSAMENTO DA SELEÇÃO =====
@@ -1274,10 +1278,11 @@ function onUpKillWhatNeed(e){
 
     
 }
-
+//#region cacherize que da otimização
 function cacherize(Line){
     if (Line) {
             const points = Line.attrs.points;
+            console.log(points);
             
             // Garante que a linha tenha pelo menos 1 ponto (2 coordenadas)
             if (points.length >= 2) {
@@ -1285,7 +1290,7 @@ function cacherize(Line){
                 let maxX = points[0];
                 let minY = points[1];
                 let maxY = points[1];
-
+                
                 // 1. Calcula o menor e maior X e Y em todos os pontos
                 for (let i = 2; i < points.length; i += 2) {
                     minX = Math.min(minX, points[i]);
@@ -1293,19 +1298,28 @@ function cacherize(Line){
                     minY = Math.min(minY, points[i + 1]);
                     maxY = Math.max(maxY, points[i + 1]);
                 }
+                console.log("textureScale ",textureScale);
                 
-                const lw = Line.attrs.lineWidth;
+                const lw = Math.round(textureScale) * 3;
+                console.log(textureScale);
+                
                 
                 // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
+                let finalwidth = (maxX - minX)+ lw;
+                let finalheight = (maxY - minY)+ lw;
+                let offsetx = (minX - lw / 2) ;
+                let offsety = (minY- lw/ 2);
                 Line.cache({
                     // O cache precisa começar um pouco antes do X/Y mínimo para incluir metade do stroke
-                    x: minX - lw / 2, 
-                    y: minY - lw / 2, 
+                    x: offsetx, 
+                    y: offsety, 
                     // A largura/altura precisa ser a distância total (max - min) + a largura do stroke (lw)
-                    width: maxX - minX + lw, 
-                    height: maxY - minY + lw,
-                    pixelRatio:1,
-                    hitGraphEnabled: false
+                    width: finalwidth, 
+                    height: finalheight,
+                    pixelRatio:DRAWSIZE.PIXELQUALITY,
+                    hitGraphEnabled: false,
+                    drawBorder:false,
+                    imageSmoothingEnabled:false
                 });
             }
         }
@@ -1384,7 +1398,7 @@ async function saveAsImage(){
             //// guardamos a url pra mera vizualização na galeria;
             foundDraw.drawURL = stage.toDataURL({
                 mimeType: "image/png",
-                pixelRatio: 3,    //3x mais nítido
+                pixelRatio:DRAWSIZE.PIXELQUALITY,    //3x mais nítido
                 width: DRAWSIZE.width,
                 height: DRAWSIZE.height
             });
@@ -1412,7 +1426,7 @@ async function saveAsImage(){
             // Captura a imagem da página i
             pages['page' + i].PageURL = stage.toDataURL({
                 mimeType: "image/png",
-                pixelRatio: 3,   // 3x mais nítido
+                pixelRatio:DRAWSIZE.PIXELQUALITY,   // 3x mais nítido
                 width: DRAWSIZE.width,
                 height: DRAWSIZE.height
             });
@@ -1441,13 +1455,11 @@ function AddactionToHistory() {
     } else if (lastRect) {
         undoHistory.push(lastRect);
         selectorDeNodes(lastRect);
-        set_current_tool('transform')
-        ///lastRect = null;
+        lastRect = null;
     } else if (lastCicle) {
         undoHistory.push(lastCicle);
         selectorDeNodes(lastCicle);
-        set_current_tool('transform')
-        //lastCicle = null;
+        lastCicle = null;
     } else if (lastLineTool) {
         undoHistory.push(lastLineTool);
 
@@ -1484,7 +1496,8 @@ function redo() {
 
 
 function selectorDeNodes(node){
-    //node.draggable(true);
+    set_current_tool('transform')
+    node.draggable(true);
     trans.nodes([]);
     trans.moveToTop();
     trans.on("click tap", (e) =>{
@@ -1496,9 +1509,9 @@ function selectorDeNodes(node){
         trans.nodes([]);
     })
     stage.on('click tap', (e) => {
-    if (e.target === stage) {
-        trans.nodes([]);
-    }
+        if (e.target === stage) {
+            trans.nodes([]);
+        }
     });
     trans.nodes([node]);
     console.log("Tinha uma porra aqui");
