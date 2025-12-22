@@ -5,7 +5,7 @@
 let DRAWSIZE = {
     width: 600,
     height: 800,
-    PIXELQUALITY: 1
+    PIXELQUALITY: 3
 }
 let isSaved = true;
 
@@ -24,7 +24,7 @@ const stage = new Konva.Stage({
     container: 'draw-canvas',   // id of container <div>
     width: drawContainer.offsetWidth,
     height: drawContainer.offsetHeight,
-    listening:false
+    listening:true
     
 });
 
@@ -60,11 +60,10 @@ const chapID = search.get('chapID');
 let getManga;
 async function startSavedData(){
     drawlist = await getDrawList();
-    console.log(drawlist);
     mangaList = await getMangasList();
     getManga = mangaList ? mangaList.find(manga => manga.id === Number(id)) : null;
     foundDraw = drawlist ? drawlist.find(draw => draw.id === Number(id)) : null;
-    console.log(foundDraw);
+    
 }
 
 
@@ -153,7 +152,6 @@ function StartInitWithType(layer, bgLayer) {
                     pages['page' + i].background = null;
                     pages['page' + i].PageURL = null;
                     lengthArr += 1;
-                    console.log(pages['page' + i].layers);
                     
                     pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
                         if (child.attrs.customClassName === 'ShapeLine') {
@@ -235,7 +233,6 @@ function StartInitWithType(layer, bgLayer) {
             ]
 
         }
-        console.log('antes > ', foundDraw);
         
         if (foundDraw && foundDraw.layers[0] != null) {
 
@@ -341,8 +338,6 @@ stage.add(layer);
 
 let group;
 
-let trans = null;
-
 function updateLayerUI() {
     layerGrid.innerHTML = ''; // Limpa a grid
     for (let i = 0; i < layerList.length; i++) {
@@ -350,7 +345,7 @@ function updateLayerUI() {
         createUXlayer(); // Recria cada elemento
     }
 }
-
+let trans = null;
 async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer){
     
     await startSavedData();
@@ -396,15 +391,6 @@ let lastCicle = null;
 let lastSelectBox = null;
 let lastLineTool = null;
 let lastText = null;
-
-// ===== VARIÁVEIS PARA O SISTEMA DE SELEÇÃO =====
-// Array que armazena todos os nós (elementos) atualmente selecionados
-let selectedNodes = [];
-// Transformer que permite manipular múltiplos nós selecionados simultaneamente
-let selectionTransformer = null;
-// Cores para destacar os nós selecionados
-const SELECTION_STROKE_COLOR = '#00AAFF';
-const SELECTION_STROKE_WIDTH = 2;
 
 let draggingText = false;
 let endline = 0;
@@ -512,7 +498,6 @@ function set_current_page(index) {
     for (let i = 0; i < layerList.length - 1; i++) {
         currentlayer = i;
         createUXlayer();
-        console.log(realayers);
         
         realayers[i].show();
 
@@ -570,12 +555,7 @@ function createUXlayer() {
         ratio.checked = true;
         const num = Number(ratio.value);
         group = pages['page' + currentpage].layers[num].draw;
-        console.log('pressionado o radio da layer ',num);
-        
         checkimage(num);
-        ratio.dispatchEvent(new Event('change'));
-        console.log('Arrisco a dizer que clicou na layer ', currentlayer);
-        
     });
     layerCell.click();
 
@@ -615,9 +595,6 @@ function createUXlayer() {
 let imgReference = null;
 let LastimgReferenceOnLastLayer = null;
 function checkimage(number){
-    console.log('rapaiz o negoço começou e tava desse jeito aqui, se vira ai pra descobrir > ',imgReference);
-
-    console.log(LastimgReferenceOnLastLayer);
     
     if (pages['page' + currentpage].layers[number].hasimage != null){
         imgReference = pages['page' + currentpage].layers[number].hasimage;
@@ -625,19 +602,8 @@ function checkimage(number){
     }else{
         imgReference = null;
     }
-    console.log('img reference', 'local >>',);
-    
-    if(imgReference != null){
-        LastimgReferenceOnLastLayer.draggable(true)
-        trans.nodes([LastimgReferenceOnLastLayer]);
-        set_current_tool('transform');
-    }else{
-        console.log('no has porra nenhuma!');
-        set_current_tool('pen');
-        LastimgReferenceOnLastLayer.draggable(false);
-        LastimgReferenceOnLastLayer = null;
-
-        trans.nodes([]);
+    if (LastimgReferenceOnLastLayer != null){
+        selectorDeNodes(LastimgReferenceOnLastLayer);
     }
     
 
@@ -646,7 +612,6 @@ function addLayer(imagedata = '') {
     if (layerList.length > MAXLAYER){
         return;
     }
-    trans.nodes([]);
 
     let newRealLayer = new Konva.Layer();
     const newLayer = new Konva.Group();
@@ -673,7 +638,7 @@ function addLayer(imagedata = '') {
                 height: 200,
                 draggable: false
             });
-            set_current_tool('transform')
+            selectorDeNodes(konvaImage);
             newLayer.add(konvaImage);
             
             pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:konvaImage});
@@ -845,6 +810,22 @@ stage.on('mousedown', function (e) {
  function firstStartTools(e){
     const pos = getGlobalMousePos();
     startpos = pos;
+
+    
+    const intersection = stage.getIntersection(pos);
+    
+    // 2. Verifica se pegou algo e se esse algo pertence ao seu grupo atual
+    // Ignoramos se for o fundo (bgRect) ou se não houver nada
+    if (intersection && intersection !== bgRect && current_tool == "transform") {
+        console.log("Objeto atingido:", intersection);
+        
+        // Exemplo: Se clicar em algo, muda para a ferramenta de transformação
+        selectorDeNodes(intersection);
+        return; // Interrompe a criação de um novo desenho
+    }else{
+        trans.nodes([]);
+    }
+
     if (current_tool == 'pen') {
         isSaved = false
               
@@ -971,17 +952,7 @@ stage.on('mousedown', function (e) {
         showDivText();
 
         // Adiciona os eventos de drag aqui
-        lastText.on('dragstart', function () {
-            console.log("oxente!");
-            trans.nodes([lastText]);
-            
-        });
-        lastText.on('dragend', function () {
-            if (!trans){
-                trans.nodes([]);
-            }
-            
-        });
+        selectorDeNodes(lastText);
         
         draggingText = true;
     }
@@ -1046,7 +1017,7 @@ function coisanoTextura(points, i, ctx) {
 
     // // --- LÓGICA DE PRESSÃO FALSA (FAKE PRESSURE) ---
      const MAX_VELOCITY_FOR_PRESSURE = 20; 
-     const MIN_SCALE_FACTOR = 3; 
+     const MIN_SCALE_FACTOR = 2; 
     
      let speedNormalized = Math.min(result, MAX_VELOCITY_FOR_PRESSURE) / MAX_VELOCITY_FOR_PRESSURE;
      let fakePressure = 1 - speedNormalized;
@@ -1104,9 +1075,6 @@ stage.on('mousemove touchmove', function (e) {
     const y = Math.min(startpos.y, pos.y);
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
-    if (current_tool == 'transform'){
-
-    }
     if (current_tool == 'pen' && TexturedLine) {
         if (!some){
             some = {x:pos.x,y:pos.y}
@@ -1183,94 +1151,9 @@ function onUpKillWhatNeed(e){
     lastDist = 0;
     lastMidPoint = null;
     lastAngle = 0;
-    console.log(undoHistory.length);
     simplifyPoints();
     some = null;
-    // ===== PROCESSAMENTO DA SELEÇÃO =====
-    if (lastSelectBox) {
-        // Obter o retângulo de seleção em coordenadas de tela
-        const selectionRect = lastSelectBox.getClientRect();
-        // Array local para armazenar nós detectados nesta seleção
-        const detectedNodes = [];
 
-        // Iterar sobre todos os filhos do grupo de desenho
-        group.children.forEach(element => {
-            // Ignorar o próprio retângulo de seleção
-            if (element === lastSelectBox) return;
-            // Ignorar o transformer (se existir)
-            if (element === selectionTransformer) return;
-
-            // Verificar se o elemento tem interseção com a área de seleção
-            // haveIntersection retorna true se os dois retângulos se sobrepõem
-            if (Konva.Util.haveIntersection(selectionRect, element.getClientRect())) {
-                detectedNodes.push(element);
-            }
-        });
-
-        // ===== ATUALIZAR OS NÓS SELECIONADOS =====
-        // Remover destaque dos nós que NÃO estão mais selecionados
-        selectedNodes.forEach(node => {
-            if (!detectedNodes.includes(node)) {
-                // Se tinha stroke azul (de seleção), remover
-                if (node.attrs.oldStroke === undefined) {
-                    node.stroke(null);
-                } else {
-                    // Restaurar stroke original
-                    node.stroke(node.attrs.oldStroke);
-                }
-                node.strokeWidth(node.attrs.oldStrokeWidth || 1);
-            }
-        });
-
-        // Adicionar destaque aos novos nós selecionados
-        detectedNodes.forEach(node => {
-            // Armazenar stroke original para poder restaurar depois
-            if (node.attrs.oldStroke === undefined) {
-                node.attrs.oldStroke = node.stroke();
-                node.attrs.oldStrokeWidth = node.strokeWidth() || 1;
-            }
-            // Aplicar destaque com cor azul
-            node.stroke(SELECTION_STROKE_COLOR);
-            node.strokeWidth(SELECTION_STROKE_WIDTH);
-        });
-
-        // Atualizar a lista global de nós selecionados
-        selectedNodes = detectedNodes;
-
-        // ===== ATUALIZAR O TRANSFORMER =====
-        // Se houver nós selecionados, adicionar transformer para manipulá-los
-        if (selectedNodes.length > 0) {
-            // Remover transformer anterior se existir
-            if (selectionTransformer) {
-                selectionTransformer.detach();
-                selectionTransformer.destroy();
-            }
-            // Criar novo transformer attachado aos nós selecionados
-            selectionTransformer = new Konva.Transformer({
-                enabledAnchors: ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'],
-                rotateEnabled: true,
-                borderStroke: SELECTION_STROKE_COLOR,
-                borderStrokeWidth: 2,
-                anchorSize: 8,
-                anchorCornerRadius: 4,
-                padding: 5
-            });
-            group.add(selectionTransformer);
-            selectionTransformer.nodes(selectedNodes);
-        } else {
-            // Se nenhum nó foi selecionado, remover transformer
-            if (selectionTransformer) {
-                selectionTransformer.detach();
-                selectionTransformer.destroy();
-                selectionTransformer = null;
-            }
-        }
-
-        // ===== LIMPAR O RETÂNGULO DE SELEÇÃO =====
-        // Destruir o retângulo de seleção após processar
-        lastSelectBox.destroy();
-        lastSelectBox = null;
-    }
     cacherize(TexturedLine);
     AddactionToHistory();
     
@@ -1282,7 +1165,6 @@ function onUpKillWhatNeed(e){
 function cacherize(Line){
     if (Line) {
             const points = Line.attrs.points;
-            console.log(points);
             
             // Garante que a linha tenha pelo menos 1 ponto (2 coordenadas)
             if (points.length >= 2) {
@@ -1298,11 +1180,8 @@ function cacherize(Line){
                     minY = Math.min(minY, points[i + 1]);
                     maxY = Math.max(maxY, points[i + 1]);
                 }
-                console.log("textureScale ",textureScale);
                 
                 const lw = Math.round(textureScale) * 3;
-                console.log(textureScale);
-                
                 
                 // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
                 let finalwidth = (maxX - minX)+ lw;
@@ -1324,7 +1203,7 @@ function cacherize(Line){
             }
         }
 }
-
+//#region simplifyPoints
 function simplifyPoints(custom = null){
     ///////// log do atts > (18) [395, 140.25, 380, 148.25, 357, 162.25, 318, 193.25, 270, 231.25, 222, 270.25, 189, 
     // 296.25, 172, 307.25, 167, 311.25]
@@ -1353,10 +1232,15 @@ function simplifyPoints(custom = null){
     }
 }
 
+//#region clearCanvas
+
 function clearCanvas() {
+    trans.nodes([]);
+    trans.remove();
     undoHistory = [];
     redoHistory = [];
-    group.destroyChildren(); // Remove todas as linhas do grupo
+    group.destroyChildren();
+    group.add(trans)
 }
 
 //#region SAVE
@@ -1493,42 +1377,40 @@ function redo() {
     }
 }
 //#region SelectDeNodes
-
-
 function selectorDeNodes(node){
     set_current_tool('transform')
     node.draggable(true);
     trans.nodes([]);
     trans.moveToTop();
-    trans.on("click tap", (e) =>{
-        trans.nodes([node]);
+    trans.on("dragstart",(e) => {
         node.draggable(true);
+        trans.nodes([node]);
     })
     trans.on("dragend",(e) => {
-        node.draggable(false);
-        trans.nodes([]);
+        deselectNode(node);
     })
     stage.on('click tap', (e) => {
         if (e.target === stage) {
-            trans.nodes([]);
+            deselectNode(node);
         }
     });
     trans.nodes([node]);
-    console.log("Tinha uma porra aqui");
     layer.draw();
 
+}
+function deselectNode(node){
+    node.draggable(false);
+    trans.nodes([]);
 }
 
 //#region SAVE AUTO
 function autosave() {
     saveCanvas();
-    console.log("O tempo acabou! Função chamada! (✿◕‿◕)");
     iniciarTimer(); // reinicia o timer automaticamente
 }
 
 function iniciarTimer() {
     const umMinutos = 1 * 60 * 1000;
-    console.log("Timer iniciado! Mais 1 minutos de agonia... (⁄ ⁄•⁄ω⁄•⁄ ⁄)");
     setTimeout(autosave, umMinutos);
 }
 
