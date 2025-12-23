@@ -4,6 +4,8 @@ const create_chapter = document.getElementById('create-chapter');
 const emptyH1 = document.getElementById('emptyH1');
 create_chapter.style.visibility = 'hidden';
 
+let MAXPAGES = 30
+
 const search = new URLSearchParams(window.location.search);
 const id = search.get('id');
 // Carrega a lista de TODOS os mangás
@@ -58,7 +60,10 @@ function toggleCreateChapter() {
 async function addChapter() {
     const chapterName = document.getElementById('chapter-name').value || 'Novo Capítulo';
     const pagesNumber = document.getElementById('pages-number').value || 10;
-    
+    if (pagesNumber > MAXPAGES){
+        alert("Desculpe... Mas ainda não é possivel fazer mais de 30 paginas no mesmo capitulo")
+        return
+    }
     createChapterUX(chapterName,chapter_list.children.length,pagesNumber,'assets/drawing.png');
 
     if (selectedManga && selectedManga.chapters){

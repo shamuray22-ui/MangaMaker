@@ -455,6 +455,9 @@ function set_current_tool(tool) {
     const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text','transform'];
     if (validTools.includes(tool)) {
         current_tool = tool;
+        if (tool === "pen"){
+            trans.nodes([]);
+        }
         // Ajusta o modo de composição para a borracha
         if (tool === 'eraser') {
             composite = 'destination-out';
@@ -1382,7 +1385,7 @@ function selectorDeNodes(node){
     node.draggable(true);
     trans.nodes([]);
     trans.moveToTop();
-    trans.on("dragstart",(e) => {
+    trans.on("click tap",(e) => {
         node.draggable(true);
         trans.nodes([node]);
     })
