@@ -326,18 +326,227 @@ function StartInitWithType(layer, bgLayer) {
 
     }
 }
+
+
+function NewStartInitWithType(layer, bgLayer) {
+    //#region modo manga
+    if (Gettype === 'manga') {
+
+        getManga.chapters.forEach((page) => {
+            if (chapID == page.number) {
+                forgeratePageButton = page.pagesCount;
+            }
+
+        });
+        for (let i = 0; i < forgeratePageButton; i++) {
+            pagenumbers += 1;
+            /////////// o trabalho do i é enemurar as paginas não as layers
+            pages['page' + i] = {
+                background: null,
+                PageURL: null,
+                layers: [
+                ]
+            }
+            const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
+            let lengthArr = -1;
+            if (hasDrawInPage != null){
+                hasDrawInPage.layers.forEach(layer =>{
+                    pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
+                    pages['page' + i].background = null;
+                    pages['page' + i].PageURL = null;
+                    lengthArr += 1;
+                    
+                    pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
+                        if (child.attrs.customClassName === 'ShapeLine') {
+                            StartBrush(child.attrs.texturepath).then(response => {
+                                currentBrush = response
+                                child.setAttr('customTexture', currentBrush);
+
+                                child.sceneFunc(function (ctx) {
+                                    strokenize(ctx,child);
+                                });
+                                cacherize(child);
+
+                                
+                            });
+                        }
+                    });
+                    pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
+                            ctx.beginPath();
+                            ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                            ctx.closePath();
+                            ctx.clip();
+                    });
+                });
+
+            }
+            else{
+                pages['page' + i].layers.push({draw:new Konva.Group({})});
+                pages['page' + i].background = null;
+                pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
+                        ctx.beginPath();
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                        ctx.closePath();
+                        ctx.clip();
+                });
+            }
+            
+            pages['page' + i].background = new Konva.Group({
+            });
+
+            ////////// adiciona os grupos a page atual
+            let bgclone = bgRect.clone();
+            
+            pages['page' + i].background.add(bgclone); // Adicione o novo retângulo ao grupo
+            /////////// talvez eu use muito for e foreach desnecessariamente
+            let groupBgRect = pages['page' + i].background;
+            pages['page' + i].layers.forEach(layercell =>{
+                layercell.draw.hide();
+                
+                layer.add(layercell.draw);
+                
+                
+            });
+            
+            bgLayer.add(groupBgRect);
+
+            groupBgRect.hide();
+
+            currentpage = i;
+            updateLayerList()
+            ////////// criando a UX 😎😎😎😎
+            const buttonPage = document.createElement('button');
+            buttonPage.className = 'Generalbutton';
+            buttonPage.textContent = i + 1;
+            buttonPage.style.margin = '2px';
+
+            buttonPage.onclick = () => {
+                set_current_page(i);
+            };
+            pagesDiv.appendChild(buttonPage);
+        }
+        
+    }
+    //#region modo draw
+    else if (Gettype === 'draw') {
+        pages['page' + currentpage] = {
+            background: null,
+            layers: [
+            ]
+
+        }
+        
+        if (foundDraw && foundDraw.layers[0] != null) {
+            
+
+            DRAWSIZE.width = foundDraw.DRAWSIZE.width;
+            DRAWSIZE.height = foundDraw.DRAWSIZE.height
+            bgRect.width(DRAWSIZE.width);
+            bgRect.height(DRAWSIZE.height);
+            /// atualizando os numeros de resize da UX
+            getwidthInput.value = DRAWSIZE.width;
+            getheightInput.value = DRAWSIZE.height;
+
+            for (let i = 0; i < foundDraw.layers.length; i++) {
+                
+                let layer = foundDraw.layers[i];
+                pages['page' + currentpage].layers.push({ draw: null,drawImageBase64:null });
+
+                
+                pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer.draw);
+                /// criamos um elemento img 2seguindinhos sem perder a amizade
+                let drawedImg = new Image();
+                drawedImg.src = layer.drawImageBase64;
+                drawedImg.onload = function(){
+                    let konvaImage = new Konva.Image({
+                        x: 0,
+                        y: 0,
+                        image: drawedImg,
+                        width: DRAWSIZE.width,
+                        height: DRAWSIZE.height,
+                        draggable: false
+                    })
+                    pages['page' + currentpage].layers[i].draw.add(konvaImage)
+                }
+            }
+            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
+                
+                pages['page' + currentpage].layers[i].draw.clipFunc(function (ctx) {
+                    ctx.beginPath();
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                    ctx.closePath();
+                    ctx.clip();
+                });
+                if (pages['page' + currentpage].layers[i].draw.children.length < 1) {
+                    StartBrush('assets/brush/default.png', '#000');
+                }
+            }
+
+            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
+                let group = pages['page' + currentpage].layers[i].draw;
+
+                layer.add(group);
+
+                updateLayerList();
+
+            }
+
+        }
+        else {
+            StartBrush('assets/brush/default.png', '#000');
+            pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
+
+            pages['page' + currentpage].layers[0].draw = new Konva.Group({
+                clipFunc: function (ctx) {
+                    ctx.beginPath(); // Inicia um novo caminho
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                    ctx.closePath(); // Fecha o caminho
+                    ctx.clip(); // Aplica o recorte
+                }
+            });
+
+            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
+                let group = pages['page' + currentpage].layers[i].draw;
+
+                layer.add(group);
+
+                updateLayerList();
+                
+
+            }
+
+        }
+        ///////////// cria o bg e nada mais
+        // Um novo bgRect para o grupo de bg rect
+        pages['page' + currentpage].background = new Konva.Group({
+        });
+
+        ////////// adiciona os grupos a page atual
+        pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
+
+        let groupBgRect = pages['page' + currentpage].background;
+        bgLayer.add(groupBgRect);
+
+
+    }
+}
+
 let startlayer = new Konva.Layer();
 let realayers = [];
 realayers.push(startlayer);
 currentlayer = realayers[0];
 let layer = currentlayer;
 
+function upadeRealLayerList(layer){
+    realayers.push(layer);
+    currentlayer = realayers[realayers.length];
+}
 
 stage.add(bgLayer);
 stage.add(layer);
 
 let group;
-
+let trans = null;
 function updateLayerUI() {
     layerGrid.innerHTML = ''; // Limpa a grid
     for (let i = 0; i < layerList.length; i++) {
@@ -345,7 +554,7 @@ function updateLayerUI() {
         createUXlayer(); // Recria cada elemento
     }
 }
-let trans = null;
+
 async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer){
     
     await startSavedData();
@@ -361,10 +570,23 @@ async function RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJ
 
 }
 
+async function OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMaisFuncionalEm2026AtualizadoVersao100porcetoFree(layer,bgLayer){
+    await startSavedData();
+    await StartBrush('assets/brush/default.png', '#000');
+    NewStartInitWithType(layer, bgLayer);
+
+    group = pages['page' + currentpage].layers[0].draw;
+    set_current_page(0);
+    updateLayerList();
+    trans = new Konva.Transformer();
+    group.add(trans);
+    updateLayerUI();
+}
 
 //#region BOOT
 withLoadScreen(async () => {
-    await RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
+    ///await RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
+    await OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMaisFuncionalEm2026AtualizadoVersao100porcetoFree(layer, bgLayer);
 });
 
 //#region  VARIAVEIS
@@ -1265,7 +1487,8 @@ async function saveCanvas() {
     stage.draw();
     bgRect.stroke(null);
     withLoadScreen(async () =>{
-        await saveAsImage();
+        //await saveAsImage();
+        await NewsaveAsImage();
     });
     
 
@@ -1331,6 +1554,66 @@ async function saveAsImage(){
     }
 }
 
+async function NewsaveAsImage(){
+    if (Gettype == 'draw') {
+        
+        if (foundDraw) {
+            //// guardamos a url pra mera vizualização na galeria;
+            foundDraw.drawURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio:DRAWSIZE.PIXELQUALITY,    //3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
+            // aqui que guardamos grupos
+            foundDraw.layers = [];
+            for (let i = 0; i <= layerList.length - 1; i++) {
+                let layerbase64 = pages['page' + currentpage].layers[i].draw.toDataURL({
+                    mimeType: "image/png",
+                    pixelRatio:DRAWSIZE.PIXELQUALITY,
+                    width: DRAWSIZE.width,
+                    height: DRAWSIZE.height
+                });
+                pages['page' + currentpage].layers[i].drawImageBase64 = layerbase64
+                foundDraw.layers.push(pages['page' + currentpage].layers[i]);
+                
+            }
+            foundDraw.DRAWSIZE.width = DRAWSIZE.width;
+            foundDraw.DRAWSIZE.height = DRAWSIZE.height;
+            console.log(foundDraw);
+            // Atualiza apenas o draw específico ao invés da lista toda
+            await updateDrawById(foundDraw.id, foundDraw);
+        }
+
+    } else if (Gettype == 'manga') {
+        const getPages = [];
+        const originalPage = currentpage; // Salva a página atual para restaurar depois
+
+        for (let i = 0; i <= pagenumbers; i++) {
+            // Mostra apenas a página i no stage
+            set_current_page(i);
+            stage.batchDraw();
+            
+            // Captura a imagem da página i
+            pages['page' + i].PageURL = stage.toDataURL({
+                mimeType: "image/png",
+                pixelRatio:DRAWSIZE.PIXELQUALITY,   // 3x mais nítido
+                width: DRAWSIZE.width,
+                height: DRAWSIZE.height
+            });
+            
+            getPages.push(pages['page' + i]);
+        }
+        
+        // Restaura a página que estava sendo exibida
+        set_current_page(originalPage);
+
+        getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
+        
+        // Atualiza apenas o manga específico ao invés da lista toda
+        await updateMangaById(getManga.id, getManga);
+    }
+}
 //#region ADD TO HISTORY
 function AddactionToHistory() {
     if (TexturedLine) {
@@ -1385,7 +1668,11 @@ function selectorDeNodes(node){
     node.draggable(true);
     trans.nodes([]);
     trans.moveToTop();
-    trans.on("click tap",(e) => {
+    trans.on("tap",(e) => {
+        node.draggable(true);
+        trans.nodes([node]);
+    })
+    trans.on("dragstart",(e) => {
         node.draggable(true);
         trans.nodes([node]);
     })
@@ -1489,97 +1776,4 @@ stage.on('mouseleave ', function (e) {
 
     // Inicia o loop de cálculo de FPS
     requestAnimationFrame(calculateFPS);
-})();
-/**
- * Cria um painel flutuante no canto inferior direito para exibir logs do console
- * em tempo real, interceptando as funções originais do console.
- */
-(function () {
-    // 1. Criação e Estilização do Painel de Log
-    const logContainer = document.createElement('div');
-    logContainer.id = 'browser-log-display';
-    logContainer.style.position = 'fixed';
-    logContainer.style.top = '40px';
-    logContainer.style.left = '10px';
-    logContainer.style.width = '200px';
-    logContainer.style.maxHeight = '200px';
-    logContainer.style.overflowY = 'auto'; // Habilita scroll
-    logContainer.style.padding = '5px';
-    logContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.52)'; // Fundo escuro
-    logContainer.style.color = '#4ec62dff';
-    logContainer.style.fontFamily = 'monospace';
-    logContainer.style.fontSize = '10px';
-    logContainer.style.zIndex = '10000';
-    logContainer.style.borderRadius = '4px';
-    logContainer.style.border = '1px solid #285718ff';
-
-    document.body.appendChild(logContainer);
-
-    // 2. Armazena as funções originais do console
-    const originalConsole = {
-        log: console.log,
-        warn: console.warn,
-        error: console.error
-    };
-
-    /**
-     * Função auxiliar para formatar a mensagem e adicionar ao painel.
-     * @param {string} type - Tipo de log ('LOG', 'WARN', 'ERROR').
-     * @param {Array} args - Argumentos passados para a função console original.
-     */
-    function appendLog(type, args) {
-        // Converte os argumentos (objetos, strings, etc.) para uma string legível
-        const message = Array.from(args).map(arg => {
-            if (typeof arg === 'object' && arg !== null) {
-                try {
-                    return JSON.stringify(arg);
-                } catch {
-                    return String(arg); // fallback para objetos complexos
-                }
-            }
-            return String(arg);
-        }).join(' ');
-        
-        // Cria o elemento da mensagem
-        const logEntry = document.createElement('div');
-        logEntry.style.wordBreak = 'break-all'; // Quebra linhas longas
-        logEntry.style.padding = '2px 0';
-        
-        let color = '#FFFFFF'; // Cor padrão (LOG)
-        if (type === 'WARN') {
-            color = '#FFD700'; // Amarelo para warning
-        } else if (type === 'ERROR') {
-            color = '#FF4500'; // Vermelho/Laranja para erro
-        }
-        
-        // Aplica a cor e o prefixo
-        logEntry.innerHTML = `<span style="color:${color};">[${type}]</span>: ${message}`;
-
-        // Adiciona ao topo do contêiner (para ver o mais recente primeiro)
-        logContainer.prepend(logEntry);
-
-        // Limita o número de logs para evitar sobrecarga (ex: 50 mensagens)
-        if (logContainer.children.length > 50) {
-            logContainer.removeChild(logContainer.lastChild);
-        }
-    }
-
-    // 3. Sobrescreve as funções do console
-    console.log = function(...args) {
-        originalConsole.log.apply(console, args); // Chama a função original (para o console devtools)
-        appendLog('LOG', args); // Adiciona ao painel personalizado
-    };
-
-    console.warn = function(...args) {
-        originalConsole.warn.apply(console, args);
-        appendLog('WARN', args);
-    };
-
-    console.error = function(...args) {
-        originalConsole.error.apply(console, args);
-        appendLog('ERROR', args);
-    };
-
-    // Mensagem de confirmação no painel
-    appendLog('INFO', ['Live Browser Log iniciado com sucesso.']);
 })();
