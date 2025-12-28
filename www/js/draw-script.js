@@ -80,13 +80,23 @@ let currentpage = 0;
 
 let layerList = [];
 let currentlayer = 0;
+let realayers = [];
+let layer = null;
+
+function upadeRealLayerList(newlayer){
+    console.log("adicionado");
+    realayers.push(newlayer);
+    currentlayer = realayers[realayers.length - 1];
+    layer = currentlayer;
+    
+    stage.add(layer);
+}
 
 function updateLayerList() {
     if (!pages['page' + currentpage]) return;
     layerList = [];
     layerList = pages['page' + currentpage].layers; 
 }
-
 
 function StartBrush(path, color) {
     brushpath = path;
@@ -123,312 +133,79 @@ function StartBrush(path, color) {
     });
 }
 
-//#region STARTYPE
 
-function StartInitWithType(layer, bgLayer) {
+async function NewStartInitWithType(layer, bgLayer) {
     //#region modo manga
     if (Gettype === 'manga') {
-
-        getManga.chapters.forEach((page) => {
-            if (chapID == page.number) {
-                forgeratePageButton = page.pagesCount;
-            }
-
-        });
-        for (let i = 0; i < forgeratePageButton; i++) {
-            pagenumbers += 1;
-            /////////// o trabalho do i é enemurar as paginas não as layers
-            pages['page' + i] = {
-                background: null,
-                PageURL: null,
-                layers: [
-                ]
-            }
-            const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
-            let lengthArr = -1;
-            if (hasDrawInPage != null){
-                hasDrawInPage.layers.forEach(layer =>{
-                    pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
-                    pages['page' + i].background = null;
-                    pages['page' + i].PageURL = null;
-                    lengthArr += 1;
-                    
-                    pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
-                        if (child.attrs.customClassName === 'ShapeLine') {
-                            StartBrush(child.attrs.texturepath).then(response => {
-                                currentBrush = response
-                                child.setAttr('customTexture', currentBrush);
-
-                                child.sceneFunc(function (ctx) {
-                                    strokenize(ctx,child);
-                                });
-                                cacherize(child);
-
-                                
-                            });
-                        }
-                    });
-                    pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
-                            ctx.beginPath();
-                            ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                            ctx.closePath();
-                            ctx.clip();
-                    });
-                });
-
-            }
-            else{
-                pages['page' + i].layers.push({draw:new Konva.Group({})});
-                pages['page' + i].background = null;
-                pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
-                        ctx.beginPath();
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                        ctx.closePath();
-                        ctx.clip();
-                });
-            }
-            
-            pages['page' + i].background = new Konva.Group({
-            });
-
-            ////////// adiciona os grupos a page atual
-            let bgclone = bgRect.clone();
-            
-            pages['page' + i].background.add(bgclone); // Adicione o novo retângulo ao grupo
-            /////////// talvez eu use muito for e foreach desnecessariamente
-            let groupBgRect = pages['page' + i].background;
-            pages['page' + i].layers.forEach(layercell =>{
-                layercell.draw.hide();
-                
-                layer.add(layercell.draw);
-                
-                
-            });
-            
-            bgLayer.add(groupBgRect);
-
-            groupBgRect.hide();
-
-            currentpage = i;
-            updateLayerList()
-            ////////// criando a UX 😎😎😎😎
-            const buttonPage = document.createElement('button');
-            buttonPage.className = 'Generalbutton';
-            buttonPage.textContent = i + 1;
-            buttonPage.style.margin = '2px';
-
-            buttonPage.onclick = () => {
-                set_current_page(i);
-            };
-            pagesDiv.appendChild(buttonPage);
-        }
+        typeManga(layer);
         
     }
     //#region modo draw
     else if (Gettype === 'draw') {
+        await typeDraw(layer);
+    }
+///////////// cria o bg e nada mais
+    // Um novo bgRect para o grupo de bg rect
+    pages['page' + currentpage].background = new Konva.Group({
+    });
+
+    ////////// adiciona os grupos a page atual
+    pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
+
+    let groupBgRect = pages['page' + currentpage].background;
+    bgLayer.add(groupBgRect);
+
+    
+    function typeManga(layerReal){
         pages['page' + currentpage] = {
             background: null,
             layers: [
-
             ]
-
         }
-        
-        if (foundDraw && foundDraw.layers[0] != null) {
+        ///// zanzamos pela lista de chapters
+        getManga.chapters.forEach(chapter => {
+            console.log(chapter);
+            
+            if (chapter.pages.length > 0){
+                ///////// aqui começa o cabare de codigo mal feito
 
-            for (let i = 0; i < foundDraw.layers.length; i++) {
-                if (foundDraw.layers[i].draw == null) {
-                    foundDraw.layers.slice(i, 1);
-                    //pages['page' + currentpage].layers.slice(i, 1); // reseta as layers
+            }else{
+                ///// aqui é copiando mesmo to nem ai
+                let newLayer = new Konva.Layer();
+                upadeRealLayerList(newLayer)
+                StartBrush('assets/brush/default.png', '#000');
+                pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
 
-                }
-                let layer = foundDraw.layers[i];
-                pages['page' + currentpage].layers.push({ draw: null });
-                pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer);
-
-
-                pages['page' + currentpage].layers[i].draw.children.forEach(child => {
-
-                    if (child.attrs.customClassName === 'ShapeLine'){
-                        StartBrush(child.attrs.texturepath).then(response => {
-                            currentBrush = response
-                            child.setAttr('customTexture', currentBrush);
-                            
-                            child.sceneFunc(function (ctx) {
-                                strokenize(ctx,child);
-                                
-                            });
-                            cacherize(child)
-                        });
+                pages['page' + currentpage].layers[0].draw = new Konva.Group({
+                    clipFunc: function (ctx) {
+                        ctx.beginPath(); // Inicia um novo caminho
+                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
+                        ctx.closePath(); // Fecha o caminho
+                        ctx.clip(); // Aplica o recorte
                     }
-
                 });
-            }
-
-            DRAWSIZE.width = foundDraw.DRAWSIZE.width;
-            DRAWSIZE.height = foundDraw.DRAWSIZE.height
-            bgRect.width(DRAWSIZE.width);
-            bgRect.height(DRAWSIZE.height);
-            /// atualizando os numeros de resize da UX
-            getwidthInput.value = DRAWSIZE.width;
-            getheightInput.value = DRAWSIZE.height;
-            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
-                pages['page' + currentpage].layers[i].draw.clipFunc(function (ctx) {
-                    ctx.beginPath();
-                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                    ctx.closePath();
-                    ctx.clip();
-                });
-                ////////////// pegando as linhas salvas e recriando
-                if (pages['page' + currentpage].layers[i].draw.children.length < 1) {
-                    StartBrush('assets/brush/default.png', '#000');
+                let group = pages['page' + currentpage].layers[0].draw;
+                newLayer.add(group);
+                updateLayerList();
+                /////////// aqui populamos a lista de botoes de paginas
+                /// premeiro lembe-se que bipolaridade em codigo existe e o numero era string e não interger
+                let num = Number(chapter.pagesCount);
+                console.log(num);
+                
+                for (let i = 0; i < num; i++){
+                    gerateUXpages(i);
                 }
+
+
+
             }
-
-
-
-        }
-        else {
-            StartBrush('assets/brush/default.png', '#000');
-            pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
-
-            pages['page' + currentpage].layers[0].draw = new Konva.Group({
-                clipFunc: function (ctx) {
-                    ctx.beginPath(); // Inicia um novo caminho
-                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height); // Define o retângulo de recorte
-                    ctx.closePath(); // Fecha o caminho
-                    ctx.clip(); // Aplica o recorte
-                }
-            });
-
-
-
-        }
-
-
-        // Um novo bgRect para o grupo de bg rect
-        pages['page' + currentpage].background = new Konva.Group({
+            
         });
+        
 
-        ////////// adiciona os grupos a page atual
-        pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
-
-        let groupBgRect = pages['page' + currentpage].background;
-        bgLayer.add(groupBgRect);
-        for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
-            let group = pages['page' + currentpage].layers[i].draw;
-
-            layer.add(group);
-
-            updateLayerList();
-
-        }
-
-    }
-}
-
-
-function NewStartInitWithType(layer, bgLayer) {
-    //#region modo manga
-    if (Gettype === 'manga') {
-
-        getManga.chapters.forEach((page) => {
-            if (chapID == page.number) {
-                forgeratePageButton = page.pagesCount;
-            }
-
-        });
-        for (let i = 0; i < forgeratePageButton; i++) {
-            pagenumbers += 1;
-            /////////// o trabalho do i é enemurar as paginas não as layers
-            pages['page' + i] = {
-                background: null,
-                PageURL: null,
-                layers: [
-                ]
-            }
-            const hasDrawInPage = getManga.chapters.find(chap => chap.number == chapID).pages[i] || null;
-            let lengthArr = -1;
-            if (hasDrawInPage != null){
-                hasDrawInPage.layers.forEach(layer =>{
-                    pages['page' + i].layers.push({draw:Konva.Node.create(layer.draw)});
-                    pages['page' + i].background = null;
-                    pages['page' + i].PageURL = null;
-                    lengthArr += 1;
-                    
-                    pages['page' + i].layers[lengthArr].draw.children.forEach(child => {
-                        if (child.attrs.customClassName === 'ShapeLine') {
-                            StartBrush(child.attrs.texturepath).then(response => {
-                                currentBrush = response
-                                child.setAttr('customTexture', currentBrush);
-
-                                child.sceneFunc(function (ctx) {
-                                    strokenize(ctx,child);
-                                });
-                                cacherize(child);
-
-                                
-                            });
-                        }
-                    });
-                    pages['page' + i].layers[lengthArr].draw.clipFunc(function (ctx) {
-                            ctx.beginPath();
-                            ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                            ctx.closePath();
-                            ctx.clip();
-                    });
-                });
-
-            }
-            else{
-                pages['page' + i].layers.push({draw:new Konva.Group({})});
-                pages['page' + i].background = null;
-                pages['page' + i].layers[0].draw.clipFunc(function (ctx) {
-                        ctx.beginPath();
-                        ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                        ctx.closePath();
-                        ctx.clip();
-                });
-            }
-            
-            pages['page' + i].background = new Konva.Group({
-            });
-
-            ////////// adiciona os grupos a page atual
-            let bgclone = bgRect.clone();
-            
-            pages['page' + i].background.add(bgclone); // Adicione o novo retângulo ao grupo
-            /////////// talvez eu use muito for e foreach desnecessariamente
-            let groupBgRect = pages['page' + i].background;
-            pages['page' + i].layers.forEach(layercell =>{
-                layercell.draw.hide();
-                
-                layer.add(layercell.draw);
-                
-                
-            });
-            
-            bgLayer.add(groupBgRect);
-
-            groupBgRect.hide();
-
-            currentpage = i;
-            updateLayerList()
-            ////////// criando a UX 😎😎😎😎
-            const buttonPage = document.createElement('button');
-            buttonPage.className = 'Generalbutton';
-            buttonPage.textContent = i + 1;
-            buttonPage.style.margin = '2px';
-
-            buttonPage.onclick = () => {
-                set_current_page(i);
-            };
-            pagesDiv.appendChild(buttonPage);
-        }
         
     }
-    //#region modo draw
-    else if (Gettype === 'draw') {
+    async function typeDraw(layerReal){
         pages['page' + currentpage] = {
             background: null,
             layers: [
@@ -437,8 +214,6 @@ function NewStartInitWithType(layer, bgLayer) {
         }
         
         if (foundDraw && foundDraw.layers[0] != null) {
-            
-
             DRAWSIZE.width = foundDraw.DRAWSIZE.width;
             DRAWSIZE.height = foundDraw.DRAWSIZE.height
             bgRect.width(DRAWSIZE.width);
@@ -451,9 +226,24 @@ function NewStartInitWithType(layer, bgLayer) {
                 
                 let layer = foundDraw.layers[i];
                 pages['page' + currentpage].layers.push({ draw: null,drawImageBase64:null });
-
+                let newRealLayer = new Konva.Layer();
+                upadeRealLayerList(newRealLayer)
+                console.log(pages['page' + currentpage].layers[i]);
                 
-                pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer.draw);
+                ///pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer.draw);
+                pages['page' + currentpage].layers[i].draw = new Konva.Group({
+
+                });
+                pages['page' + currentpage].layers[i].draw.clipFunc(function (ctx) {
+                    ctx.beginPath();
+                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                    ctx.closePath();
+                    ctx.clip();
+                });
+                if (pages['page' + currentpage].layers[i].draw.children.length < 1) {
+                    StartBrush('assets/brush/default.png', '#000');
+                }
+                
                 /// criamos um elemento img 2seguindinhos sem perder a amizade
                 let drawedImg = new Image();
                 drawedImg.src = layer.drawImageBase64;
@@ -466,33 +256,21 @@ function NewStartInitWithType(layer, bgLayer) {
                         height: DRAWSIZE.height,
                         draggable: false
                     })
-                    pages['page' + currentpage].layers[i].draw.add(konvaImage)
+                    pages['page' + currentpage].layers[i].draw.add(konvaImage);
+                    stage.batchDraw();
+                    console.log(layer);
+                    let group = pages['page' + currentpage].layers[i].draw;
+                    newRealLayer.add(group);
                 }
-            }
-            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
-                
-                pages['page' + currentpage].layers[i].draw.clipFunc(function (ctx) {
-                    ctx.beginPath();
-                    ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                    ctx.closePath();
-                    ctx.clip();
-                });
-                if (pages['page' + currentpage].layers[i].draw.children.length < 1) {
-                    StartBrush('assets/brush/default.png', '#000');
-                }
-            }
-
-            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
-                let group = pages['page' + currentpage].layers[i].draw;
-
-                layer.add(group);
-
                 updateLayerList();
-
+                updateLayerUI();
             }
+            
 
         }
         else {
+            let newLayer = new Konva.Layer();
+            upadeRealLayerList(newLayer)
             StartBrush('assets/brush/default.png', '#000');
             pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
 
@@ -504,46 +282,26 @@ function NewStartInitWithType(layer, bgLayer) {
                     ctx.clip(); // Aplica o recorte
                 }
             });
-
-            for (let i = 0; i < pages['page' + currentpage].layers.length; i++) {
-                let group = pages['page' + currentpage].layers[i].draw;
-
-                layer.add(group);
-
-                updateLayerList();
-                
-
-            }
+            let group = pages['page' + currentpage].layers[0].draw;
+            newLayer.add(group);
+            updateLayerList();
 
         }
-        ///////////// cria o bg e nada mais
-        // Um novo bgRect para o grupo de bg rect
-        pages['page' + currentpage].background = new Konva.Group({
-        });
+        
+    }
 
-        ////////// adiciona os grupos a page atual
-        pages['page' + currentpage].background.add(bgRect); // Adicione o novo retângulo ao grupo
-
-        let groupBgRect = pages['page' + currentpage].background;
-        bgLayer.add(groupBgRect);
-
+    function gerateUXpages(num){
+        const pagesDiv = document.getElementById("pagesDiv");
+        const button = document.createElement("button");
+        button.textContent = "Página " + (num + 1);
+        button.className = "Generalbutton";
+        pagesDiv.appendChild(button);
+        
 
     }
 }
 
-let startlayer = new Konva.Layer();
-let realayers = [];
-realayers.push(startlayer);
-currentlayer = realayers[0];
-let layer = currentlayer;
-
-function upadeRealLayerList(layer){
-    realayers.push(layer);
-    currentlayer = realayers[realayers.length];
-}
-
 stage.add(bgLayer);
-stage.add(layer);
 
 let group;
 let trans = null;
@@ -579,17 +337,20 @@ async function OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMais
     set_current_page(0);
     updateLayerList();
     trans = new Konva.Transformer();
+    trans.nodes([]);
     group.add(trans);
     updateLayerUI();
 }
 
 //#region BOOT
 withLoadScreen(async () => {
-    ///await RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer);
+    ///await RealBoot100PocentoAtulizadoVersao2025melhorCodigoCustoBeneficionJaFeito(layer, bgLayer); (versao legada)
     await OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMaisFuncionalEm2026AtualizadoVersao100porcetoFree(layer, bgLayer);
 });
 
 //#region  VARIAVEIS
+let mouseicon = document.getElementById("mouseicon");
+
 let isDrawing = false;
 let TexturedLine;
 let LineEraser;
@@ -626,9 +387,16 @@ colorPickerPanel.style.display = 'none'
 const colorPickerLib = new iro.ColorPicker("#pickerContainer", {
     width: 132,
     color: "#000000ff", // Puxa o valor inicial do seu input antigo
+    padding:4,
+    borderWidth: 1,// Borda
+    borderColor: "#000",
+    handleRadius: 6,// Tamanho do cursor
+    handleStrokeWidth: 2,
+    handleStrokeColor: "#fff",
     layout: [
         { component: iro.ui.Wheel },
-        { component: iro.ui.Slider, options: { sliderType: 'value' } }
+        { component: iro.ui.Slider, options: { sliderType: 'value' }, },
+        { component: iro.ui.Slider, options: { sliderType: 'saturation' } },
     ]
 });
 
@@ -674,7 +442,7 @@ function getGlobalMousePos() {
 //#region SET CURRENT TOOL
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
-    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text','transform'];
+    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text','transform','colorpicker'];
     if (validTools.includes(tool)) {
         current_tool = tool;
         if (tool === "pen"){
@@ -717,16 +485,7 @@ function set_current_page(index) {
     stage.batchDraw();
     updateLayerList();
     layerGrid.innerHTML = '';
-    for(let w = 0; w < realayers.length - 1; w++){
-        realayers[w].hide();
-    }
-    for (let i = 0; i < layerList.length - 1; i++) {
-        currentlayer = i;
-        createUXlayer();
-        
-        realayers[i].show();
-
-    }
+    
 }
 
 //#region ADD LAYER
@@ -1083,7 +842,7 @@ stage.on('mousedown', function (e) {
         
         group.add(TexturedLine);
         
-        stage.batchDraw();
+        layer.draw();
         
     }else if (current_tool == 'eraser'){
         // Cria o traço de borracha (LineEraser)
@@ -1103,7 +862,7 @@ stage.on('mousedown', function (e) {
         
         LineEraser.opacity(opacityPicker.value / 100);
         group.add(LineEraser);
-        stage.batchDraw();
+        layer.draw();
         //LineEraser.points([startpos.x, startpos.y]);
     }
     else if (current_tool == 'rectangle') {
@@ -1129,8 +888,6 @@ stage.on('mousedown', function (e) {
             
         });
         group.add(lastCicle);
-
-
     }
     else if (current_tool == 'select') {
         lastSelectBox = new Konva.Rect({
@@ -1212,7 +969,7 @@ function strokenize(ctx,shape){
     }
 
     //ctx.fillStrokeShape(shape);
-    ctx.stroke();
+    //ctx.stroke();
 }
 //#region coisanoTextura
 let textureScale = 0;
@@ -1251,15 +1008,14 @@ function coisanoTextura(points, i, ctx) {
      let pressureFactor = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * fakePressure;
     
      // O tamanho da textura é ajustado pela pressão
-      textureScale = baseTextureScale * pressureFactor;
-      //--- FIM DA LÓGICA DE PRESSÃO FALSA ---
-
-      //3. Desenhar o ponto de destino (com a nova escala)
-     ctx.drawImage(currentBrush,
-         points[i] - textureScale / 2,
-         points[i + 1] - textureScale / 2,
-         textureScale, textureScale
-     );
+    textureScale = baseTextureScale * pressureFactor;
+    //--- FIM DA LÓGICA DE PRESSÃO FALSA ---
+    //3. Desenhar o ponto de destino (com a nova escala)
+    ctx.drawImage(currentBrush,
+        points[i] - textureScale / 2,
+        points[i + 1] - textureScale / 2,
+        textureScale, textureScale
+    );
 
      //4. Calcular e desenhar os passos intermediários (interpolação)
     
@@ -1267,7 +1023,7 @@ function coisanoTextura(points, i, ctx) {
     let step = space; 
 
     let steps = Math.floor(result / step);
-    steps = Math.min(steps, 30);
+    steps = Math.min(steps, 130);
     
     for (let st = 0; st <= steps; st++) {
         let initInter = x + (hyp1 * st / steps);
@@ -1296,6 +1052,9 @@ stage.on('mousemove touchmove', function (e) {
         return;
     }
     const pos = getGlobalMousePos();
+    mouseicon.style.top = pos.y;
+    mouseicon.style.left = pos.x;
+    
     const x = Math.min(startpos.x, pos.x);
     const y = Math.min(startpos.y, pos.y);
     const w = Math.abs(pos.x - startpos.x);
@@ -1308,9 +1067,8 @@ stage.on('mousemove touchmove', function (e) {
         some.x += (pos.x - some.x) * (1-strongStabilizador.value);
         some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         
-        
         TexturedLine.attrs.points.push(some.x, some.y);
-        stage.batchDraw();
+        layer.draw();
     } else if (current_tool == 'eraser' && LineEraser){
 
 
@@ -1323,7 +1081,7 @@ stage.on('mousemove touchmove', function (e) {
         
         
         LineEraser.points(LineEraser.points().concat([some.x, some.y]));
-        stage.batchDraw();
+        layer.draw();
     }
     else if (current_tool == 'circle' && lastCicle) {
         lastCicle.x(x);
@@ -1378,11 +1136,9 @@ function onUpKillWhatNeed(e){
     lastAngle = 0;
     simplifyPoints();
     some = null;
-
     cacherize(TexturedLine);
     AddactionToHistory();
-    
-    stage.batchDraw();
+    layer.draw();
 
     
 }
@@ -1555,6 +1311,7 @@ async function saveAsImage(){
 }
 
 async function NewsaveAsImage(){
+    trans.nodes([]);
     if (Gettype == 'draw') {
         
         if (foundDraw) {
@@ -1588,26 +1345,23 @@ async function NewsaveAsImage(){
     } else if (Gettype == 'manga') {
         const getPages = [];
         const originalPage = currentpage; // Salva a página atual para restaurar depois
-
-        for (let i = 0; i <= pagenumbers; i++) {
-            // Mostra apenas a página i no stage
-            set_current_page(i);
-            stage.batchDraw();
-            
-            // Captura a imagem da página i
-            pages['page' + i].PageURL = stage.toDataURL({
-                mimeType: "image/png",
-                pixelRatio:DRAWSIZE.PIXELQUALITY,   // 3x mais nítido
-                width: DRAWSIZE.width,
-                height: DRAWSIZE.height
+        getManga.chapters.forEach(chapter => {
+            chapter.pages.forEach(page => {
+                
+                page.layers.forEach((layer,layerindex) => {
+                    let layerbase64 = layer.draw.toDataURL({
+                        mimeType: "image/png",
+                        pixelRatio:DRAWSIZE.PIXELQUALITY,
+                        width: DRAWSIZE.width,
+                        height: DRAWSIZE.height
+                    });
+                    page.layers[layerindex].drawImageBase64 = layerbase64
+                    
+                });
+                
             });
-            
-            getPages.push(pages['page' + i]);
-        }
+        });
         
-        // Restaura a página que estava sendo exibida
-        set_current_page(originalPage);
-
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
         
         // Atualiza apenas o manga específico ao invés da lista toda

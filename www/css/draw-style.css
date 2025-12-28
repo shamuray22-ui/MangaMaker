@@ -11,7 +11,12 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-
+#mouseicon{
+  position: fixed;
+  background-color: aqua;
+  width: 100px;
+  height: 100px;
+}
 /* ======== BOTÕES ======== */
 .Generalbutton {
   display: flex;

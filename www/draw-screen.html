@@ -31,7 +31,7 @@
 
   <!-- Área do canvas -->
   <main id="draw-canvas"></main>
-
+  <div id="mouseicon"><img src="assets/icons/pen.png"> </div>
   <div id="definitionsscreen">
     <label>
       CONFIGS
@@ -67,6 +67,9 @@
     <label>Pinceis</label>
     <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/default.png')">
       <img src='assets/brush/default.png'>
+    </button>
+    <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/default 2.png')">
+      <img src='assets/brush/default 2.png'>
     </button>
     <button class="Generalbutton" id="BrushBtn" onclick="StartBrush('assets/brush/Xbrush.png')">
       <img src='assets/brush/Xbrush.png'>
@@ -132,7 +135,9 @@
       <label>
         <button id="colorPicker"></button>
       </label>
-      <div id="pickerContainer"></div>
+      <div id="pickerContainer">
+        <button class="Generalbutton"> Get Color </button>
+      </div>
       <button class="Generalbutton" onclick="showLayerListDiv()">
         <img src="assets/icons/layers.png" alt="LayerImg">
       </button>
