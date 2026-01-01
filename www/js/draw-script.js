@@ -5,7 +5,7 @@
 let DRAWSIZE = {
     width: 600,
     height: 800,
-    PIXELQUALITY: 3
+    PIXELQUALITY: 1
 }
 let isSaved = true;
 
@@ -13,7 +13,14 @@ const MAXLAYER = 10;
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
 const layerGrid = document.getElementById('layerGrid');
-    
+const pixelquality = document.getElementById('pixelquality');
+DRAWSIZE.PIXELQUALITY = pixelquality.value;
+
+pixelquality.addEventListener('change', () => {
+    DRAWSIZE.PIXELQUALITY = pixelquality.value;
+});
+
+
 let Gettype = localStorage.getItem('type');
 
 const drawContainer = document.getElementById('draw-canvas');
@@ -81,14 +88,21 @@ let currentpage = 0;
 let layerList = [];
 let currentlayer = 0;
 let realayers = [];
+let currentreallayer = 0;
 let layer = null;
 
 function upadeRealLayerList(newlayer){
     console.log("adicionado");
     realayers.push(newlayer);
-    currentlayer = realayers[realayers.length - 1];
-    layer = currentlayer;
+    currentreallayer = realayers[realayers.length - 1];
+    layer = currentreallayer;
     stage.add(layer);
+}
+function getRealLayer(index){
+    currentreallayer = realayers[index];
+    let layergetted = currentreallayer;
+    return layergetted;
+
 }
 
 function updateLayerList() {
@@ -298,11 +312,7 @@ async function NewStartInitWithType(layer, bgLayer) {
     function createBgRect(bgLayer) {
         //// pages é tao repetido no codigo porque toda func aqui é uma mulher ciumenta
         /// não me culpe
-        pages['page' + currentpage] = {
-            background: null,
-            layers: [
-            ]
-        }
+        
         pages['page' + currentpage].background = new Konva.Group({
         });
 
@@ -319,6 +329,7 @@ async function NewStartInitWithType(layer, bgLayer) {
         upadeRealLayerList(newLayer);
         StartBrush('assets/brush/default.png', '#000');
         pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
+        
         
         pages['page' + currentpage].layers[indexlayer].draw = new Konva.Group({
             clipFunc: function (ctx) {
@@ -383,6 +394,7 @@ let mouseicon = document.getElementById("mouseicon");
 
 let isDrawing = false;
 let TexturedLine;
+let linepreviwe;
 let LineEraser;
 
 let simplifyStrenght = 2;
@@ -491,36 +503,12 @@ function set_current_tool(tool) {
 //#region SET CURRENT PAGE
 function set_current_page(index) {
     trans.nodes([]);
-    currentlayer = 0;
-    currentpage = index;
     
-    for (let i = 0; i < pagesDiv.children.length - 1; i++) {
-        //////// escodende geral antes de mostrar a page selecionada
-        
-        if (pages['page' + i].background){
-            pages['page' + i].background.hide();
-        }
-        pages['page' + i].layers.forEach(layer => {
-            layer.draw.hide();
-            
-        });
-    }
-    if (pages['page' + currentpage].background){
-        pages['page' + currentpage].background.show();
-    }
-    pages['page' + currentpage].layers.forEach(layer => {
-        layer.draw.show();
-        group = layer.draw;
-    });
-    stage.batchDraw();
-    updateLayerList();
-    layerGrid.innerHTML = '';
     
 }
 
 //#region ADD LAYER
 function createUXlayer() {
-    
     const layerCell = document.createElement('div');
     layerCell.id = 'layerCell'; // usa class, id é pra ser único
     // label
@@ -569,6 +557,7 @@ function createUXlayer() {
         ratio.checked = true;
         const num = Number(ratio.value);
         group = pages['page' + currentpage].layers[num].draw;
+        layer = getRealLayer(ratio.value);
         checkimage(num);
     });
     layerCell.click();
@@ -628,9 +617,9 @@ function addLayer(imagedata = '') {
     }
 
     let newRealLayer = new Konva.Layer();
-    const newLayer = new Konva.Group();
+    const newGroup = new Konva.Group();
     set_current_tool('pen')
-    newLayer.clipFunc(function (ctx) {
+    newGroup.clipFunc(function (ctx) {
         ctx.beginPath();
         ctx.rect(0, 0, DRAWSIZE.width, DRAWSIZE.height);
         ctx.closePath();
@@ -653,22 +642,22 @@ function addLayer(imagedata = '') {
                 draggable: false
             });
             selectorDeNodes(konvaImage);
-            newLayer.add(konvaImage);
+            newRealLayer.add(konvaImage);
             
-            pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:konvaImage});
-            newRealLayer.add(newLayer);
-            stage.add(newRealLayer);
-            realayers.push(newRealLayer);
+            pages['page' + currentpage].layers.push({ draw: newGroup, hasimage:konvaImage});
+            newRealLayer.add(newGroup);
+            upadeRealLayerList(newRealLayer);
             group = pages['page' + currentpage].layers[currentlayer].draw;
             updateLayerList();
             updateLayerUI();
         }
 
     } else{
-        pages['page' + currentpage].layers.push({ draw: newLayer, hasimage:null});
-        newRealLayer.add(newLayer);
-        stage.add(newRealLayer);
-        realayers.push(newRealLayer);
+        pages['page' + currentpage].layers.push({ draw: newGroup, hasimage:null});
+        newRealLayer.add(newGroup);
+        upadeRealLayerList(newRealLayer);
+        console.log("saddada ",currentlayer);
+        
         group = pages['page' + currentpage].layers[currentlayer].draw;
         updateLayerList();
         createUXlayer();
@@ -865,12 +854,19 @@ stage.on('mousedown', function (e) {
 
             }
         });
+        linepreviwe = new Konva.Line({
+            stroke: color,
+            strokeWidth: scaletexture,
+            points: [pos.x, pos.y],
+            
+        });
+        
         TexturedLine.opacity(opacityPicker.value / 100);
         if (isDrawing === true){
             TexturedLine.attrs.points.push(startpos.x, startpos.y,startpos.x,startpos.y);
         }
-        
-        group.add(TexturedLine);
+        linepreviwe.opacity(opacityPicker.value / 100);
+        group.add(linepreviwe);
         
         layer.draw();
         
@@ -1089,15 +1085,17 @@ stage.on('mousemove touchmove', function (e) {
     const y = Math.min(startpos.y, pos.y);
     const w = Math.abs(pos.x - startpos.x);
     const h = Math.abs(pos.y - startpos.y);
-    if (current_tool == 'pen' && TexturedLine) {
+    if (current_tool == 'pen') {
         if (!some){
             some = {x:pos.x,y:pos.y}
         }
         
         some.x += (pos.x - some.x) * (1-strongStabilizador.value);
         some.y += (pos.y - some.y) * (1-strongStabilizador.value);
-        
-        TexturedLine.attrs.points.push(some.x, some.y);
+        if (TexturedLine){
+            TexturedLine.attrs.points.push(some.x, some.y);
+            linepreviwe.points(linepreviwe.points().concat([some.x, some.y]));
+        }
         layer.draw();
     } else if (current_tool == 'eraser' && LineEraser){
 
@@ -1156,6 +1154,10 @@ stage.on('mouseup', function (e) {
 //#region onUpKillWhatNeed
 
 function onUpKillWhatNeed(e){
+    if (isDrawing === true && current_tool == 'pen' && linepreviwe){
+        linepreviwe.remove();
+        group.add(TexturedLine);
+    }
     clearTimeout(touchTimer);
     touchTimer = null;
     e.evt.preventDefault();
@@ -1263,7 +1265,6 @@ async function saveCanvas() {
     const lascale = stage.scaleX();
     const lasrotation = stage.rotation();
 
-
     ////// resetando as coordenadas da tela pra pos inicial
 
     stage.position({ x: 0, y: 0 });
@@ -1281,69 +1282,14 @@ async function saveCanvas() {
     //////// resturando as cordenadas da tela
     stage.position(laspos);
     stage.scale({ x: lascale, y: lascale });
-    layer.draw();
+    stage.draw();
     stage.rotation(lasrotation);
     bgRect.stroke('black')
     bgLayer.draw();
-    group.draw();
 }
-async function saveAsImage(){
-    if (Gettype == 'draw') {
-        
-        if (foundDraw) {
-            //// guardamos a url pra mera vizualização na galeria;
-            foundDraw.drawURL = stage.toDataURL({
-                mimeType: "image/png",
-                pixelRatio:DRAWSIZE.PIXELQUALITY,    //3x mais nítido
-                width: DRAWSIZE.width,
-                height: DRAWSIZE.height
-            });
-            // aqui que guardamos grupos
-            foundDraw.layers = [];
-            for (let i = 0; i <= layerList.length - 1; i++) {
-                foundDraw.layers.push(pages['page' + currentpage].layers[i].draw.toJSON());
-            }
-            foundDraw.DRAWSIZE.width = DRAWSIZE.width;
-            foundDraw.DRAWSIZE.height = DRAWSIZE.height;
-            
-            // Atualiza apenas o draw específico ao invés da lista toda
-            await updateDrawById(foundDraw.id, foundDraw);
-        }
-
-    } else if (Gettype == 'manga') {
-        const getPages = [];
-        const originalPage = currentpage; // Salva a página atual para restaurar depois
-
-        for (let i = 0; i <= pagenumbers; i++) {
-            // Mostra apenas a página i no stage
-            set_current_page(i);
-            stage.batchDraw();
-            
-            // Captura a imagem da página i
-            pages['page' + i].PageURL = stage.toDataURL({
-                mimeType: "image/png",
-                pixelRatio:DRAWSIZE.PIXELQUALITY,   // 3x mais nítido
-                width: DRAWSIZE.width,
-                height: DRAWSIZE.height
-            });
-            
-            getPages.push(pages['page' + i]);
-        }
-        
-        // Restaura a página que estava sendo exibida
-        set_current_page(originalPage);
-
-        getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-        
-        // Atualiza apenas o manga específico ao invés da lista toda
-        await updateMangaById(getManga.id, getManga);
-    }
-}
-
 async function NewsaveAsImage(){
     trans.nodes([]);
     if (Gettype == 'draw') {
-        
         if (foundDraw) {
             //// guardamos a url pra mera vizualização na galeria;
             foundDraw.drawURL = stage.toDataURL({
@@ -1367,7 +1313,6 @@ async function NewsaveAsImage(){
             }
             foundDraw.DRAWSIZE.width = DRAWSIZE.width;
             foundDraw.DRAWSIZE.height = DRAWSIZE.height;
-            console.log(foundDraw);
             // Atualiza apenas o draw específico ao invés da lista toda
             await updateDrawById(foundDraw.id, foundDraw);
         }
@@ -1376,13 +1321,15 @@ async function NewsaveAsImage(){
         const getPages = [];
         const originalPage = currentpage; // Salva a página atual para restaurar depois
         getManga.chapters.forEach(chapter => {
-            
+            chapter.pages = []
             chapter.pages.push(pages['page' + currentpage]);
             getPages.push(pages['page' + currentpage]);
             
             chapter.pages.forEach(page => {
                 
                 page.layers.forEach((layer,layerindex) => {
+                    console.log(layer);
+                    
                     let layerbase64 = layer.draw.toDataURL({
                         mimeType: "image/png",
                         pixelRatio:DRAWSIZE.PIXELQUALITY,
@@ -1399,7 +1346,6 @@ async function NewsaveAsImage(){
         });
         
         getManga.chapters.find(chap => chap.number == chapID).pages = getPages;
-        console.log(getManga);
         // Atualiza apenas o manga específico ao invés da lista toda
         await updateMangaById(getManga.id, getManga);
     }
@@ -1408,6 +1354,7 @@ async function NewsaveAsImage(){
 function AddactionToHistory() {
     if (TexturedLine) {
         undoHistory.push(TexturedLine);
+        linepreviwe = null;
         TexturedLine = null;
     } else if(LineEraser){
         undoHistory.push(LineEraser);
