@@ -81,7 +81,6 @@ function saveText() {
     lastText.text(text);
     lastText.listening(false);
     draggingText = false;
-    trans.nodes([]);
     lastText.draggable(false);
     layer.draw();
     textEditorDiv.style.visibility = 'hidden';
@@ -95,9 +94,7 @@ function cancelEdit() {
     textEditorDiv.style.visibility = 'hidden';
     undo();
     editText.value = '';
-    
     draggingText = false;
-    trans.nodes([]);
     lastText.draggable(false);
 }
 //#endregion
