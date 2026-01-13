@@ -115,7 +115,7 @@ async function get_draws() {
             }
         }
 
-        createMangaDiv.style.visibility = 'hidden';
+        createDiv.style.visibility = 'hidden';
 
     });
 
@@ -168,12 +168,38 @@ async function add_draw() {
 //#endregion
 
 //#region MANGA MANAGEMENT
-const createMangaDiv = document.getElementById('createMangaDiv');
-createMangaDiv.style.visibility = 'hidden';
+const createDiv = document.getElementById('createDiv');
+createDiv.style.visibility = 'hidden';
+
+let createmanga = false;
+let createdraw = false;
+
+const mangaBtn = document.getElementById('mangaBtn');
+const drawbtn = document.getElementById('drawbtn');
+
+mangaBtn.addEventListener('click', function () {
+    createmanga = true;
+    createdraw = false;
+    mangaBtn.classList.add('pressed');
+    if (drawbtn.classList.contains('pressed')) {
+        drawbtn.classList.remove('pressed');
+    }
+});
 
 
-function ShowCreateMangaDiv() {
-    createMangaDiv.style.visibility = 'visible';
+
+drawbtn.addEventListener('click', function () {
+    createmanga = false;
+    createdraw = true;
+    drawbtn.classList.add('pressed');
+    if (mangaBtn.classList.contains('pressed')) {
+        mangaBtn.classList.remove('pressed');
+    }
+});
+
+
+function ShowcreateDiv() {
+    createDiv.style.visibility = 'visible';
 }
 const sizeDrawCanvaPREV = document.getElementById('sizeDrawCanvaPREV');
 const ABSOLUTE = { x: 100, y: 100 };
@@ -193,8 +219,6 @@ resPagesY.addEventListener('input', function () {
 });
 
 
-const nameManga = document.getElementById('nameManga');
-
 async function createManga() {
 
     const MangaCard = document.createElement('div');
@@ -205,19 +229,17 @@ async function createManga() {
     let mangaList = await getMangasList() || [];
 
     newPicture.src = 'assets/HQIcon.png'
-    nameDraw.textContent = nameManga.value;
+    nameDraw.textContent = "novo manga > " + mangaList.length;
 
     MangaCard.appendChild(newPicture);
     MangaCard.appendChild(nameDraw);
     MangaCard.append(downloadManga);
     drawlist.appendChild(MangaCard);
 
-    createMangaDiv.style.visibility = 'hidden';
-
     ////////// hora de criar um pacote de hq no local storage
     const newManga = {
         id: mangaList.length,
-        name: nameManga.value,
+        name: "novo manga > " + mangaList.length,
         chapters: []
     }
 
@@ -235,11 +257,9 @@ async function downloadManga(manga) {
 
     let getMangaList = await getMangasList() || [];
     let getrightmanga = getMangaList.find(current => current.id === manga.id);
-    console.log(getrightmanga);
     if (getrightmanga) {
         
         getrightmanga.chapters.forEach(chap => {
-            console.log(chap);
             
             // Itera sobre o número de páginas, não apenas as que têm PageURL
             for (let i = 0; i < chap.pagesCount; i++) {
@@ -264,6 +284,20 @@ async function downloadManga(manga) {
             }
         });
     }
+}
+
+function call_create_new(){
+    createDiv.style.visibility = 'visible';
+}
+
+function createFile(){
+    if (createdraw) {
+        add_draw();
+    }
+    else if (createmanga) {
+        createManga();
+    }
+    createDiv.style.visibility = 'hidden';
 }
 
 function loadjson() {
@@ -314,7 +348,7 @@ async function savejson() {
 
 
 function cancelCreateManga() {
-    createMangaDiv.style.visibility = 'hidden';
+    createDiv.style.visibility = 'hidden';
 }
 
 async function deleteDraw(drawId) {

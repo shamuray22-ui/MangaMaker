@@ -12,77 +12,28 @@
 <body>
 
     <header class="header">
-        <button class="add-button" onclick="add_draw()"> <img src="assets/icons/add.png"> Criar desenho </button>
-        <button onclick="ShowCreateMangaDiv()"> <img src="assets/icons/addmanga.png"> Criar Manga </button>
-        <button onclick="clearStorage()"> <img src="assets/icons/clear.png"> Limpar Galeria </button>
+        <button class="add-button" onclick="call_create_new()"> <img src="assets/icons/add.png"> Criar desenho </button>
         <button onclick="savejson()"> <img src="assets/icons/export.png"> Salvar Galeria </button>
-        <button onclick="loadjson()"> <img src="assets/icons/import.png"> Carregar Galeria </button>
-        <!-- <div class="theme-buttons">
-            <button onclick="setTheme('')" style="background-color: rgb(8, 12, 70); color: #ffffff;">Padrão</button>
-            <button onclick="setTheme('white')"
-                style="background-color: rgb(255, 255, 255);  color: #000000;">Branco</button>
-            <button onclick="setTheme('pink')" style="background-color: rgb(255, 138, 249);">Rosa</button>
-            <button onclick="setTheme('blue')" style="background-color: rgb(98, 155, 240);">Azul</button>
-        </div>--> 
+        <button onclick="loadjson()"> <img src="assets/icons/import.png"> Carregar Galeria </button> 
+        <button onclick="clearStorage()"> <img src="assets/icons/clear.png"> Limpar Galeria </button>
+    
     </header>
 
     <main>
-        <div class="gallery-controls">
-
-        </div>
         <div class="scroll-draws">
             <div id="drawlist">
             </div>
         </div>
-        <div id="createMangaDiv">
+        <div id="createDiv">
             <div id="options">
-                <button> Draw </button>
-                <button> Manga</button>
+                <button id="drawbtn"> <img src="assets/icons/addDraw.png"> Draw </button>
+                <button id="mangaBtn"> <img src="assets/icons/addManga.png"> Manga</button>
             </div>
-
-            <label>
-                nome do manga:
-            </label>
-            <input type="text" id="nameManga" value="Nova Obra">
-
-            <table>
-                <tr>
-                    <thead>
-                        <label>
-                            resolução de paginas:
-                        </label>
-                    </thead>
-                    <td>
-                        <label>
-                            X
-                            <input type="number" id="resPagesX" value="800">
-                        </label>
-                    </td>
-                    <td>
-                        <label>
-                            Y
-                            <input type="number" id="resPagesY" value="600">
-                        </label>
-                    </td>
-                </tr>
-                
-            </table>
-            <div>
-                <label>
-                    Pre-visualização de proporção:
-                    <img src="assets/drawing.png" id="sizeDrawCanvaPREV">
-                </label>
+            <input type="text" id="newFileName" placeholder="Nome do arquivo">
+            <div id="optionsdown">
+                <button id="createFileBtn" onclick="createFile()">Criar</button>
+                <button id="cancelBtn">Cancelar</button>
             </div>
-            <table>
-                <tr>
-                    <td>
-                        <button onclick="createManga()"> Criar Manga </button>
-                    </td>
-                    <td>
-                        <button onclick="cancelCreateManga()"> Cancelar </button>
-                    </td>
-                </tr>
-            </table>
 
         </div>
     </main>
