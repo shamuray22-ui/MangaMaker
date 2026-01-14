@@ -1163,7 +1163,18 @@ stage.on('mousemove touchmove', function (e) {
     }
     else if (current_tool == 'line' && lastLineTool) {
         lastLineTool.points([startpos.x, startpos.y, pos.x, pos.y]);
-
+        if (!some){
+            some = {x:pos.x,y:pos.y}
+        }
+        
+        some.x += (pos.x - some.x) * (1-strongStabilizador.value);
+        some.y += (pos.y - some.y) * (1-strongStabilizador.value);
+        if (TexturedLine){
+            TexturedLine.attrs.points.push(some.x, some.y);
+            linepreviwe.points(linepreviwe.points().concat([some.x, some.y]));
+        }
+        layer.draw();
+        console.log(lastLineTool);
     }
     
 });

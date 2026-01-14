@@ -143,11 +143,12 @@ body {
   display: flex;
   flex-direction: column;
   overflow: scroll;
-  top: 302px;
+  left: 0;
+  bottom: 0;
   background-color: var(--selectbrush-bg);
   width: 50%;
   max-width: 800px;
-  height: 600px;
+  height: 500px;
   padding: 20px;
   border-radius: 15px;
   gap: 15px;
