@@ -80,7 +80,6 @@ let scaleTexture = 1;
 // Cache de brushes - array de objetos {path, canvas}
 const brushCache = [];
 
-
 //#region updateLayerList
 let currentpage = 0;
 
@@ -90,7 +89,7 @@ let realayers = [];
 let currentreallayer = 0;
 let layer = null;
 
-function upadeRealLayerList(newlayer){
+function createRealLayerList(newlayer){
     realayers.push(newlayer);
     currentreallayer = realayers[realayers.length - 1];
     layer = currentreallayer;
@@ -176,7 +175,7 @@ async function NewStartInitWithType(layer, bgLayer) {
             getChapter.pages.forEach((page, pageindex) => {
                 page.layers.forEach((layer, index) => {
                     let newRealLayer = new Konva.Layer();
-                    upadeRealLayerList(newRealLayer)
+                    createRealLayerList(newRealLayer)
                     ///////// precisamos aumentar paginas! de forma terrivel!
                     pages['page' + pageindex].layers.push({ 
                         draw: new Konva.Group({
@@ -246,7 +245,7 @@ async function NewStartInitWithType(layer, bgLayer) {
                 let layer = foundDraw.layers[i];
                 pages['page' + currentpage].layers.push({ draw: null,drawImageBase64:null });
                 let newRealLayer = new Konva.Layer();
-                upadeRealLayerList(newRealLayer)
+                createRealLayerList(newRealLayer)
                 
                 ///pages['page' + currentpage].layers[i].draw = Konva.Node.create(layer.draw);
                 pages['page' + currentpage].layers[i].draw = new Konva.Group({
@@ -322,7 +321,7 @@ async function NewStartInitWithType(layer, bgLayer) {
     function createNewPage(indexlayer){
         ///// aqui é copiando mesmo to nem ai
         let newLayer = new Konva.Layer();
-        upadeRealLayerList(newLayer);
+        createRealLayerList(newLayer);
         StartBrush('assets/brush/default.png', '#000');
         pages['page' + currentpage].layers.push({ draw: null,hasimage:null });
         
@@ -361,7 +360,7 @@ async function NewStartInitWithType(layer, bgLayer) {
                 ]
             }
             let newLayer = new Konva.Layer();
-            upadeRealLayerList(newLayer);
+            createRealLayerList(newLayer);
             StartBrush('assets/brush/default.png', '#000');
             pages['page' + i].layers.push({ draw: null,drawImageBase64:null,hasimage:null });
             
@@ -584,11 +583,19 @@ function createUXlayer() {
         btn.appendChild(img);
         return btn;
     };
+    let toup = document.createElement('button');
+    toup.className = 'Generalbutton';
+    let todown = document.createElement('button');
+    todown.className = 'Generalbutton';
+    todown.innerHTML = '<img src="assets/icons/arrowdown.png" alt="Mover para baixo">';
+    toup.innerHTML = '<img src="assets/icons/arrowup.png" alt="Mover para cima">';
 
     // cria os botões
     const hide = makeButton('hidden', 'Esconder');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
+    layerCell.appendChild(toup);
+    layerCell.appendChild(todown);
     layerCell.appendChild(label);
     layerCell.appendChild(ratio);
     layerCell.appendChild(preview);
@@ -606,6 +613,41 @@ function createUXlayer() {
         checkimage(num);
     });
     layerCell.click();
+
+    toup.onclick = () => {
+        if (currentlayer > 0) {
+            ///[realayers[currentlayer], realayers[currentlayer - 1]] = [realayers[currentlayer - 1], realayers[currentlayer]];
+            
+            ///// metodo antigo é 1000 melhor que essa sujeira ai de swap
+            /////// real layer 0
+            let temp = realayers[currentlayer - 1];
+            //// real layer zero recebe 1
+            realayers[currentlayer - 1] = realayers[currentlayer];
+            /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
+            realayers[currentlayer] = temp;
+            console.log("layerreal",realayers);
+
+            /////// logica de ux
+            let templayer = pages['page' + currentpage].layers[currentlayer - 1];
+            pages['page' + currentpage].layers[currentlayer - 1] = pages['page' + currentpage].layers[currentlayer];
+            pages['page' + currentpage].layers[currentlayer] = templayer;
+            
+            ///// precisamos que o user seja enganado achando 
+            // que isso subir é uma coisa muito
+            /////  necessaria.
+            layerGrid.innerHTML = '';
+            
+            updateLayerList();
+            updateLayerUI();
+            
+
+            
+        }
+        
+    }
+    todown.onclick = () => {
+       
+    }
 
     hide.onclick = () => {
         if (group.attrs.visible){
@@ -690,7 +732,7 @@ function addLayer(imagedata = '') {
             
             pages['page' + currentpage].layers.push({ draw: newGroup, hasimage:konvaImage});
             newRealLayer.add(newGroup);
-            upadeRealLayerList(newRealLayer);
+            createRealLayerList(newRealLayer);
             group = pages['page' + currentpage].layers[currentlayer].draw;
             updateLayerList();
             updateLayerUI();
@@ -699,7 +741,7 @@ function addLayer(imagedata = '') {
     } else{
         pages['page' + currentpage].layers.push({ draw: newGroup, hasimage:null});
         newRealLayer.add(newGroup);
-        upadeRealLayerList(newRealLayer);
+        createRealLayerList(newRealLayer);
         
         group = pages['page' + currentpage].layers[currentlayer].draw;
         updateLayerList();
@@ -1114,7 +1156,6 @@ stage.on('mousemove touchmove', function (e) {
         if (!some){
             some = {x:pos.x,y:pos.y}
         }
-        
         some.x += (pos.x - some.x) * (1-strongStabilizador.value);
         some.y += (pos.y - some.y) * (1-strongStabilizador.value);
         if (TexturedLine){
@@ -1144,13 +1185,10 @@ stage.on('mousemove touchmove', function (e) {
     }
     else if (current_tool == 'rectangle' && lastRect) {
         // atualizar posição e tamanho dinamicamente usando pos (não pos)
-
         lastRect.x(x);
         lastRect.y(y);
         lastRect.width(w);
         lastRect.height(h);
-        
-
     }
     else if (current_tool == 'select' && lastSelectBox) {
 
