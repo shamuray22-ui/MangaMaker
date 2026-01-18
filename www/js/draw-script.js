@@ -143,7 +143,6 @@ function StartBrush(path, color) {
     });
 }
 
-
 async function NewStartInitWithType(layer, bgLayer) {
     //#region modo manga
     if (Gettype === 'manga') {
@@ -589,13 +588,44 @@ function createUXlayer() {
     todown.className = 'Generalbutton';
     todown.innerHTML = '<img src="assets/icons/arrowdown.png" alt="Mover para baixo">';
     toup.innerHTML = '<img src="assets/icons/arrowup.png" alt="Mover para cima">';
+    toup.onclick = () => {
+        if (currentlayer > 0) {
+            ///[realayers[currentlayer], realayers[currentlayer - 1]] = [realayers[currentlayer - 1], realayers[currentlayer]];
+            
+            ///// metodo antigo é 1000 melhor que essa sujeira ai de swap
+            /////// real layer 0
+            let templayer = pages['page' + currentpage].layers[currentlayer - 1];
+            //// real layer zero recebe 1
+            
+            pages['page' + currentpage].layers[currentlayer - 1] = pages['page' + currentpage].layers[currentlayer];
+            /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
+            pages['page' + currentpage].layers[currentlayer] = templayer;
+            /// 0 = 1
+            realayers[currentlayer - 1] = realayers[currentlayer];
+            /// 1 = é 0
+            realayers[currentlayer] = getRealLayer(currentlayer - 1);
+            /// agora 1 vai pra cima e 0 vai pra ... eu devia ler a documentaçao
+            realayers[currentlayer].moveUp();
+            realayers[currentlayer - 1].moveToTop()
 
+            updateLayerUI();
+            label.hidden = true;
+            
+            console.log(label.textContent);
+            
+            stage.batchDraw();
+        }
+        
+    }
+    todown.onclick = () => {
+       
+    }
     // cria os botões
     const hide = makeButton('hidden', 'Esconder');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
     layerCell.appendChild(toup);
-    layerCell.appendChild(todown);
+    //layerCell.appendChild(todown);
     layerCell.appendChild(label);
     layerCell.appendChild(ratio);
     layerCell.appendChild(preview);
@@ -614,40 +644,6 @@ function createUXlayer() {
     });
     layerCell.click();
 
-    toup.onclick = () => {
-        if (currentlayer > 0) {
-            ///[realayers[currentlayer], realayers[currentlayer - 1]] = [realayers[currentlayer - 1], realayers[currentlayer]];
-            
-            ///// metodo antigo é 1000 melhor que essa sujeira ai de swap
-            /////// real layer 0
-            let temp = realayers[currentlayer - 1];
-            //// real layer zero recebe 1
-            realayers[currentlayer - 1] = realayers[currentlayer];
-            /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
-            realayers[currentlayer] = temp;
-            console.log("layerreal",realayers);
-
-            /////// logica de ux
-            let templayer = pages['page' + currentpage].layers[currentlayer - 1];
-            pages['page' + currentpage].layers[currentlayer - 1] = pages['page' + currentpage].layers[currentlayer];
-            pages['page' + currentpage].layers[currentlayer] = templayer;
-            
-            ///// precisamos que o user seja enganado achando 
-            // que isso subir é uma coisa muito
-            /////  necessaria.
-            layerGrid.innerHTML = '';
-            
-            updateLayerList();
-            updateLayerUI();
-            
-
-            
-        }
-        
-    }
-    todown.onclick = () => {
-       
-    }
 
     hide.onclick = () => {
         if (group.attrs.visible){
