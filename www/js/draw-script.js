@@ -105,7 +105,8 @@ function getRealLayer(index){
 function updateLayerList() {
     if (!pages['page' + currentpage]) return;
     layerList = [];
-    layerList = pages['page' + currentpage].layers; 
+    layerList = pages['page' + currentpage].layers;
+    realayers.length = layerList.length;
 }
 
 function StartBrush(path, color) {
@@ -601,18 +602,22 @@ function createUXlayer() {
             /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
             pages['page' + currentpage].layers[currentlayer] = templayer;
             /// 0 = 1
+            let tempreallayer = realayers[currentlayer - 1];
             realayers[currentlayer - 1] = realayers[currentlayer];
             /// 1 = é 0
-            realayers[currentlayer] = getRealLayer(currentlayer - 1);
+            realayers[currentlayer] = tempreallayer;
             /// agora 1 vai pra cima e 0 vai pra ... eu devia ler a documentaçao
-            realayers[currentlayer].moveUp();
-            realayers[currentlayer - 1].moveToTop()
-
-            updateLayerUI();
-            label.hidden = true;
-            
-            console.log(label.textContent);
-            
+            realayers[currentlayer - 1].moveUp();
+            realayers[currentlayer].moveToTop();
+            //////// atualiza o ux
+            let l = layerGrid.children[currentlayer - 1];
+            let l1 = layerGrid.children[currentlayer];
+            //layerGrid.insertBefore(l1, l);
+            l.children[1].textContent = currentlayer;
+            l1.children[1].textContent = currentlayer - 1;
+            console.log(" 0>::",l," 1>::",l1);
+            updateLayerList();
+            //currentlayer -= 1;
             stage.batchDraw();
         }
         
