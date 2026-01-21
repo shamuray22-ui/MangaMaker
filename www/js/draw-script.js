@@ -9,6 +9,7 @@ let DRAWSIZE = {
 }
 let isSaved = true;
 
+
 const MAXLAYER = 10;
 const getwidthInput = document.getElementById('canvasWidth');
 const getheightInput = document.getElementById('canvasHeight');
@@ -446,7 +447,23 @@ let endline = 0;
 
 let posing = false;
 
+const rangelabelopacity = document.getElementById('rangelabelopacity-value');
+const rangesizelabel = document.getElementById('rangesizelabel-value');
+
 const opacityPicker = document.getElementById('opacityPicker');
+const sizePicker = document.getElementById('sizePicker');
+rangelabelopacity.textContent = opacityPicker.value;
+rangesizelabel.textContent = sizePicker.value;
+opacityPicker.oninput = function () {
+    console.log(opacityPicker.value);
+    
+    rangelabelopacity.textContent = opacityPicker.value;
+};
+sizePicker.oninput = function () {
+    rangesizelabel.textContent = sizePicker.value;
+};
+
+
 const colorPicker = document.getElementById('colorPicker');
 const colorPickerPanel = document.getElementById('pickerContainer');
 colorPickerPanel.style.display = 'none'
@@ -1116,7 +1133,7 @@ function coisanoTextura(points, i, ctx) {
     let step = space; 
 
     let steps = Math.floor(result / step);
-    steps = Math.min(steps, 130);
+    steps = Math.min(steps, 120); // Limite para evitar loops excessivos
     
     for (let st = 0; st <= steps; st++) {
         let initInter = x + (hyp1 * st / steps);
@@ -1171,8 +1188,8 @@ stage.on('mousemove touchmove', function (e) {
             some = {x:pos.x,y:pos.y}
         }
         
-        some.x += (pos.x - some.x) * (1-strongStabilizador.value);
-        some.y += (pos.y - some.y) * (1-strongStabilizador.value);
+        some.x += (pos.x - some.x) * (1- strongStabilizador.value);
+        some.y += (pos.y - some.y) * (1- strongStabilizador.value);
         
         
         LineEraser.points(LineEraser.points().concat([some.x, some.y]));
@@ -1272,8 +1289,8 @@ function cacherize(Line){
                 const lw = Math.round(textureScale) * 3;
                 
                 // 2. Aplica o cache com os limites calculados, adicionando margem igual à largura do stroke (lw)
-                let finalwidth = (maxX - minX)+ lw;
-                let finalheight = (maxY - minY)+ lw;
+                let finalwidth = (maxX - minX) + lw;
+                let finalheight = (maxY - minY) + lw;
                 let offsetx = (minX - lw / 2) ;
                 let offsety = (minY- lw/ 2);
                 Line.cache({
@@ -1285,8 +1302,9 @@ function cacherize(Line){
                     height: finalheight,
                     pixelRatio:DRAWSIZE.PIXELQUALITY,
                     hitGraphEnabled: false,
+                    listening:false,
                     drawBorder:false,
-                    imageSmoothingEnabled:false
+                    imageSmoothingEnabled:true
                 });
             }
         }
