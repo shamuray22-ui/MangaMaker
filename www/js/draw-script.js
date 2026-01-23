@@ -178,6 +178,9 @@ async function NewStartInitWithType(layer, bgLayer) {
                     let newRealLayer = new Konva.Layer();
                     createRealLayerList(newRealLayer)
                     ///////// precisamos aumentar paginas! de forma terrivel!
+                    pages['page' + pageindex].background = new Konva.Group({
+
+                    });
                     pages['page' + pageindex].layers.push({ 
                         draw: new Konva.Group({
                             clipFunc: function (ctx) {
@@ -202,6 +205,8 @@ async function NewStartInitWithType(layer, bgLayer) {
                             draggable: false
                         });
                         pages['page' + pageindex].layers[index].draw.add(konvaImage);
+                        let newbg = bgRect.clone();
+                        pages['page' + pageindex].background.add(newbg);
 
                         let group = pages['page' + pageindex].layers[index].draw;
                         console.log("on load manga ",group);
@@ -363,6 +368,8 @@ async function NewStartInitWithType(layer, bgLayer) {
             let newLayer = new Konva.Layer();
             createRealLayerList(newLayer);
             StartBrush('assets/brush/default.png', '#000');
+            pages['page' + i].background = new Konva.Group({
+            });
             pages['page' + i].layers.push({ draw: null,drawImageBase64:null,hasimage:null });
             
             pages['page' + i].layers[indexlayer].draw = new Konva.Group({
@@ -374,6 +381,8 @@ async function NewStartInitWithType(layer, bgLayer) {
                 }
             });
             let group = pages['page' + i].layers[indexlayer].draw;
+            let newbg = bgRect.clone();
+            pages['page' + i].background.add(newbg);
             newLayer.add(group);
             updateLayerList();
             gerateUXpages(i);
@@ -449,7 +458,7 @@ let posing = false;
 
 const rangelabelopacity = document.getElementById('rangelabelopacity-value');
 const rangesizelabel = document.getElementById('rangesizelabel-value');
-
+const pressureRange = document.getElementById('pressureRange');
 const opacityPicker = document.getElementById('opacityPicker');
 const sizePicker = document.getElementById('sizePicker');
 rangelabelopacity.textContent = opacityPicker.value;
@@ -1107,26 +1116,8 @@ function coisanoTextura(points, i, ctx) {
         return;
     }
 
-    // // --- LÓGICA DE PRESSÃO FALSA (FAKE PRESSURE) ---
-     const MAX_VELOCITY_FOR_PRESSURE = 20; 
-     const MIN_SCALE_FACTOR = 2; 
-    
-     let speedNormalized = Math.min(result, MAX_VELOCITY_FOR_PRESSURE) / MAX_VELOCITY_FOR_PRESSURE;
-     let fakePressure = 1 - speedNormalized;
-    
-      //Calcula o fator de escala (entre MIN_SCALE_FACTOR e 1)
-     let pressureFactor = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * fakePressure;
-    
      // O tamanho da textura é ajustado pela pressão
-    textureScale = baseTextureScale * pressureFactor;
-    //--- FIM DA LÓGICA DE PRESSÃO FALSA ---
-    //3. Desenhar o ponto de destino (com a nova escala)
-    ctx.drawImage(currentBrush,
-        points[i] - textureScale / 2,
-        points[i + 1] - textureScale / 2,
-        textureScale, textureScale
-    );
-
+    textureScale = baseTextureScale
      //4. Calcular e desenhar os passos intermediários (interpolação)
     
     let space = textureScale * Number(SpacingRange?.value); 
@@ -1419,6 +1410,8 @@ async function NewsaveAsImage() {
                     width: DRAWSIZE.width,
                     height: DRAWSIZE.height
                 });
+                console.log(pages);
+                
                 layer.drawImageBase64 = layerbase64;
             });
             

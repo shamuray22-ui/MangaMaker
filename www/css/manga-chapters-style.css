@@ -49,7 +49,7 @@ body {
 }
 
 #create-chapter button {
-    padding: 10px 16px;
+    padding: 10px;
     border: none;
     border-radius: 12px;
     background-color: var(--form-button-bg);
@@ -79,16 +79,11 @@ body {
 #chapter-list div {
     border-radius: 20px;
     background-color: var(--chapter-bg);
-    width: 90vw;
-    max-width: 600px;
-    height: 100px;
+    padding: 20px;
     scale: 0.9;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     gap: 20px;
-    padding: 10px;
-    margin: 32px auto;
     transition: 0.2s;
     color: var(--chapter-font-color);
 }

@@ -4,38 +4,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pré-visualização do Mangá</title>
+    <title>MangaMaker - Leitor</title>
     <link rel="stylesheet" href="css/global-roots.css">
     <link rel="stylesheet" href="css/manga-preview-style.css">
 </head>
 
-<body>
-    <header class="header">
-        <h1>Pré-visualização do Mangá</h1>
+<body class="manga-reader">
+    <!-- Header Superior -->
+    <header class="manga-header">
+        <button class="header-back-btn" onclick="backToGallery()" title="Voltar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        
+        <div class="header-title">
+            <h1 id="chapterTitle">Carregando...</h1>
+        </div>
+        
+        <select id="chapterSelect" class="header-select" onchange="changeChapter()" title="Selecionar capítulo">
+            <option value="">Carregando capítulos...</option>
+        </select>
     </header>
 
-    <main>
-        <div class="chapter-selector-container">
-            <label for="chapter-select">Escolha o Capítulo:</label>
-            <select id="chapterSelect" onchange="changeChapter()">
-                <option value="">Carregando capítulos...</option>
-            </select>
+    <!-- Área Principal de Leitura -->
+    <main class="manga-main">
+        <div class="reader-container">
+            <!-- Botão Anterior (esquerda) -->
+            <button id="prevBtn" class="nav-button nav-left" onclick="prevPage()" title="Página anterior">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+
+            <!-- Container da Página -->
+            <div id="manga-preview-container" class="manga-page-container">
+                <div class="loading-placeholder">Carregando página...</div>
+            </div>
+
+            <!-- Botão Próximo (direita) -->
+            <button id="nextBtn" class="nav-button nav-right" onclick="nextPage()" title="Próxima página">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19l7-7-7-7"/>
+                </svg>
+            </button>
         </div>
 
-        <div id="manga-preview-container">
-            <!-- As páginas do mangá serão carregadas aqui -->
+        <!-- Informações de Página -->
+        <div class="page-info-bar">
+            <span id="page-info" class="page-counter">0 / 0</span>
+            <div class="progress-bar-container">
+                <div id="pageIndicator" class="progress-bar"></div>
+            </div>
         </div>
-        <div class="manga-navigation">
-            <button onclick="prevPage()">← Anterior</button>
-            <span id="page-info">Página 1 de 1</span>
-            <button onclick="nextPage()">Próxima →</button>
-        </div>
-        <button onclick="backToGallery()">Voltar para a Galeria</button>
     </main>
 
-    <footer class="footer">
-        <p>&copy; essa é uma demontração de como ficara sua hq </p>
+    <!-- Footer com Controles Adicionais -->
+    <footer class="manga-footer">
+        <div class="footer-content">
+            <button class="footer-btn" onclick="changeChapter()" title="Mudar capítulo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Capítulos
+            </button>
+            
+            <div class="footer-divider"></div>
+            
+            <button class="footer-btn" onclick="backToGallery()" title="Voltar à galeria">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                Galeria
+            </button>
+        </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="globals/localforage.min.js"></script>
     <script src="globals/globalStorage.js"></script>
     <script src="js/manga-preview.js"></script>

@@ -1,218 +1,327 @@
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #2e3141 0%, #2a1d38 100%);
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.chapter-selector-container {
+html, body {
     width: 100%;
-    max-width: 800px;
-    margin: 0 auto 20px;
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
 }
 
-.chapter-selector-container label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #333;
-    font-size: 1.1rem;
-}
-
-#chapterSelect {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border: 2px solid #667eea;
-    border-radius: 6px;
-    background-color: white;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-#chapterSelect:hover {
-    border-color: #764ba2;
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
-}
-
-#chapterSelect:focus {
-    outline: none;
-    border-color: #764ba2;
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-}
-
-.header {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 30px;
-    border-radius: 8px;
-}
-
-.header h1 {
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-}
-
-main {
+body.manga-reader {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    max-width: 800px;
-    margin: 0 auto;
+    background-color: var(--body-bg);
+    color: var(--font-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-#manga-preview-container {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    min-height: 400px;
+/* ============ HEADER ============ */
+.manga-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+    backdrop-filter: blur(10px);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    flex-shrink: 0;
+    height: 56px;
+}
+
+.header-back-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: var(--font-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
-#manga-preview-container img {
+.header-back-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.95);
+}
+
+.header-title {
+    flex: 1;
+    min-width: 0;
+    padding: 0 8px;
+}
+
+.header-title h1 {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.header-select {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--font-color);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    max-width: 140px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.header-select:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============ MAIN CONTENT ============ */
+.manga-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.reader-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ============ PÁGINA ============ */
+.manga-page-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.manga-page-image {
     max-width: 100%;
+    max-height: 100%;
+    width: auto;
     height: auto;
-    border-radius: 8px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
 }
 
-#manga-preview-container p {
-    color: #999;
-    font-size: 1.1rem;
+.loading-placeholder {
+    color: var(--font-color);
+    font-size: 14px;
+    opacity: 0.6;
     text-align: center;
 }
 
-.manga-navigation {
+@keyframes fadeIn {
+    from {
+        opacity: 0.7;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============ BOTÕES DE NAVEGAÇÃO ============ */
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 8px;
+    color: var(--font-color);
+    cursor: pointer;
     display: flex;
-    gap: 20px;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
+    transition: all 0.15s ease;
+    z-index: 50;
+    -webkit-tap-highlight-color: transparent;
+    padding: 0;
+    min-width: 48px;
+    min-height: 48px;
 }
 
-.manga-navigation button {
-    padding: 12px 30px;
-    font-size: 1rem;
-    background-color: #667eea;
-    color: white;
+.nav-button:active:not(:disabled) {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(0.92);
+}
+
+.nav-button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.nav-left {
+    left: 8px;
+}
+
+.nav-right {
+    right: 8px;
+}
+
+/* ============ BARRA DE INFORMAÇÕES ============ */
+.page-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+    height: 40px;
+}
+
+.page-counter {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 45px;
+    color: var(--font-color);
+    white-space: nowrap;
+}
+
+.progress-bar-container {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 6px rgba(102, 126, 234, 0.5);
+}
+
+/* ============ FOOTER ============ */
+.manga-footer {
+    background: linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.8));
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0;
+    flex-shrink: 0;
+    height: 48px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    height: 100%;
+}
+
+.footer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    height: 100%;
+    background: transparent;
     border: none;
-    border-radius: 6px;
+    color: var(--font-color);
+    font-size: 11px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-transform: uppercase;
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    padding: 0 8px;
+    white-space: nowrap;
 }
 
-.manga-navigation button:hover {
-    background-color: #764ba2;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.footer-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(0.95);
 }
 
-.manga-navigation button:active {
-    transform: translateY(0);
+.footer-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 -4px;
 }
 
-#page-info {
-    color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 20px;
-    min-width: 150px;
-    text-align: center;
+
+/* ============ TEMA CLARO ============ */
+.white-theme .reader-container {
+    background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
 }
 
-main > button {
-    padding: 14px 40px;
-    font-size: 1.1rem;
-    background-color: #ff6b6b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-transform: uppercase;
-    width: 100%;
-    max-width: 400px;
+.white-theme .manga-header,
+.white-theme .manga-footer {
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(240,240,240,0.9));
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
-main > button:hover {
-    background-color: #ff5252;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.white-theme .nav-button {
+    background: rgba(0, 0, 0, 0.08);
 }
 
-main > button:active {
-    transform: translateY(0);
+.white-theme .nav-button:active:not(:disabled) {
+    background: rgba(0, 0, 0, 0.15);
 }
 
-.footer {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    margin-top: 30px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 800px;
-}
-
-.footer p {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-@media (max-width: 600px) {
-    .header h1 {
-        font-size: 1.8rem;
+/* ============ TOUCH INTERACTIONS ============ */
+@media (hover: none) and (pointer: coarse) {
+    .header-back-btn:active {
+        background: rgba(255, 255, 255, 0.2);
     }
-    
-    .chapter-selector-container {
-        padding: 15px;
+
+    .nav-button:active:not(:disabled) {
+        background: rgba(0, 0, 0, 0.7);
     }
-    
-    .chapter-selector-container label {
-        font-size: 1rem;
+
+    .footer-btn:active {
+        background: rgba(255, 255, 255, 0.1);
     }
-    
-    #chapter-select {
-        padding: 10px;
-        font-size: 0.95rem;
-    }
-    
-    #page-info {
-        font-size: 1rem;
-        min-width: 130px;
-    }
-    
-    .manga-navigation button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-    
-    main > button {
-        padding: 12px 30px;
-        font-size: 1rem;
-    }
+}
+
+/* Previne zoom acidental no iOS */
+input, button, select {
+    font-size: 16px !important;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
 }

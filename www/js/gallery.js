@@ -220,7 +220,6 @@ resPagesY.addEventListener('input', function () {
 
 
 async function createManga() {
-
     const MangaCard = document.createElement('div');
     const newPicture = document.createElement('img');
     const nameDraw = document.createElement('h1');
@@ -260,7 +259,6 @@ async function downloadManga(manga) {
     if (getrightmanga) {
         
         getrightmanga.chapters.forEach(chap => {
-            
             // Itera sobre o número de páginas, não apenas as que têm PageURL
             for (let i = 0; i < chap.pagesCount; i++) {
                 if (chap.pages && chap.pages[i] && chap.pages[i].PageURL) {
