@@ -149,7 +149,6 @@ async function NewStartInitWithType(layer, bgLayer) {
     //#region modo manga
     if (Gettype === 'manga') {
         await typeManga(layer);
-        
     }
     //#region modo draw
     else if (Gettype === 'draw') {
@@ -168,6 +167,7 @@ async function NewStartInitWithType(layer, bgLayer) {
             for (let i = 0; i < num; i++){
                 pages['page' + i] = {
                     background: null,
+                    PageURL: null,
                     layers: [
                     ]
                 }
@@ -209,7 +209,6 @@ async function NewStartInitWithType(layer, bgLayer) {
                         pages['page' + pageindex].background.add(newbg);
 
                         let group = pages['page' + pageindex].layers[index].draw;
-                        console.log("on load manga ",group);
                         
                         newRealLayer.add(group);
                         stage.batchDraw();
@@ -464,7 +463,6 @@ const sizePicker = document.getElementById('sizePicker');
 rangelabelopacity.textContent = opacityPicker.value;
 rangesizelabel.textContent = sizePicker.value;
 opacityPicker.oninput = function () {
-    console.log(opacityPicker.value);
     
     rangelabelopacity.textContent = opacityPicker.value;
 };
@@ -559,7 +557,6 @@ function set_current_page(index) {
     });
     updateLayerList();
     updateLayerUI();
-    console.log("on set page manga ",group);
 }
 function setVisAllPages(set) {
     let sizepages = Object.keys(pages).length;
@@ -641,7 +638,6 @@ function createUXlayer() {
             //layerGrid.insertBefore(l1, l);
             l.children[1].textContent = currentlayer;
             l1.children[1].textContent = currentlayer - 1;
-            console.log(" 0>::",l," 1>::",l1);
             updateLayerList();
             //currentlayer -= 1;
             stage.batchDraw();
@@ -1124,7 +1120,7 @@ function coisanoTextura(points, i, ctx) {
     let step = space; 
 
     let steps = Math.floor(result / step);
-    steps = Math.min(steps, 120); // Limite para evitar loops excessivos
+    ///steps = Math.min(steps, 120); // Limite para evitar loops excessivos
     
     for (let st = 0; st <= steps; st++) {
         let initInter = x + (hyp1 * st / steps);
@@ -1210,18 +1206,7 @@ stage.on('mousemove touchmove', function (e) {
     }
     else if (current_tool == 'line' && lastLineTool) {
         lastLineTool.points([startpos.x, startpos.y, pos.x, pos.y]);
-        if (!some){
-            some = {x:pos.x,y:pos.y}
-        }
-        
-        some.x += (pos.x - some.x) * (1-strongStabilizador.value);
-        some.y += (pos.y - some.y) * (1-strongStabilizador.value);
-        if (TexturedLine){
-            TexturedLine.attrs.points.push(some.x, some.y);
-            linepreviwe.points(linepreviwe.points().concat([some.x, some.y]));
-        }
         layer.draw();
-        console.log(lastLineTool);
     }
     
 });
@@ -1368,6 +1353,13 @@ async function saveCanvas() {
     bgLayer.draw();
 }
 async function NewsaveAsImage() {
+    let tempsavecanvas = document.createElement('canvas');
+    tempsavecanvas.width = DRAWSIZE.width;
+    tempsavecanvas.height = DRAWSIZE.height;
+    let tpsctx = tempsavecanvas.getContext('2d');
+    tpsctx.fillStyle = 'white';
+    tpsctx.fillRect(0, 0, tempsavecanvas.width, tempsavecanvas.height);
+
     if (Gettype == 'draw') {
         // ... (lógica de draw permanece igual)
         if (foundDraw) {
@@ -1399,10 +1391,12 @@ async function NewsaveAsImage() {
         const pageKeys = Object.keys(pages); // Pega 'page0', 'page1', etc.
         pageKeys.forEach((pageKey) => {
             const targetpage = pages[pageKey];
+            const nimg = new Image();
+            
             // Para cada camada desta página, gera o Base64
+            
             targetpage.layers.forEach((layer) => {
                 setVisAllPages("show");
-                console.log(layer);
 
                 const layerbase64 = layer.draw.toDataURL({
                     mimeType: "image/png",
@@ -1410,13 +1404,23 @@ async function NewsaveAsImage() {
                     width: DRAWSIZE.width,
                     height: DRAWSIZE.height
                 });
-                console.log(pages);
                 
                 layer.drawImageBase64 = layerbase64;
+                console.log(layer.drawImageBase64);
+                
+                nimg.src = layerbase64;
+                
+                tpsctx.drawImage(nimg, 0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                pages[pageKey].PageURL = tempsavecanvas.toDataURL({
+                    mimeType: "image/png",
+                    pixelRatio: DRAWSIZE.PIXELQUALITY,
+                    width: DRAWSIZE.width,
+                    height: DRAWSIZE.height
+                });
+                
             });
             
             allPagesData.push(targetpage);
-            //
 
         });
 

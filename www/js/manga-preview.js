@@ -20,7 +20,6 @@ const pageIndicator = document.getElementById("pageIndicator");
 
 // DEBUG: Logger simples
 function debugLog(msg, data) {
-    console.log(`[MangaReader] ${msg}`, data || '');
 }
 
 // Inicialização
@@ -135,13 +134,7 @@ function displayPage() {
         if (currentChapter.pages && currentChapter.pages[currentPageIndex]) {
             pageData = currentChapter.pages[currentPageIndex];
             debugLog('pageData encontrado (estrutura pages[])', pageData);
-            
-            if (pageData.layers && pageData.layers.length > 0) {
-                // Renderiza primeira layer
-                imageSrc = pageData.layers[0].drawImageBase64 || pageData.layers[0].draw;
-            } else if (pageData.drawImageBase64) {
-                imageSrc = pageData.drawImageBase64;
-            }
+            imageSrc = pageData.PageURL;
         }
         // Estrutura 2: drawImageBase64 direto
         else if (currentChapter.pages && currentChapter.pages[currentPageIndex]?.drawImageBase64) {
