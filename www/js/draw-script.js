@@ -344,7 +344,7 @@ async function NewStartInitWithType(layer, bgLayer) {
         updateLayerList();
         /////////// aqui populamos a lista de botoes de paginas
         /// premeiro lembe-se que bipolaridade em codigo existe e o numero era string e não interger
-        if(getChapter != undefined){
+        if(Gettype != "draw"){
             let num = Number(getChapter.pagesCount);
             pagesDiv.innerHTML = '';
             for (let i = 0; i < num; i++){
@@ -1353,12 +1353,7 @@ async function saveCanvas() {
     bgLayer.draw();
 }
 async function NewsaveAsImage() {
-    let tempsavecanvas = document.createElement('canvas');
-    tempsavecanvas.width = DRAWSIZE.width;
-    tempsavecanvas.height = DRAWSIZE.height;
-    let tpsctx = tempsavecanvas.getContext('2d');
-    tpsctx.fillStyle = 'white';
-    tpsctx.fillRect(0, 0, tempsavecanvas.width, tempsavecanvas.height);
+
 
     if (Gettype == 'draw') {
         // ... (lógica de draw permanece igual)
@@ -1391,12 +1386,18 @@ async function NewsaveAsImage() {
         const pageKeys = Object.keys(pages); // Pega 'page0', 'page1', etc.
         pageKeys.forEach((pageKey) => {
             const targetpage = pages[pageKey];
-            const nimg = new Image();
+            
             
             // Para cada camada desta página, gera o Base64
             
             targetpage.layers.forEach((layer) => {
                 setVisAllPages("show");
+                let tempsavecanvas = document.createElement('canvas');
+                tempsavecanvas.width = DRAWSIZE.width;
+                tempsavecanvas.height = DRAWSIZE.height;
+                let tpsctx = tempsavecanvas.getContext('2d');
+                tpsctx.fillStyle = 'white';
+                tpsctx.fillRect(0, 0, tempsavecanvas.width, tempsavecanvas.height);
 
                 const layerbase64 = layer.draw.toDataURL({
                     mimeType: "image/png",
@@ -1407,16 +1408,19 @@ async function NewsaveAsImage() {
                 
                 layer.drawImageBase64 = layerbase64;
                 console.log(layer.drawImageBase64);
-                
+                const nimg = new Image();
                 nimg.src = layerbase64;
-                
-                tpsctx.drawImage(nimg, 0, 0, DRAWSIZE.width, DRAWSIZE.height);
-                pages[pageKey].PageURL = tempsavecanvas.toDataURL({
-                    mimeType: "image/png",
-                    pixelRatio: DRAWSIZE.PIXELQUALITY,
-                    width: DRAWSIZE.width,
-                    height: DRAWSIZE.height
-                });
+                console.log(nimg.src);
+
+                nimg.onload = async () => {
+                    tpsctx.drawImage(nimg, 0, 0, DRAWSIZE.width, DRAWSIZE.height);
+                    pages[pageKey].PageURL = tempsavecanvas.toDataURL({
+                        mimeType: "image/png",
+                        pixelRatio: DRAWSIZE.PIXELQUALITY,
+                        width: DRAWSIZE.width,
+                        height: DRAWSIZE.height
+                    });
+                }
                 
             });
             
