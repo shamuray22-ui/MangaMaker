@@ -951,7 +951,8 @@ stage.on('mousedown', function (e) {
             stroke: color,
             strokeWidth: scaletexture,
             points: [pos.x, pos.y],
-            
+            lineCap: 'round',
+            lineJoin: 'round'
         });
         
         TexturedLine.opacity(opacityPicker.value / 100);
