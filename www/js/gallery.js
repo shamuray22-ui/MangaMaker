@@ -288,13 +288,16 @@ function call_create_new(){
     createDiv.style.visibility = 'visible';
 }
 
+function close_create_new(){
+    createDiv.style.visibility = 'hidden';
+}
+
 function createFile(){
-    if (createdraw) {
-        add_draw();
-    }
-    else if (createmanga) {
-        createManga();
-    }
+    add_draw();
+    
+   // else if (createmanga) {
+   //     createManga();
+  ///  }
     createDiv.style.visibility = 'hidden';
 }
 
@@ -382,11 +385,17 @@ async function deleteManga(mangaId) {
 
 //#region STORAGE MANAGEMENT
 function clearStorage() {
-    let confim = window.confirm('isso vai apagar todas as suas obra e desenhos ');
+    let confim = window.confirm('Isso vai apagar todos os seus desenho, GARANTA QUE VOCÊ EXPORTOU ANTES DISSO');
     if (confim == true) {
-        localforage.clear();
-        localStorage.clear();
-        window.location.reload();
+        let ncf = window.confirm('VOCÊ TEM CERTEZA QUE QUER APAGAR TUDO MESMO?');
+        if (ncf == true){
+            localforage.clear();
+            localStorage.clear();
+            window.location.reload();
+        } else {
+            return;
+        }
+        
     } else {
         return;
     }
