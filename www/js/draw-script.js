@@ -1342,6 +1342,7 @@ async function saveCanvas() {
     withLoadScreen(async () =>{
         //await saveAsImage();
         await NewsaveAsImage();
+        window.location.reload();
     });
     
 
@@ -1352,6 +1353,7 @@ async function saveCanvas() {
     stage.rotation(lasrotation);
     bgRect.stroke('black')
     bgLayer.draw();
+    
 }
 async function NewsaveAsImage() {
 
@@ -1513,9 +1515,7 @@ function iniciarTimer() {
     const umMinutos = 1 * 60 * 1000;
     setTimeout(autosave, umMinutos);
 }
-
-// Começa a tortura
-//iniciarTimer();
+iniciarTimer();
 
 //#region MOUSE LEAVE
 stage.on('touchcancel', function (e) {
