@@ -385,7 +385,7 @@ async function deleteManga(mangaId) {
 
 //#region STORAGE MANAGEMENT
 function clearStorage() {
-    let confim = window.confirm('Isso vai apagar todos os seus desenho, GARANTA QUE VOCÊ EXPORTOU ANTES DISSO');
+    let confim = window.confirm('Isso vai apagar todos os seus desenhos, GARANTA QUE VOCÊ EXPORTOU ANTES DISSO');
     if (confim == true) {
         let ncf = window.confirm('VOCÊ TEM CERTEZA QUE QUER APAGAR TUDO MESMO?');
         if (ncf == true){
