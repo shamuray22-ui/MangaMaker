@@ -406,6 +406,22 @@ function updateLayerUI() {
 //#region OutroBoot
 async function OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMaisFuncionalEm2026AtualizadoVersao100porcetoFree(layer,bgLayer){
     await startSavedData();
+    
+    // Busca a config específica deste ID
+    const savedConfig = await localforage.getItem(`config_draw_${id}`);
+    
+    if (savedConfig) {
+        lastDefinitionsPacked = savedConfig;
+        
+        // Aplica o estado da câmera
+        stage.position(savedConfig.lastviewpos);
+        stage.scale({ x: savedConfig.lastviewpos.scale, y: savedConfig.lastviewpos.scale });
+        
+        // Atualiza a UI com os valores salvos do pincel
+        document.getElementById('SpacingRange').value = savedConfig.penGlobalConfig.space;
+        sizePicker.value = savedConfig.penGlobalConfig.size;
+        // ... restauar os outros campos ...
+    }
     await StartBrush('assets/brush/default.png', '#000');
     NewStartInitWithType(layer, bgLayer);
 
@@ -1324,6 +1340,27 @@ function clearCanvas() {
 }
 
 //#region SAVE
+async function saveDefinitions() {
+    const config = {
+        lastviewpos: {
+            x: stage.x(),
+            y: stage.y(),
+            scale: stage.scaleX(),
+            rotation: stage.rotation()
+        },
+        penGlobalConfig: {
+            space: parseFloat(document.getElementById('SpacingRange').value),
+            size: parseFloat(sizePicker.value),
+            opacity: parseFloat(opacityPicker.value),
+            color: colorPickerLib.color.hexString,
+            stabilizer: parseFloat(strongStabilizador.value)
+        }
+    };
+
+    // Salvando especificamente para ESTE desenho no LocalForage
+    // Chave única: "config_draw_12"
+    await localforage.setItem(`config_draw_${id}`, config);
+}
 async function saveCanvas() {
     isDrawing = false;
     isSaved = true;
@@ -1342,6 +1379,7 @@ async function saveCanvas() {
     withLoadScreen(async () =>{
         //await saveAsImage();
         await NewsaveAsImage();
+        await saveDefinitions();
         window.location.reload();
     });
     
