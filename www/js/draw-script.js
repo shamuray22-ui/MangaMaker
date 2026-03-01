@@ -416,10 +416,25 @@ async function OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMais
         // Aplica o estado da câmera
         stage.position(savedConfig.lastviewpos);
         stage.scale({ x: savedConfig.lastviewpos.scale, y: savedConfig.lastviewpos.scale });
+        const pen = savedConfig.penGlobalConfig;
+    
+        // Mapeamento corrigido (cada um com seu respectivo valor do save)
+        document.getElementById('SpacingRange').value = pen.space;
+        document.getElementById('strongStabilizador').value = pen.stabilizer;
+        document.getElementById('pixelquality').value = pen.pixelquality; 
+        document.getElementById('pressureRange').value = pen.pressure;
+        document.getElementById('sizePicker').value = pen.size;
+        document.getElementById('opacityPicker').value = pen.opacity;
         
-        // Atualiza a UI com os valores salvos do pincel
-        document.getElementById('SpacingRange').value = savedConfig.penGlobalConfig.space;
-        sizePicker.value = savedConfig.penGlobalConfig.size;
+        // Atualiza a cor no seletor iro.js e no preview
+        if (pen.color) {
+            colorPickerLib.color.set(pen.color);
+            colorPicker.style.background = pen.color;
+        }
+
+        // Atualiza os textos numéricos que aparecem na tela
+        document.getElementById('rangelabelopacity-value').textContent = pen.opacity;
+        document.getElementById('rangesizelabel-value').textContent = pen.size;
         // ... restauar os outros campos ...
     }
     await StartBrush('assets/brush/default.png', '#000');
@@ -1353,12 +1368,12 @@ async function saveDefinitions() {
             size: parseFloat(sizePicker.value),
             opacity: parseFloat(opacityPicker.value),
             color: colorPickerLib.color.hexString,
-            stabilizer: parseFloat(strongStabilizador.value)
+            stabilizer: parseFloat(strongStabilizador.value),
+            // ADICIONE ESTES DOIS ABAIXO:
+            pixelquality: parseFloat(document.getElementById('pixelquality').value),
+            pressure: parseFloat(document.getElementById('pressureRange').value)
         }
     };
-
-    // Salvando especificamente para ESTE desenho no LocalForage
-    // Chave única: "config_draw_12"
     await localforage.setItem(`config_draw_${id}`, config);
 }
 async function saveCanvas() {
@@ -1391,6 +1406,8 @@ async function saveCanvas() {
     stage.rotation(lasrotation);
     bgRect.stroke('black')
     bgLayer.draw();
+
+
     
 }
 async function NewsaveAsImage() {
