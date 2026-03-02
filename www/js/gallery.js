@@ -258,29 +258,61 @@ async function downloadManga(manga) {
     let getrightmanga = getMangaList.find(current => current.id === manga.id);
     if (getrightmanga) {
         
+        const zip = new JSZip();
+        let totalPages = 0;
+        let pagesProcessed = 0;
+
+        // Primeiro, conta o total de páginas para o progresso
         getrightmanga.chapters.forEach(chap => {
-            // Itera sobre o número de páginas, não apenas as que têm PageURL
             for (let i = 0; i < chap.pagesCount; i++) {
                 if (chap.pages && chap.pages[i] && chap.pages[i].PageURL) {
-                    const link = document.createElement('a');
-                    link.href = chap.pages[i].PageURL;
-                    link.download = chap.title + ' - Página ' + (i + 1);
-                    
-                    // Usa fetch + blob para compatibilidade com mobile
-                    fetch(link.href)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const url = URL.createObjectURL(blob);
-                            const downloadLink = document.createElement('a');
-                            downloadLink.href = url;
-                            downloadLink.download = link.download + '.png';
-                            downloadLink.click();
-                            URL.revokeObjectURL(url);
-                        })
-                        .catch(err => console.error('Erro ao baixar página:', err));
+                    totalPages++;
                 }
             }
         });
+
+        // Processa cada capítulo
+        const chaptersPromises = getrightmanga.chapters.map(async (chap, chapIndex) => {
+            const chapFolder = zip.folder(`Capítulo ${chapIndex + 1} - ${chap.title}`);
+            const pagePromises = [];
+
+            for (let i = 0; i < chap.pagesCount; i++) {
+                if (chap.pages && chap.pages[i] && chap.pages[i].PageURL) {
+                    const pagePromise = fetch(chap.pages[i].PageURL)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const pageNum = String(i + 1).padStart(3, '0');
+                            chapFolder.file(`Página ${pageNum}.png`, blob);
+                            pagesProcessed++;
+                        })
+                        .catch(err => console.error('Erro ao baixar página:', err));
+                    
+                    pagePromises.push(pagePromise);
+                }
+            }
+
+            return Promise.all(pagePromises);
+        });
+
+        // Aguarda todas as páginas de todos os capítulos
+        Promise.all(chaptersPromises)
+            .then(() => {
+                // Gera o ZIP
+                return zip.generateAsync({ type: 'blob' });
+            })
+            .then(blob => {
+                // Faz o download
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = getrightmanga.name + '.zip';
+                link.click();
+                URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+                alert('Erro ao processar o download do manga. Σ(っ °Д °;)っ');
+                console.error(err);
+            });
     }
 }
 
@@ -293,11 +325,12 @@ function close_create_new(){
 }
 
 function createFile(){
-    add_draw();
-    
-   // else if (createmanga) {
-   //     createManga();
-  ///  }
+    if (createdraw){
+        add_draw();
+    }
+    else if (createmanga) {
+        createManga();
+    }
     createDiv.style.visibility = 'hidden';
 }
 

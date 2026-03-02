@@ -261,13 +261,22 @@ body {
   flex-direction: row;
   border-radius: 10px;
   padding: 10px;
+  overflow: scroll;
+  height: 100px;
 }
-
+#pagesDiv::-webkit-scrollbar {
+  visibility: hidden;
+}
 #pagesDiv button {
   padding: 30px;
   border-radius: 6px;
 }
-
+#pagesDiv button:focus {
+  padding: 24px;
+  border-radius: 6px;
+  border-width: 5px;
+  border-color: rgb(255, 230, 0);
+}
 #definitionsscreen {
   background-color: var(--DefaultpanelColor);
   position: fixed;

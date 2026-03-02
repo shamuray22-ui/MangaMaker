@@ -90,11 +90,11 @@ body {
 /* Card do Capítulo */
 #chapter-list div {
     display: grid; /* Mudado para grid para melhor controle */
-    grid-template-columns: 80px 1fr auto;
+    grid-template-columns: 60px 1fr auto;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
-    padding: 12px;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 8px;
     background-color: var(--form-bg);
     border-radius: 20px;
     transition: transform 0.2s ease;
@@ -102,8 +102,8 @@ body {
 }
 
 #chapter-list img {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     border-radius: 12px;
 }
@@ -112,7 +112,8 @@ body {
 .chapter-info {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
+    min-width: 0; /* Impede overflow do flex */
 }
 
 /* Efeito de clique (feedback tátil) */
@@ -124,7 +125,9 @@ body {
 /* Botões de ação na lista */
 .actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 #chapter-list button {
@@ -135,4 +138,34 @@ body {
     color: var(--font-color);
     font-size: 0.8rem;
     font-weight: 500;
+}
+
+/* ======== MEDIA QUERIES - RESPONSIVIDADE ======== */
+
+/* Tablets e telas médias (acima de 600px) */
+@media (min-width: 600px) {
+    #chapter-list div {
+        grid-template-columns: 80px 1fr auto;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+
+    #chapter-list img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .chapter-info {
+        gap: 8px;
+    }
+
+    .actions {
+        gap: 8px;
+    }
+
+    #create-chapter {
+        max-width: 600px;
+        padding: 24px;
+    }
 }

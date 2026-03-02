@@ -2,7 +2,7 @@
 const chapter_list = document.getElementById('chapter-list');
 const create_chapter = document.getElementById('create-chapter');
 const emptyH1 = document.getElementById('emptyH1');
-create_chapter.style.visibility = 'hidden';
+create_chapter.style.display = 'none';
 
 let MAXPAGES = 30
 
@@ -32,8 +32,9 @@ function loadChapterList(){
 
     if (selectedManga && selectedManga.chapters) {
         // Itera sobre os capítulos do mangá selecionado e os cria na tela
-        selectedManga.chapters.forEach((chapter) => {
-            createChapterUX(chapter.title, chapter.number,chapter.pagesCount, 'assets/drawing.png');
+        selectedManga.chapters.forEach((chapter, idx) => {
+            // use current index for ordering in case chapters were removed/renumbered
+            createChapterUX(chapter.title, idx, chapter.pagesCount, 'assets/drawing.png');
         });
     }
 
@@ -49,10 +50,10 @@ function loadChapterList(){
 //#region CHAPTER MANAGEMENT
 // Mostrar/ocultar o card de criação
 function toggleCreateChapter() {
-    if(create_chapter.style.visibility === 'hidden') {
-        create_chapter.style.visibility = 'visible';
+    if(create_chapter.style.display === 'none') {
+        create_chapter.style.display = 'flex';
     } else {
-        create_chapter.style.visibility = 'hidden';
+        create_chapter.style.display = 'none';
     }
 }
 
@@ -69,7 +70,8 @@ async function addChapter() {
     if (selectedManga && selectedManga.chapters){
         const newChapterData = {
             title: chapterName,
-            number: chapter_list.children.length - 1,
+            // number will be recalculated when rendering; set to length before push for consistency
+            number: selectedManga.chapters.length,
             pagesCount: pagesNumber,
             pages: []
         };
@@ -82,7 +84,7 @@ async function addChapter() {
 
 function createChapterUX(title,number,numpages,imgPage){
     // Oculta o form
-    create_chapter.style.visibility = 'hidden';
+    create_chapter.style.display = 'none';
     emptyH1.style.visibility = 'hidden';
 
     // Cria a div do capítulo
@@ -107,20 +109,25 @@ function createChapterUX(title,number,numpages,imgPage){
     const tr = document.createElement('tr');
     const td = document.createElement('td');
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Editar';
-    editBtn.onclick = () => {
+    h1.onclick = () => {
         window.location.href = "draw-screen.html?id=" + id + "&chapID=" + number + "&isManga=true";
-    };
+    }
 
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Deletar';
     deleteBtn.onclick = () => {
-        newChaper.remove();
-        loadChapterList(); // checa se ficou vazio
-    }
-
-    td.appendChild(editBtn);
+            // find index of this chapter element in the list
+            const index = Array.from(chapter_list.children).indexOf(newChaper);
+            if (index > -1 && selectedManga && selectedManga.chapters) {
+                // remove from data array
+                selectedManga.chapters.splice(index, 1);
+                addToMangasList(mangaList);
+            }
+            // reload the visual list which will renumber chapters and check empty state
+            loadChapterList(); // checa se ficou vazio
+        }
+    
+    ////td.appendChild(editBtn);
     td.appendChild(deleteBtn);
     tr.appendChild(td);
     table.appendChild(tr);
