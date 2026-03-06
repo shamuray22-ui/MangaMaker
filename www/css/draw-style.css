@@ -262,7 +262,6 @@ body {
   border-radius: 10px;
   padding: 10px;
   overflow: scroll;
-  height: 100px;
 }
 #pagesDiv::-webkit-scrollbar {
   visibility: hidden;
