@@ -21,6 +21,8 @@ pixelquality.addEventListener('change', () => {
     DRAWSIZE.PIXELQUALITY = pixelquality.value;
 });
 
+const autoSaveInterval = document.getElementById('autoSaveInterval');
+autoSaveInterval.addEventListener('change', iniciarTimer);
 
 let Gettype = localStorage.getItem('type');
 
@@ -423,8 +425,10 @@ async function OutroBootMuitoBemFeitoTestandoUmNovoTipoDeLoadDeDesenhoEmuitoMais
         document.getElementById('strongStabilizador').value = pen.stabilizer;
         document.getElementById('pixelquality').value = pen.pixelquality; 
         document.getElementById('pressureRange').value = pen.pressure;
+        document.getElementById('autoSaveInterval').value = pen.autosaveIntervalMinutes ?? 1;
         document.getElementById('sizePicker').value = pen.size;
         document.getElementById('opacityPicker').value = pen.opacity;
+        iniciarTimer();
         
         // Atualiza a cor no seletor iro.js e no preview
         if (pen.color) {
@@ -1369,9 +1373,9 @@ async function saveDefinitions() {
             opacity: parseFloat(opacityPicker.value),
             color: colorPickerLib.color.hexString,
             stabilizer: parseFloat(strongStabilizador.value),
-            // ADICIONE ESTES DOIS ABAIXO:
             pixelquality: parseFloat(document.getElementById('pixelquality').value),
-            pressure: parseFloat(document.getElementById('pressureRange').value)
+            pressure: parseFloat(document.getElementById('pressureRange').value),
+            autosaveIntervalMinutes: parseFloat(document.getElementById('autoSaveInterval').value) || 1
         }
     };
     await localforage.setItem(`config_draw_${id}`, config);
@@ -1561,15 +1565,25 @@ function redo() {
     }
 }
 //#region SAVE AUTO
+let autosaveTimerId = null;
+
+function getAutosaveMilliseconds() {
+    const minutes = Number(document.getElementById('autoSaveInterval')?.value) || 1;
+    return Math.max(1, minutes) * 60 * 1000;
+}
+
 function autosave() {
     saveCanvas();
-    iniciarTimer(); // reinicia o timer automaticamente
+    iniciarTimer(); // reinicia o timer automaticamente depois do save
 }
 
 function iniciarTimer() {
-    const umMinutos = 1 * 60 * 1000;
-    setTimeout(autosave, umMinutos);
+    if (autosaveTimerId !== null) {
+        clearTimeout(autosaveTimerId);
+    }
+    autosaveTimerId = setTimeout(autosave, getAutosaveMilliseconds());
 }
+
 iniciarTimer();
 
 //#region MOUSE LEAVE
