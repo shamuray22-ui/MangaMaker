@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaMaker - Documentação</title>
+    <link rel="stylesheet" href="css/global-roots.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .documentation { max-width: 900px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }
+        .tool-icon { width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; }
+        .section { margin-bottom: 30px; }
+        .subsection { margin-left: 20px; margin-bottom: 15px; }
+        .code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        ul { padding-left: 20px; }
+        ol { padding-left: 20px; }
+        .highlight { background-color: #e7f3ff; padding: 10px; border-left: 4px solid #007acc; }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <button onclick="window.location.href='index.html'"> <img src="assets/icons/exit.png" class="tool-icon">Voltar à Galeria</button>
+        <h1>Documentação do MangaMaker</h1>
+    </header>
+
+    <main>
+        <div class="documentation">
+
+            <div class="section">
+                <h2>1. Introdução</h2>
+                <p>O MangaMaker é uma aplicação web gratuita para criação e gerenciamento de desenhos e mangás. Desenvolvido com tecnologias modernas como Konva.js para canvas interativo, oferece ferramentas completas para artistas digitais. Compatível com dispositivos móveis e desktop, utilizando armazenamento local para persistência de dados.</p>
+                <p><strong>Recursos Principais:</strong></p>
+                <ul>
+                    <li>Desenho com pincéis personalizáveis e estabilização.</li>
+                    <li>Gerenciamento de camadas para organização complexa.</li>
+                    <li>Criação de mangás com capítulos e páginas.</li>
+                    <li>Visualização em modo leitor.</li>
+                    <li>Exportação e importação de projetos.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>2. Iniciando</h2>
+                <div class="subsection">
+                    <h3>2.1 Galeria Principal</h3>
+                    <p>A galeria (<code>index.html</code>) é o ponto de entrada da aplicação, exibindo todos os projetos salvos.</p>
+                    <p><strong>Funcionalidades:</strong></p>
+                    <ul>
+                        <li><img src="assets/icons/add.png" class="tool-icon"><strong>Criar Desenho:</strong> Inicia um novo projeto. Selecione "Draw" para arte única ou "Manga" para série com capítulos.</li>
+                        <li><img src="assets/icons/export.png" class="tool-icon"><strong>Salvar Galeria:</strong> Exporta projetos em JSON para backup.</li>
+                        <li><img src="assets/icons/import.png" class="tool-icon"><strong>Carregar Galeria:</strong> Importa projetos de arquivo JSON.</li>
+                        <li><img src="assets/icons/clear.png" class="tool-icon"><strong>Limpar Galeria:</strong> Remove todos os projetos (irreversível).</li>
+                        <li><img src="assets/icons/info.png" class="tool-icon"><strong>Ajuda:</strong> Acesso a esta documentação.</li>
+                    </ul>
+                    <p><strong>Passos para Criar um Projeto:</strong></p>
+                    <ol>
+                        <li>Clique em "Criar desenho".</li>
+                        <li>Escolha o tipo: Draw ou Manga.</li>
+                        <li>Insira um nome e confirme.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>3. Tela de Desenho</h2>
+                <p>A tela de desenho (<code>draw-screen.html</code>) utiliza um canvas Konva para criação artística.</p>
+                <div class="subsection">
+                    <h3>3.1 Ferramentas Principais</h3>
+                    <ul>
+                        <li><img src="assets/icons/undo.png" class="tool-icon"><strong>Desfazer (Ctrl+Z):</strong> Reverte ação anterior.</li>
+                        <li><img src="assets/icons/redo.png" class="tool-icon"><strong>Refazer (Ctrl+Y):</strong> Restaura ação desfeita.</li>
+                        <li><img src="assets/icons/exit.png" class="tool-icon"><strong>Sair:</strong> Retorna à galeria com confirmação de salvamento.</li>
+                        <li><img src="assets/icons/resize.png" class="tool-icon"><strong>Redimensionar:</strong> Ajusta dimensões do canvas (largura/altura).</li>
+                        <li><img src="assets/icons/save.png" class="tool-icon"><strong>Salvar (Ctrl+S):</strong> Salva trabalho na galeria.</li>
+                        <li><img src="assets/icons/settings.png" class="tool-icon"><strong>Configurações:</strong> Abre painéis de ferramentas e camadas.</li>
+                    </ul>
+                </div>
+                <div class="subsection">
+                    <h3>3.2 Ferramentas de Desenho</h3>
+                    <ul>
+                        <li><img src="assets/icons/pen.png" class="tool-icon"><strong>Caneta (Q):</strong> Desenha linhas suaves com estabilização.</li>
+                        <li><img src="assets/icons/eraser.png" class="tool-icon"><strong>Borracha (E):</strong> Remove traços.</li>
+                        <li><img src="assets/icons/line.png" class="tool-icon"><strong>Linha:</strong> Cria linhas retas.</li>
+                        <li><img src="assets/icons/rectangle.png" class="tool-icon"><strong>Retângulo:</strong> Desenha formas retangulares.</li>
+                        <li><img src="assets/icons/elipse.png" class="tool-icon"><strong>Elipse:</strong> Desenha círculos/elipses.</li>
+                        <li><img src="assets/icons/text.png" class="tool-icon"><strong>Texto:</strong> Insere texto editável.</li>
+                        <li><img src="assets/icons/selection.png" class="tool-icon"><strong>Seleção:</strong> Seleciona e move áreas/objetos.</li>
+                    </ul>
+                </div>
+                <div class="subsection">
+                    <h3>3.3 Camadas</h3>
+                    <p>Organize elementos em até 10 camadas para controle preciso.</p>
+                    <ul>
+                        <li><img src="assets/icons/layers.png" class="tool-icon"><strong>Gerenciar Camadas:</strong> Adiciona/remove camadas.</li>
+                        <li><img src="assets/icons/visible.png" class="tool-icon"><strong>Visível:</strong> Alterna visibilidade.</li>
+                        <li><img src="assets/icons/hidden.png" class="tool-icon"><strong>Oculto:</strong> Torna camada invisível.</li>
+                        <li><img src="assets/icons/arrowup.png" class="tool-icon"><strong>Mover para Cima:</strong> Reordena camadas.</li>
+                        <li><img src="assets/icons/arrowdown.png" class="tool-icon"><strong>Mover para Baixo:</strong> Reordena camadas.</li>
+                    </ul>
+                    <p><strong>Dicas:</strong> Use camadas para separar fundo, personagens e detalhes.</p>
+                </div>
+                <div class="subsection">
+                    <h3>3.5 Navegação e Zoom</h3>
+                    <p>Use roda do mouse para zoom (0.1x a 21x). Toque duplo para zoom em dispositivos móveis. Arraste para pan.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>4. Gerenciamento de Mangás</h2>
+                <p>Para projetos de mangá (<code>manga-screen.html</code>), estruture seu trabalho em capítulos.</p>
+                <div class="subsection">
+                    <h3>4.1 Criando Capítulos</h3>
+                    <ul>
+                        <li><img src="assets/icons/add.png" class="tool-icon"><strong>Criar Capítulo:</strong> Adiciona capítulo com nome e número de páginas (máx. 30).</li>
+                        <li><img src="assets/icons/pages.png" class="tool-icon"><strong>Páginas:</strong> Cada página é editada individualmente.</li>
+                    </ul>
+                    <p><strong>Fluxo:</strong></p>
+                    <ol>
+                        <li>Na galeria, crie projeto "Manga".</li>
+                        <li>Em "Gerenciar Mangá", clique "Criar Capítulo".</li>
+                        <li>Defina nome e páginas.</li>
+                        <li>Clique no capítulo para editar páginas.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>5. Visualização de Mangá</h2>
+                <p>O preview (<code>mangaPreviwe.html</code>) simula um leitor de mangá.</p>
+                <ul>
+                    <li><img src="assets/icons/arrowup.png" class="tool-icon"><strong>Página Anterior:</strong> Navega para página anterior.</li>
+                    <li><img src="assets/icons/arrowdown.png" class="tool-icon"><strong>Página Seguinte:</strong> Navega para página seguinte.</li>
+                    <li><img src="assets/icons/selectnode.png" class="tool-icon"><strong>Selecionar Capítulo:</strong> Escolhe capítulo.</li>
+                </ul>
+                <p><strong>Uso:</strong> Clique em mangá na galeria e selecione "Visualizar".</p>
+            </div>
+
+            <div class="section">
+                <h2>6. Configurações e Salvamento</h2>
+                <p>Configurações são salvas automaticamente por projeto.</p>
+                <ul>
+                    <li><strong>Salvamento Automático:</strong> Configurável em minutos (padrão 1 min).</li>
+                    <li><strong>Qualidade de Pixel:</strong> Ajusta resolução de renderização.</li>
+                    <li><strong>Estabilização:</strong> Suaviza traços.</li>
+                    <li><strong>Referências:</strong> Importe imagens como fundo via "Referência".</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. Atalhos de Teclado</h2>
+                <ul>
+                    <li><strong>Ctrl+Z:</strong> Desfazer</li>
+                    <li><strong>Ctrl+Y:</strong> Refazer</li>
+                    <li><strong>Ctrl+S:</strong> Salvar</li>
+                    <li><strong>Ctrl+C:</strong> Limpar Canvas</li>
+                    <li><strong>Q:</strong> Caneta</li>
+                    <li><strong>E:</strong> Borracha</li>
+                    <li><strong>Setas:</strong> Rotacionar canvas</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>8. Dicas Gerais</h2>
+                <ul>
+                    <li>Salve frequentemente para evitar perda de dados.</li>
+                    <li>Use camadas para projetos complexos.</li>
+                    <li>Para mobile: Otimizado para toque; use mouse para precisão.</li>
+                    <li>Armazenamento: Dados salvos localmente via localStorage/localForage.</li>
+                    <li>Backup: Exporte galerias regularmente.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>9. Solução de Problemas</h2>
+                <ul>
+                    <li><strong>Desenho não salva:</strong> Verifique espaço em disco e permissões.</li>
+                    <li><strong>Ferramentas não respondem:</strong> Recarregue página; verifique console (F12).</li>
+                    <li><strong>Mangá sem capítulos:</strong> Adicione capítulos primeiro.</li>
+                    <li><strong>Performance lenta:</strong> Reduza qualidade de pixel ou camadas.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>10. Suporte e Contribuição</h2>
+                <p>Para bugs ou sugestões, verifique o console do navegador. Código fonte disponível para contribuições.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="globals/globalDebug.js"></script>
+
+</body>
+
+</html>
