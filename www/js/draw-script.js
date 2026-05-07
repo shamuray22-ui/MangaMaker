@@ -22,7 +22,6 @@ pixelquality.addEventListener('change', () => {
 });
 
 const autoSaveInterval = document.getElementById('autoSaveInterval');
-autoSaveInterval.addEventListener('change', iniciarTimer);
 
 let Gettype = localStorage.getItem('type');
 
@@ -1582,6 +1581,10 @@ function iniciarTimer() {
         clearTimeout(autosaveTimerId);
     }
     autosaveTimerId = setTimeout(autosave, getAutosaveMilliseconds());
+}
+
+function confirmAutoSaveInterval() {
+    iniciarTimer();
 }
 
 iniciarTimer();
