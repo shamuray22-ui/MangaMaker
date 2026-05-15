@@ -1348,6 +1348,9 @@ function simplifyPoints(custom = null){
         
     }
 }
+//#region mangaToolsOpcions
+
+
 
 //#region clearCanvas
 
