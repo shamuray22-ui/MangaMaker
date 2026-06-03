@@ -106,61 +106,9 @@ function getRealLayer(index){
 
 function updateLayerList() {
     if (!pages['page' + currentpage]) return;
+    layerList = [];
     layerList = pages['page' + currentpage].layers;
     realayers.length = layerList.length;
-}
-
-function reorderRealLayers() {
-    realayers.forEach((rl, index) => {
-        if (rl && typeof rl.setZIndex === 'function') {
-            rl.setZIndex(index + 1);
-        }
-    });
-    stage.batchDraw();
-}
-
-function moveLayerOrder(sourceIndex, targetIndex) {
-    const pageLayers = pages['page' + currentpage]?.layers;
-    if (!pageLayers || sourceIndex < 0 || targetIndex < 0 || sourceIndex >= pageLayers.length || targetIndex >= pageLayers.length) {
-        return;
-    }
-
-    [pageLayers[sourceIndex], pageLayers[targetIndex]] = [pageLayers[targetIndex], pageLayers[sourceIndex]];
-    [realayers[sourceIndex], realayers[targetIndex]] = [realayers[targetIndex], realayers[sourceIndex]];
-
-    reorderRealLayers();
-    updateLayerList();
-    currentlayer = targetIndex;
-    updateLayerUI();
-
-    const newButton = layerGrid.children[targetIndex];
-    if (newButton) {
-        newButton.click();
-    }
-}
-
-function removeLayerAt(index) {
-    const pageLayers = pages['page' + currentpage]?.layers;
-    if (!pageLayers || index < 0 || index >= pageLayers.length) return;
-
-    const layerEntry = pageLayers[index];
-    if (layerEntry && layerEntry.draw) {
-        layerEntry.draw.destroy();
-    }
-
-    if (realayers[index]) {
-        realayers[index].destroy();
-    }
-
-    pageLayers.splice(index, 1);
-    realayers.splice(index, 1);
-
-    updateLayerList();
-    currentlayer = Math.min(index, layerList.length - 1);
-    updateLayerUI();
-    if (layerGrid.children[currentlayer]) {
-        layerGrid.children[currentlayer].click();
-    }
 }
 
 function StartBrush(path, color) {
@@ -779,8 +727,6 @@ function createUXlayer() {
     rangevis.value = 100;
     rangevis.type = 'range';
 
-    const layerIndex = currentlayer;
-
     // função pra criar botão com ícone e alt
     const makeButton = (icon, alt) => {
         const btn = document.createElement('button');
@@ -798,17 +744,46 @@ function createUXlayer() {
     todown.innerHTML = '<img src="assets/icons/arrowdown.png" alt="Mover para baixo">';
     toup.innerHTML = '<img src="assets/icons/arrowup.png" alt="Mover para cima">';
     toup.onclick = () => {
-        moveLayerOrder(layerIndex, layerIndex - 1);
-    };
+        if (currentlayer > 0) {
+            ///[realayers[currentlayer], realayers[currentlayer - 1]] = [realayers[currentlayer - 1], realayers[currentlayer]];
+            
+            ///// metodo antigo é 1000 melhor que essa sujeira ai de swap
+            /////// real layer 0
+            let templayer = pages['page' + currentpage].layers[currentlayer - 1];
+            //// real layer zero recebe 1
+            
+            pages['page' + currentpage].layers[currentlayer - 1] = pages['page' + currentpage].layers[currentlayer];
+            /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
+            pages['page' + currentpage].layers[currentlayer] = templayer;
+            /// 0 = 1
+            let tempreallayer = realayers[currentlayer - 1];
+            realayers[currentlayer - 1] = realayers[currentlayer];
+            /// 1 = é 0
+            realayers[currentlayer] = tempreallayer;
+            /// agora 1 vai pra cima e 0 vai pra ... eu devia ler a documentaçao
+            realayers[currentlayer - 1].moveUp();
+            realayers[currentlayer].moveToTop();
+            //////// atualiza o ux
+            let l = layerGrid.children[currentlayer - 1];
+            let l1 = layerGrid.children[currentlayer];
+            //layerGrid.insertBefore(l1, l);
+            l.children[1].textContent = currentlayer;
+            l1.children[1].textContent = currentlayer - 1;
+            updateLayerList();
+            //currentlayer -= 1;
+            stage.batchDraw();
+        }
+        
+    }
     todown.onclick = () => {
-        moveLayerOrder(layerIndex, layerIndex + 1);
-    };
+       
+    }
     // cria os botões
     const hide = makeButton('hidden', 'Esconder');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
     layerCell.appendChild(toup);
-    layerCell.appendChild(todown);
+    //layerCell.appendChild(todown);
     layerCell.appendChild(label);
     layerCell.appendChild(ratio);
     layerCell.appendChild(preview);
@@ -818,12 +793,12 @@ function createUXlayer() {
 
     layerGrid.appendChild(layerCell);
     
-    layerCell.addEventListener('click', () => {
+    layerCell.addEventListener('click', (event) => {
         ratio.checked = true;
-        currentlayer = layerIndex;
-        group = pages['page' + currentpage].layers[layerIndex].draw;
-        layer = getRealLayer(layerIndex);
-        checkimage(layerIndex);
+        const num = Number(ratio.value);
+        group = pages['page' + currentpage].layers[num].draw;
+        layer = getRealLayer(ratio.value);
+        checkimage(num);
     });
     layerCell.click();
 
@@ -843,11 +818,20 @@ function createUXlayer() {
     });
 
     del.onclick = () => {
-        if (!ratio.checked) {
+        if (label.textContent === '0' || ratio.checked === false) {
             return;
         }
 
-        removeLayerAt(layerIndex);
+        pages['page' + currentpage].layers[currentlayer].draw.remove();
+        layerList.splice(currentlayer,1);
+        updateLayerList();
+        if (currentlayer >= layerList.length) {
+            currentlayer = layerList.length - 1; // Garante índice válido
+        }
+        if (layerList.length > 0) {
+            group = pages['page' + currentpage].layers[currentlayer].draw;
+        }
+        updateLayerUI();
     }
 
 }
@@ -1065,7 +1049,7 @@ stage.on('mousedown', function (e) {
     firstStartTools()
 });
 //#region FIRST START TOOLS
-async function firstStartTools(e){
+ function firstStartTools(e){
     const pos = getGlobalMousePos();
     startpos = pos;
 
@@ -1076,7 +1060,6 @@ async function firstStartTools(e){
         let scaletexture = sizePicker.value;
         
         let color = colorPickerLib.color.hexString;
-        await StartBrush('assets/brush/default.png', color);
         TexturedLine = new Konva.Shape({
             strokeColor: color,
             lineWidth: scaletexture,
@@ -1141,7 +1124,7 @@ async function firstStartTools(e){
             width: 0,
             height: 0,
             fill: '#ffff', // transparente por padrão
-            stroke: colorPickerLib.color.hexString
+            stroke: 'black'
         });
         group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
@@ -1152,7 +1135,7 @@ async function firstStartTools(e){
             radiusX: 0,
             radiusY: 0,
             fill: '#ffff',
-            stroke: colorPickerLib.color.hexString
+            stroke: 'black'
             
         });
         group.add(lastCicle);
@@ -1174,7 +1157,7 @@ async function firstStartTools(e){
     }
     else if (current_tool == 'line') {
         lastLineTool = new Konva.Line({
-            stroke: colorPickerLib.color.hexString,
+            stroke: colorPicker.value,
             strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             points: [startpos.x, startpos.y, startpos.x, startpos.y],
@@ -1192,7 +1175,7 @@ async function firstStartTools(e){
             text: 'New text',
             width: 200,
             height: 100,
-            fill: colorPickerLib.color.hexString,
+            fill: colorPicker.value,
             align:'center',
             fontSize: 12,
             draggable: true
@@ -1241,7 +1224,7 @@ function coisanoTextura(points, i, ctx,shape) {
     let result = Math.sqrt(hyp1 * hyp1 + hyp2 * hyp2);
 
     if (result === 0) {
-        ctx.drawImage(currentBrush,
+        ctx.drawImage(shape.attrs.customTexture,
             points[i] - baseTextureScale / 2,
             points[i + 1] - baseTextureScale / 2,
             baseTextureScale, baseTextureScale
@@ -1264,7 +1247,7 @@ function coisanoTextura(points, i, ctx,shape) {
         let endInter = y + (hyp2 * st / steps);
         
         // Desenhar carimbo intermediário com a 'textureScale' calculada
-        ctx.drawImage(currentBrush,
+        ctx.drawImage(shape.attrs.customTexture,
             initInter - textureScale / 2,
             endInter - textureScale / 2,
             textureScale, textureScale
