@@ -106,9 +106,61 @@ function getRealLayer(index){
 
 function updateLayerList() {
     if (!pages['page' + currentpage]) return;
-    layerList = [];
     layerList = pages['page' + currentpage].layers;
     realayers.length = layerList.length;
+}
+
+function reorderRealLayers() {
+    realayers.forEach((rl, index) => {
+        if (rl && typeof rl.setZIndex === 'function') {
+            rl.setZIndex(index + 1);
+        }
+    });
+    stage.batchDraw();
+}
+
+function moveLayerOrder(sourceIndex, targetIndex) {
+    const pageLayers = pages['page' + currentpage]?.layers;
+    if (!pageLayers || sourceIndex < 0 || targetIndex < 0 || sourceIndex >= pageLayers.length || targetIndex >= pageLayers.length) {
+        return;
+    }
+
+    [pageLayers[sourceIndex], pageLayers[targetIndex]] = [pageLayers[targetIndex], pageLayers[sourceIndex]];
+    [realayers[sourceIndex], realayers[targetIndex]] = [realayers[targetIndex], realayers[sourceIndex]];
+
+    reorderRealLayers();
+    updateLayerList();
+    currentlayer = targetIndex;
+    updateLayerUI();
+
+    const newButton = layerGrid.children[targetIndex];
+    if (newButton) {
+        newButton.click();
+    }
+}
+
+function removeLayerAt(index) {
+    const pageLayers = pages['page' + currentpage]?.layers;
+    if (!pageLayers || index < 0 || index >= pageLayers.length) return;
+
+    const layerEntry = pageLayers[index];
+    if (layerEntry && layerEntry.draw) {
+        layerEntry.draw.destroy();
+    }
+
+    if (realayers[index]) {
+        realayers[index].destroy();
+    }
+
+    pageLayers.splice(index, 1);
+    realayers.splice(index, 1);
+
+    updateLayerList();
+    currentlayer = Math.min(index, layerList.length - 1);
+    updateLayerUI();
+    if (layerGrid.children[currentlayer]) {
+        layerGrid.children[currentlayer].click();
+    }
 }
 
 function StartBrush(path, color) {
@@ -727,6 +779,8 @@ function createUXlayer() {
     rangevis.value = 100;
     rangevis.type = 'range';
 
+    const layerIndex = currentlayer;
+
     // função pra criar botão com ícone e alt
     const makeButton = (icon, alt) => {
         const btn = document.createElement('button');
@@ -744,46 +798,17 @@ function createUXlayer() {
     todown.innerHTML = '<img src="assets/icons/arrowdown.png" alt="Mover para baixo">';
     toup.innerHTML = '<img src="assets/icons/arrowup.png" alt="Mover para cima">';
     toup.onclick = () => {
-        if (currentlayer > 0) {
-            ///[realayers[currentlayer], realayers[currentlayer - 1]] = [realayers[currentlayer - 1], realayers[currentlayer]];
-            
-            ///// metodo antigo é 1000 melhor que essa sujeira ai de swap
-            /////// real layer 0
-            let templayer = pages['page' + currentpage].layers[currentlayer - 1];
-            //// real layer zero recebe 1
-            
-            pages['page' + currentpage].layers[currentlayer - 1] = pages['page' + currentpage].layers[currentlayer];
-            /// ou seja 0 virou 1 e agora o 1 vai vira o temp que e 0
-            pages['page' + currentpage].layers[currentlayer] = templayer;
-            /// 0 = 1
-            let tempreallayer = realayers[currentlayer - 1];
-            realayers[currentlayer - 1] = realayers[currentlayer];
-            /// 1 = é 0
-            realayers[currentlayer] = tempreallayer;
-            /// agora 1 vai pra cima e 0 vai pra ... eu devia ler a documentaçao
-            realayers[currentlayer - 1].moveUp();
-            realayers[currentlayer].moveToTop();
-            //////// atualiza o ux
-            let l = layerGrid.children[currentlayer - 1];
-            let l1 = layerGrid.children[currentlayer];
-            //layerGrid.insertBefore(l1, l);
-            l.children[1].textContent = currentlayer;
-            l1.children[1].textContent = currentlayer - 1;
-            updateLayerList();
-            //currentlayer -= 1;
-            stage.batchDraw();
-        }
-        
-    }
+        moveLayerOrder(layerIndex, layerIndex - 1);
+    };
     todown.onclick = () => {
-       
-    }
+        moveLayerOrder(layerIndex, layerIndex + 1);
+    };
     // cria os botões
     const hide = makeButton('hidden', 'Esconder');
     const del = makeButton('clear', 'Deletar');
     // joga tudo no layerCell
     layerCell.appendChild(toup);
-    //layerCell.appendChild(todown);
+    layerCell.appendChild(todown);
     layerCell.appendChild(label);
     layerCell.appendChild(ratio);
     layerCell.appendChild(preview);
@@ -793,12 +818,12 @@ function createUXlayer() {
 
     layerGrid.appendChild(layerCell);
     
-    layerCell.addEventListener('click', (event) => {
+    layerCell.addEventListener('click', () => {
         ratio.checked = true;
-        const num = Number(ratio.value);
-        group = pages['page' + currentpage].layers[num].draw;
-        layer = getRealLayer(ratio.value);
-        checkimage(num);
+        currentlayer = layerIndex;
+        group = pages['page' + currentpage].layers[layerIndex].draw;
+        layer = getRealLayer(layerIndex);
+        checkimage(layerIndex);
     });
     layerCell.click();
 
@@ -818,20 +843,11 @@ function createUXlayer() {
     });
 
     del.onclick = () => {
-        if (label.textContent === '0' || ratio.checked === false) {
+        if (!ratio.checked) {
             return;
         }
 
-        pages['page' + currentpage].layers[currentlayer].draw.remove();
-        layerList.splice(currentlayer,1);
-        updateLayerList();
-        if (currentlayer >= layerList.length) {
-            currentlayer = layerList.length - 1; // Garante índice válido
-        }
-        if (layerList.length > 0) {
-            group = pages['page' + currentpage].layers[currentlayer].draw;
-        }
-        updateLayerUI();
+        removeLayerAt(layerIndex);
     }
 
 }
@@ -1049,7 +1065,7 @@ stage.on('mousedown', function (e) {
     firstStartTools()
 });
 //#region FIRST START TOOLS
- function firstStartTools(e){
+async function firstStartTools(e){
     const pos = getGlobalMousePos();
     startpos = pos;
 
@@ -1060,6 +1076,7 @@ stage.on('mousedown', function (e) {
         let scaletexture = sizePicker.value;
         
         let color = colorPickerLib.color.hexString;
+        await StartBrush('assets/brush/default.png', color);
         TexturedLine = new Konva.Shape({
             strokeColor: color,
             lineWidth: scaletexture,
@@ -1124,7 +1141,7 @@ stage.on('mousedown', function (e) {
             width: 0,
             height: 0,
             fill: '#ffff', // transparente por padrão
-            stroke: 'black'
+            stroke: colorPickerLib.color.hexString
         });
         group.add(lastRect);
         // não adicionar ao undoHistory aqui — só no mouseup quando finalizar
@@ -1135,7 +1152,7 @@ stage.on('mousedown', function (e) {
             radiusX: 0,
             radiusY: 0,
             fill: '#ffff',
-            stroke: 'black'
+            stroke: colorPickerLib.color.hexString
             
         });
         group.add(lastCicle);
@@ -1157,7 +1174,7 @@ stage.on('mousedown', function (e) {
     }
     else if (current_tool == 'line') {
         lastLineTool = new Konva.Line({
-            stroke: colorPicker.value,
+            stroke: colorPickerLib.color.hexString,
             strokeWidth: autosize ? sizePicker.value / stage.scaleX() * autoSizeSensi : sizePicker.value,
             globalCompositeOperation: composite,
             points: [startpos.x, startpos.y, startpos.x, startpos.y],
@@ -1175,7 +1192,7 @@ stage.on('mousedown', function (e) {
             text: 'New text',
             width: 200,
             height: 100,
-            fill: colorPicker.value,
+            fill: colorPickerLib.color.hexString,
             align:'center',
             fontSize: 12,
             draggable: true
@@ -1356,7 +1373,7 @@ function onUpKillWhatNeed(e){
     lastAngle = 0;
     simplifyPoints();
     some = null;
-    //cacherize(TexturedLine);
+    cacherize(TexturedLine);
     AddactionToHistory();
     layer.draw();
 
