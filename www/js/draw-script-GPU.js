@@ -1049,10 +1049,9 @@ stage.on('mousedown', function (e) {
     firstStartTools()
 });
 //#region FIRST START TOOLS
- function firstStartTools(e){
+ async function firstStartTools(e){
     const pos = getGlobalMousePos();
     startpos = pos;
-
     if (current_tool == 'pen') {
         isSaved = false
               
@@ -1060,6 +1059,8 @@ stage.on('mousedown', function (e) {
         let scaletexture = sizePicker.value;
         
         let color = colorPickerLib.color.hexString;
+        console.log(color," aqui no starttools");
+        await StartBrush(brushpath, color);
         TexturedLine = new Konva.Shape({
             strokeColor: color,
             lineWidth: scaletexture,
@@ -1193,6 +1194,7 @@ function strokenize(ctx,shape){
     // Aplica a opacidade do shape ao contexto do canvas
     ctx.globalAlpha = shape.attrs.opacity;
     ctx.strokeStyle = shape.attrs.strokeColor;
+    console.log(ctx.strokeStyle," aqui no strokize");
     ctx.lineWidth = shape.attrs.lineWidth;
     ctx.lineCap = shape.attrs.lineCap;
     ctx.lineJoin = shape.attrs.lineJoin;
