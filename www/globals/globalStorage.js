@@ -106,12 +106,25 @@ function hideLoadScreen() {
 
 // Função auxiliar que mostra load, executa uma ação e esconde
 async function withLoadScreen(asyncFunction) {
+    const minDuration = 500;
+    const startTime = Date.now();
     showLoadScreen();
     try {
         const result = await asyncFunction();
+        const elapsed = Date.now() - startTime;
+        const remaining = minDuration - elapsed;
+        if (remaining > 0) {
+            await new Promise(resolve => setTimeout(resolve, remaining));
+        }
         hideLoadScreen();
         return result;
+        
     } catch (error) {
+        const elapsed = Date.now() - startTime;
+        const remaining = minDuration - elapsed;
+        if (remaining > 0) {
+            await new Promise(resolve => setTimeout(resolve, remaining));
+        }
         hideLoadScreen();
         throw error;
     }

@@ -40,16 +40,16 @@
       <label> Força de simplificação</label>
       <input id="strongSimply" type="range" min="0" step="2" value="0" max="8">
       <label> Força de Estabilizador</label>
-      <input id="strongStabilizador" type="range" min="0" step="0.3" value="0.0" max="0.8">
+      <input id="strongStabilizador" type="range" min="0" step="0.3" value="0.8" max="0.8">
       <label> Força de Espaçamento de textura de pincel</label>
-      <input id="SpacingRange" type="range" min="0.2" step="0.2" value="0.2" max="12">
+      <input id="SpacingRange" type="range" min="0.2" step="0.2" value="0.0" max="12">
       <label> Qualiade de pincelada </label>
       <input id="pixelquality" type="range" min="0.5" step="0.3" value="2" max="2">
       <label> Força da pressão false </label>
       <input id="pressureRange" type="range" min="1" step="0.1" value="2" max="5">
       <label> Auto-save (minutos) </label>
       <div style="display:flex; flex-direction: row; gap:6px; margin-bottom:8px;">
-        <input id="autoSaveInterval" type="number" min="1" max="60" value="1" style="width:70px;">
+        <input id="autoSaveInterval" type="number" min="1" max="60" value="5" style="width:70px;">
         <button class="Generalbutton" onclick="confirmAutoSaveInterval()">OK</button>
       </div>
       <button class="Generalbutton" onclick="removebg()">Modo sem fundo </button>
@@ -194,7 +194,7 @@
   <script src="js/configDraw-script.js"></script>
   <script src="js/KeyboardShortcuts.js"></script>
   <script src="globals/globalStorage.js"></script>
-  <script src="js/draw-script.js"></script>
+  <script src="js/draw-script-GPU.js"></script>
 
 </body>
 
