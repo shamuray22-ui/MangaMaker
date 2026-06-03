@@ -1241,7 +1241,7 @@ function coisanoTextura(points, i, ctx,shape) {
     let result = Math.sqrt(hyp1 * hyp1 + hyp2 * hyp2);
 
     if (result === 0) {
-        ctx.drawImage(shape.attrs.customTexture,
+        ctx.drawImage(currentBrush,
             points[i] - baseTextureScale / 2,
             points[i + 1] - baseTextureScale / 2,
             baseTextureScale, baseTextureScale
@@ -1264,7 +1264,7 @@ function coisanoTextura(points, i, ctx,shape) {
         let endInter = y + (hyp2 * st / steps);
         
         // Desenhar carimbo intermediário com a 'textureScale' calculada
-        ctx.drawImage(shape.attrs.customTexture,
+        ctx.drawImage(currentBrush,
             initInter - textureScale / 2,
             endInter - textureScale / 2,
             textureScale, textureScale
