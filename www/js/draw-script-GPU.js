@@ -663,7 +663,7 @@ function getGlobalMousePos() {
 //#region SET CURRENT TOOL
 function set_current_tool(tool) {
     // Lista de ferramentas válidas
-    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text', 'colorpicker'];
+    const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text', 'colorpicker', 'transform'];
     if (validTools.includes(tool)) {
         current_tool = tool;
         // Ajusta o modo de composição para a borracha
