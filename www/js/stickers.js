@@ -4,12 +4,40 @@
   const grid = document.getElementById('stickerGrid');
   const upload = document.getElementById('stickerUpload');
   const stickerAssets = [
-    { name: 'Brush', src: 'assets/brush/default.png' },
-    { name: 'Brush 2', src: 'assets/brush/default 2.png' },
-    { name: 'X Brush', src: 'assets/brush/Xbrush.png' },
-    { name: 'Tree', src: 'assets/brush/tree.png' },
-    { name: 'Grass', src: 'assets/brush/grass.png' },
-    { name: 'Water', src: 'assets/brush/waterSimply.png' }
+    { name: 'add', src: 'assets/icons/add.png' },
+    { name: 'addDraw', src: 'assets/icons/addDraw.png' },
+    { name: 'addmanga', src: 'assets/icons/addmanga.png' },
+    { name: 'arrowdown', src: 'assets/icons/arrowdown.png' },
+    { name: 'arrowup', src: 'assets/icons/arrowup.png' },
+    { name: 'autobrush', src: 'assets/icons/autobrush.png' },
+    { name: 'clear', src: 'assets/icons/clear.png' },
+    { name: 'elipse', src: 'assets/icons/elipse.png' },
+    { name: 'eraser', src: 'assets/icons/eraser.png' },
+    { name: 'exit', src: 'assets/icons/exit.png' },
+    { name: 'export', src: 'assets/icons/export.png' },
+    { name: 'help', src: 'assets/icons/help.png' },
+    { name: 'hidden', src: 'assets/icons/hidden.png' },
+    { name: 'import', src: 'assets/icons/import.png' },
+    { name: 'info', src: 'assets/icons/info.png' },
+    { name: 'inkmaker', src: 'assets/icons/inkmaker.png' },
+    { name: 'layers', src: 'assets/icons/layers.png' },
+    { name: 'line', src: 'assets/icons/line.png' },
+    { name: 'move', src: 'assets/icons/move.png' },
+    { name: 'pages', src: 'assets/icons/pages.png' },
+    { name: 'pen', src: 'assets/icons/pen.png' },
+    { name: 'rectangle', src: 'assets/icons/rectangle.png' },
+    { name: 'redo', src: 'assets/icons/redo.png' },
+    { name: 'reference', src: 'assets/icons/reference.png' },
+    { name: 'resize', src: 'assets/icons/resize.png' },
+    { name: 'restartRot', src: 'assets/icons/restartRot.png' },
+    { name: 'save', src: 'assets/icons/save.png' },
+    { name: 'selection', src: 'assets/icons/selection.png' },
+    { name: 'selectnode', src: 'assets/icons/selectnode.png' },
+    { name: 'settings', src: 'assets/icons/settings.png' },
+    { name: 'text', src: 'assets/icons/text.png' },
+    { name: 'tools', src: 'assets/icons/tools.png' },
+    { name: 'undo', src: 'assets/icons/undo.png' },
+    { name: 'visible', src: 'assets/icons/visible.png' }
   ];
   let activeTransformer = null;
   let activeStickerLayer = null;
