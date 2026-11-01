@@ -3,6 +3,7 @@
   const library = document.getElementById('stickerLibrary');
   const grid = document.getElementById('stickerGrid');
   const upload = document.getElementById('stickerUpload');
+  const transformToggle = document.getElementById('stickerTransformToggle');
   const stickerAssets = [
     { name: 'add', src: 'assets/icons/add.png' },
     { name: 'addDraw', src: 'assets/icons/addDraw.png' },
@@ -42,6 +43,22 @@
   let activeTransformer = null;
   let activeStickerLayer = null;
   let selectedStickerNode = null;
+
+  function updateTransformToggle() {
+    const hasSticker = !!(selectedStickerNode && selectedStickerNode.getLayer());
+    const enabled = current_tool === 'transform';
+    transformToggle.disabled = !hasSticker;
+    transformToggle.textContent = hasSticker
+      ? (enabled ? 'Desativar transformação' : 'Ativar transformação')
+      : 'Selecione um sticker';
+    transformToggle.setAttribute('aria-pressed', String(enabled && hasSticker));
+    transformToggle.classList.toggle('is-active', enabled && hasSticker);
+  }
+
+  window.toggleStickerTransform = function () {
+    if (!selectedStickerNode || !selectedStickerNode.getLayer()) return;
+    set_current_tool(current_tool === 'transform' ? 'pen' : 'transform');
+  };
 
   function selectedLayerGroup() {
     const page = pages && pages['page' + currentpage];
@@ -99,14 +116,12 @@
       isSaved = false;
       layer.batchDraw();
       stage.batchDraw();
-      closeStickerLibrary();
     };
     image.onerror = function () { alert('Não foi possível carregar esta imagem.'); };
     image.src = src;
   }
 
   window.openStickerLibrary = function () {
-    set_current_tool('transform');
     grid.innerHTML = '';
     stickerAssets.forEach(function (asset) {
       const button = document.createElement('button');
@@ -144,8 +159,12 @@
         activeTransformer.hide();
       }
     }
+    updateTransformToggle();
     if (stage) stage.batchDraw();
   };
+
+  transformToggle.addEventListener('click', window.toggleStickerTransform);
+  updateTransformToggle();
 
   upload.addEventListener('change', function (event) {
     const file = event.target.files && event.target.files[0];
@@ -173,5 +192,6 @@
     transformer.show();
     transformer.moveToTop();
     ownerLayer.batchDraw();
+    updateTransformToggle();
   });
 })();
