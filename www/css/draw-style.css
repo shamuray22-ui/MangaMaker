@@ -335,6 +335,9 @@ body {
 }
 .sticker-header { display:flex; align-items:center; gap:8px; }
 .sticker-header strong { flex:1; }
+.sticker-transform-toggle { width:auto; min-width:116px; height:38px; padding:0 10px; font-size:11px; white-space:nowrap; }
+.sticker-transform-toggle:disabled { opacity:.55; cursor:not-allowed; }
+.sticker-transform-toggle.is-active { border-color:var(--font-color); box-shadow:0 0 0 2px var(--button-shadow); }
 #stickerLibrary p { margin:0; font-size:13px; opacity:.8; }
 #stickerGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
 .sticker-item {
