@@ -322,3 +322,26 @@ body {
   top:50%;
   box-shadow: 0px 22px 32px rgb(0, 0, 0);
 }
+
+
+/* Sticker library */
+#stickerLibrary {
+  display: none; position: fixed; z-index: 1200; left: 12px; bottom: 112px;
+  width: min(420px, calc(100vw - 24px)); max-height: min(62vh, 560px);
+  overflow: auto; box-sizing: border-box; padding: 14px; gap: 12px;
+  flex-direction: column; color: var(--font-color); background: var(--DefaultpanelColor);
+  border: 1px solid var(--button-border); border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.28);
+}
+.sticker-header { display:flex; align-items:center; gap:8px; }
+.sticker-header strong { flex:1; }
+#stickerLibrary p { margin:0; font-size:13px; opacity:.8; }
+#stickerGrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+.sticker-item {
+  min-width:0; min-height:100px; padding:8px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:6px; border:1px solid var(--button-border);
+  border-radius:10px; color:var(--font-color); background:var(--button-bg);
+}
+.sticker-item img { width:64px; height:64px; object-fit:contain; }
+.sticker-item span { font-size:12px; overflow-wrap:anywhere; }
+#toolsdiv .Generalbutton span { font-size:24px; line-height:1; }
