@@ -13,6 +13,7 @@
   ];
   let activeTransformer = null;
   let activeStickerLayer = null;
+  let selectedStickerNode = null;
 
   function selectedLayerGroup() {
     const page = pages && pages['page' + currentpage];
@@ -62,6 +63,7 @@
       });
       targetGroup.add(node);
       const transformer = ensureTransformer();
+      selectedStickerNode = node;
       transformer.nodes([node]);
       transformer.show();
       transformer.moveToTop();
@@ -96,6 +98,27 @@
 
   window.closeStickerLibrary = function () { library.style.display = 'none'; };
 
+  window.syncStickerTransformMode = function () {
+    const enabled = current_tool === 'transform';
+    const page = pages && pages['page' + currentpage];
+    if (page && page.layers) {
+      page.layers.forEach(function (entry) {
+        if (entry.draw) entry.draw.find('.manga-sticker').forEach(function (node) {
+          node.draggable(enabled);
+        });
+      });
+    }
+    if (activeTransformer) {
+      if (enabled && selectedStickerNode && selectedStickerNode.getLayer() === layer) {
+        activeTransformer.nodes([selectedStickerNode]);
+        activeTransformer.show();
+      } else {
+        activeTransformer.hide();
+      }
+    }
+    if (stage) stage.batchDraw();
+  };
+
   upload.addEventListener('change', function (event) {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -117,6 +140,7 @@
       return;
     }
     const transformer = ensureTransformer();
+    selectedStickerNode = target;
     transformer.nodes([target]);
     transformer.show();
     transformer.moveToTop();
