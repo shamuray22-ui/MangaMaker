@@ -67,8 +67,7 @@
         alt="Linha"></button> -->
     <button class="Generalbutton" onclick="set_current_tool('text')"><img src="assets/icons/text.png"
         alt="Texto"></button>
-    <!--<button class="Generalbutton" onclick="set_current_tool('select')"><img src="assets/icons/selection.png"
-        alt="Selecionar"></button> -->
+    <button class="Generalbutton" onclick="openStickerLibrary()" title="Stickers"><span aria-hidden="true">★</span></button>
   </div>
 
   <!-- Seleção de pincel -->
@@ -93,6 +92,17 @@
       <img src='assets/brush/waterSimply.png'>
     </button>
   </div>
+
+<section id="stickerLibrary" aria-label="Biblioteca de stickers">
+    <header class="sticker-header">
+      <strong>Stickers</strong>
+      <button class="Generalbutton" type="button" onclick="document.getElementById('stickerUpload').click()" title="Importar imagem">+</button>
+      <button class="Generalbutton" type="button" onclick="closeStickerLibrary()" title="Fechar">×</button>
+    </header>
+    <p>Escolha um sticker ou importe uma imagem.</p>
+    <div id="stickerGrid"></div>
+    <input id="stickerUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+  </section>
 
   <!-- Seleção de camadas -->
   <div id="layerDiv">
@@ -195,6 +205,7 @@
   <script src="js/KeyboardShortcuts.js"></script>
   <script src="globals/globalStorage.js"></script>
   <script src="js/draw-script-GPU.js"></script>
+  <script src="js/stickers.js"></script>
 
 </body>
 
