@@ -908,6 +908,7 @@ function addLayer(imagedata = '') {
 
 //#region ZOOM
 stage.container().addEventListener('wheel', function (e) {
+    if (current_tool === 'transform') return;
     e.preventDefault();
     const oldScale = stage.scaleX();
     const pointer = stage.getPointerPosition();
@@ -945,6 +946,11 @@ let lastMidPoint = null;
 let lastAngle = 0;
 
 stage.container().addEventListener('touchmove', function (e) {
+    if (current_tool === 'transform') {
+        lastDist = 0;
+        lastMidPoint = null;
+        return;
+    }
     if (e.touches.length === 2) {
         isDrawing = false;
         e.preventDefault();
