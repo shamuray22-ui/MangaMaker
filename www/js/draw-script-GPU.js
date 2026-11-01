@@ -666,6 +666,7 @@ function set_current_tool(tool) {
     const validTools = ['pen', 'eraser', 'line', 'rectangle', 'circle', 'select', 'text', 'colorpicker', 'transform'];
     if (validTools.includes(tool)) {
         current_tool = tool;
+        if (typeof syncStickerTransformMode === 'function') syncStickerTransformMode();
         // Ajusta o modo de composição para a borracha
         if (tool === 'eraser') {
             composite = 'destination-out';
