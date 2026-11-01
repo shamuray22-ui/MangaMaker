@@ -163,7 +163,6 @@
     if (stage) stage.batchDraw();
   };
 
-  transformToggle.addEventListener('click', window.toggleStickerTransform);
   updateTransformToggle();
 
   upload.addEventListener('change', function (event) {
