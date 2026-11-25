@@ -2,102 +2,211 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Manga Maker é uma ferramenta online para criar desenhos e histórias em quadrinhos. Organize seus desenhos, crie páginas e desenvolva suas ideias em um só lugar.">
-  <meta name="theme-color" content="#f5f5f5">
-  <title>Manga Maker — Crie desenhos e histórias em quadrinhos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Conheça o Manga Maker: uma ferramenta online para desenhar, criar páginas de mangá, organizar camadas e desenvolver suas próprias histórias.">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Manga Maker — Desenhe e crie suas histórias</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4638595338489180" crossorigin="anonymous"></script>
   <style>
+    :root {
+      color-scheme: light;
+      --ink: #242321;
+      --muted: #66645f;
+      --paper: #f7f6f2;
+      --surface: #fff;
+      --line: #e5e2da;
+      --accent: #ef684f;
+      --accent-dark: #d94f38;
+      --soft: #f1eee7;
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #252525; background: #f5f5f5; line-height: 1.6; }
-    header { background: #fff; border-bottom: 1px solid #ddd; }
-    .top, main, footer { width: min(100% - 36px, 980px); margin: 0 auto; }
-    .top { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { font-size: 21px; font-weight: 700; color: #222; text-decoration: none; }
-    nav a { color: #333; margin-left: 18px; text-decoration: none; }
-    nav a:hover { text-decoration: underline; }
-    .hero { padding: 64px 0 52px; }
-    .hero h1 { max-width: 720px; margin: 0 0 16px; font-size: clamp(32px, 6vw, 52px); line-height: 1.12; }
-    .hero p { max-width: 680px; margin: 0 0 25px; font-size: 18px; color: #555; }
-    .button { display: inline-block; padding: 12px 22px; background: #222; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 700; }
-    .button:hover { background: #444; }
-    section { padding: 30px 0; border-top: 1px solid #ddd; }
-    h2 { margin: 0 0 12px; font-size: 26px; }
-    .intro { max-width: 760px; color: #555; }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 22px; }
-    .feature { padding: 18px; background: #fff; border: 1px solid #e1e1e1; border-radius: 6px; }
-    .feature h3 { margin: 0 0 7px; font-size: 18px; }
-    .feature p { margin: 0; color: #555; }
-    ol { padding-left: 22px; }
-    li { margin: 8px 0; }
-    footer { padding: 25px 0 35px; color: #666; font-size: 14px; border-top: 1px solid #ddd; }
-    footer a { color: inherit; }
-    @media (max-width: 560px) { .top { align-items: flex-start; flex-direction: column; padding: 14px 0; } nav a { margin: 0 14px 0 0; } .hero { padding: 42px 0 35px; } }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: Arial, Helvetica, sans-serif; line-height: 1.65; }
+    a { color: inherit; }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+    header { background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); }
+    .nav { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 21px; font-weight: 800; letter-spacing: -.7px; }
+    .logo-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--accent); color: white; font-weight: 900; }
+    nav { display: flex; align-items: center; gap: 24px; }
+    nav a { text-decoration: none; color: var(--muted); font-size: 14px; }
+    nav a:hover { color: var(--ink); }
+    .hero { padding: 78px 0 72px; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 55px; }
+    .eyebrow { color: var(--accent-dark); font-size: 12px; font-weight: 800; letter-spacing: 1.7px; text-transform: uppercase; }
+    h1 { max-width: 650px; margin: 13px 0 18px; font-size: clamp(38px, 6vw, 62px); line-height: 1.06; letter-spacing: -2.6px; }
+    .hero-copy { max-width: 590px; color: var(--muted); font-size: 18px; margin: 0 0 27px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .button { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 7px; background: var(--accent); color: white; text-decoration: none; font-weight: 700; }
+    .button:hover { background: var(--accent-dark); }
+    .button.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
+    .button.secondary:hover { background: var(--soft); }
+    .art-preview { position: relative; min-height: 330px; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: 0 18px 50px rgba(45,38,25,.07); transform: rotate(1deg); }
+    .preview-top { display: flex; justify-content: space-between; padding-bottom: 13px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .comic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 125px 105px; gap: 9px; padding-top: 15px; }
+    .panel { position: relative; overflow: hidden; border: 3px solid #292725; background: #f1eee7; }
+    .panel:first-child { grid-column: span 2; background: repeating-linear-gradient(135deg,#f4eee5 0 9px,#e8e0d5 9px 11px); }
+    .panel:nth-child(2) { background: #f3d7ce; }
+    .panel:nth-child(3) { background: #d9e2e7; }
+    .bubble { position: absolute; top: 14px; left: 14px; max-width: 72%; padding: 8px 12px; border: 2px solid #292725; border-radius: 50%; background: white; color: #292725; font-size: 11px; font-weight: 700; text-align: center; }
+    .panel:nth-child(2)::after, .panel:nth-child(3)::after { content: ""; position: absolute; width: 58px; height: 58px; right: 18px; bottom: -14px; border: 3px solid #292725; border-radius: 50%; background: rgba(255,255,255,.45); }
+    section { padding: 62px 0; border-top: 1px solid var(--line); }
+    .section-head { max-width: 680px; margin-bottom: 28px; }
+    h2 { margin: 8px 0 10px; font-size: clamp(27px, 4vw, 38px); line-height: 1.15; letter-spacing: -1px; }
+    .section-head p, .body-copy { color: var(--muted); margin: 0; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feature { min-height: 190px; padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+    .feature-number { display: inline-grid; place-items: center; width: 34px; height: 34px; margin-bottom: 14px; border-radius: 8px; background: var(--soft); color: var(--accent-dark); font-size: 13px; font-weight: 800; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+    .workflow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; counter-reset: step; }
+    .step { padding-top: 16px; border-top: 2px solid var(--accent); }
+    .step strong { display: block; margin-bottom: 5px; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; }
+    .note { padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+    .note p { margin: 0; color: var(--muted); }
+    .cta { padding: 42px; border-radius: 14px; background: #292725; color: white; display: flex; justify-content: space-between; align-items: center; gap: 25px; }
+    .cta h2 { margin-top: 0; }
+    .cta p { margin: 0; color: #d3d0ca; }
+    .cta .button { flex-shrink: 0; background: var(--accent); }
+    footer { margin-top: 62px; padding: 28px 0 38px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    footer a { text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: 1fr; padding: 52px 0; gap: 32px; }
+      .art-preview { min-height: 285px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .workflow { grid-template-columns: repeat(2, 1fr); }
+      .cta { align-items: flex-start; flex-direction: column; padding: 30px; }
+    }
+    @media (max-width: 520px) {
+      .wrap { width: min(100% - 28px, 1080px); }
+      .nav { align-items: flex-start; flex-direction: column; padding: 14px 0; gap: 10px; }
+      nav { gap: 17px; flex-wrap: wrap; }
+      .hero-copy { font-size: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .workflow { grid-template-columns: 1fr 1fr; gap: 20px 14px; }
+      .art-preview { padding: 16px; }
+      .comic { grid-template-rows: 110px 90px; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="top">
-      <a class="brand" href="index.html">Manga Maker</a>
+    <div class="wrap nav">
+      <a class="logo" href="index.html"><span class="logo-mark">M</span> Manga Maker</a>
       <nav aria-label="Navegação principal">
         <a href="#recursos">Recursos</a>
-        <a href="#como-usar">Como usar</a>
-        <a href="help.html">Ajuda</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="help.html">Ajuda e documentação</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <div class="hero">
-      <h1>Transforme suas ideias em desenhos e histórias em quadrinhos</h1>
-      <p>O Manga Maker é um espaço online para começar desenhos, organizar seus trabalhos e desenvolver páginas de manga. Crie um projeto, volte a ele quando quiser e construa sua própria coleção.</p>
-      <a class="button" href="gallery.html">Abrir a galeria</a>
+    <div class="wrap">
+      <section class="hero" style="border:0">
+        <div>
+          <div class="eyebrow">Seu espaço de criação</div>
+          <h1>Desenhe suas ideias. Conte suas histórias.</h1>
+          <p class="hero-copy">Manga Maker é uma ferramenta online para criar desenhos e desenvolver histórias em quadrinhos. Comece uma arte, organize seus elementos em camadas ou monte um projeto de mangá com capítulos e páginas.</p>
+          <div class="actions">
+            <a class="button" href="gallery.html">Abrir o Manga Maker</a>
+            <a class="button secondary" href="help.html">Ver como usar</a>
+          </div>
+        </div>
+        <div class="art-preview" aria-label="Ilustração demonstrativa de uma página de quadrinhos">
+          <div class="preview-top"><span>PRÉVIA DE UMA PÁGINA</span><span>MANGA MAKER</span></div>
+          <div class="comic">
+            <div class="panel"><span class="bubble">Uma ideia pode virar uma história.</span></div>
+            <div class="panel"><span class="bubble">Comece pelo primeiro traço!</span></div>
+            <div class="panel"><span class="bubble">Crie no seu ritmo.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recursos">
+        <div class="section-head">
+          <div class="eyebrow">Ferramentas de criação</div>
+          <h2>O que você pode criar?</h2>
+          <p>O editor reúne ferramentas de desenho e organização para diferentes etapas de um projeto visual.</p>
+        </div>
+        <div class="grid">
+          <article class="feature">
+            <span class="feature-number">01</span>
+            <h3>Desenhos digitais</h3>
+            <p>Crie uma arte em uma tela de desenho e trabalhe com pincel, borracha, linhas e formas geométricas.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-number">02</span>
+            <h3>Projetos de mangá</h3>
+            <p>Organize uma história em capítulos e páginas, mantendo o conteúdo do projeto reunido.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-number">03</span>
+            <h3>Camadas</h3>
+            <p>Separe partes do desenho em camadas, altere sua ordem e controle quais ficam visíveis.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-number">04</span>
+            <h3>Ferramentas de edição</h3>
+            <p>Use seleção, texto, formas, zoom e navegação pela tela para ajustar sua composição.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-number">05</span>
+            <h3>Galeria de projetos</h3>
+            <p>Acesse os trabalhos criados e escolha um projeto para continuar editando.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-number">06</span>
+            <h3>Backup da galeria</h3>
+            <p>Exporte os dados da galeria em arquivo JSON e importe um arquivo salvo anteriormente.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="como-funciona">
+        <div class="section-head">
+          <div class="eyebrow">Primeiros passos</div>
+          <h2>Como começar a usar</h2>
+          <p>Você pode começar um desenho independente ou estruturar uma história em formato de mangá.</p>
+        </div>
+        <div class="workflow">
+          <div class="step"><strong>1. Abra a galeria</strong><p>Entre na área onde seus projetos são organizados.</p></div>
+          <div class="step"><strong>2. Crie um projeto</strong><p>Escolha entre Draw, para um desenho, ou Manga, para uma história.</p></div>
+          <div class="step"><strong>3. Trabalhe no editor</strong><p>Use as ferramentas de desenho, texto e camadas disponíveis.</p></div>
+          <div class="step"><strong>4. Organize seus arquivos</strong><p>Volte à galeria para abrir projetos ou exportar um backup.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="eyebrow">Informações úteis</div>
+          <h2>Seus projetos e seus dados</h2>
+        </div>
+        <div class="note">
+          <p>O Manga Maker utiliza armazenamento no próprio navegador para manter os projetos da galeria. Isso significa que os trabalhos ficam associados ao navegador e dispositivo utilizados. Limpar os dados do navegador pode apagar projetos locais; por isso, recomendamos exportar backups da galeria regularmente e guardar os arquivos em outro local.</p>
+        </div>
+        <p class="body-copy" style="margin-top:18px">Para instruções detalhadas sobre ferramentas, atalhos, capítulos, páginas e solução de problemas, consulte a <a href="help.html">documentação do Manga Maker</a>.</p>
+      </section>
+
+      <section style="border:0;padding-bottom:0">
+        <div class="cta">
+          <div>
+            <h2>Pronto para começar?</h2>
+            <p>Abra a galeria e transforme sua próxima ideia em um projeto.</p>
+          </div>
+          <a class="button" href="gallery.html">Começar a criar</a>
+        </div>
+      </section>
     </div>
-
-    <section id="recursos">
-      <h2>O que você pode fazer</h2>
-      <p class="intro">A galeria funciona como ponto de partida para seus projetos. Nela você pode criar novos trabalhos, manter seus desenhos organizados e acessar os projetos salvos.</p>
-      <div class="features">
-        <article class="feature">
-          <h3>Criar desenhos</h3>
-          <p>Comece um novo desenho pela galeria e abra o espaço de criação para trabalhar na sua ideia.</p>
-        </article>
-        <article class="feature">
-          <h3>Desenvolver páginas de manga</h3>
-          <p>Inicie projetos no formato de manga e organize o material que fará parte da sua história.</p>
-        </article>
-        <article class="feature">
-          <h3>Organizar sua galeria</h3>
-          <p>Reúna seus trabalhos em um só lugar e retome projetos sem precisar procurar por várias páginas.</p>
-        </article>
-        <article class="feature">
-          <h3>Salvar e carregar</h3>
-          <p>Use as opções da galeria para exportar seus dados e carregar novamente uma coleção salva.</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="como-usar">
-      <h2>Como começar</h2>
-      <ol>
-        <li>Abra a galeria pelo botão <strong>Abrir a galeria</strong>.</li>
-        <li>Escolha a opção para criar um desenho ou um projeto de manga.</li>
-        <li>Entre no editor e trabalhe no seu projeto.</li>
-        <li>Volte à galeria para acessar e organizar seus trabalhos.</li>
-      </ol>
-      <p>Se precisar de orientação, consulte a página <a href="help.html">Ajuda</a>.</p>
-    </section>
-
-    <section>
-      <h2>Um espaço para praticar e criar</h2>
-      <p class="intro">Desenhar e contar histórias envolve experimentar, revisar e desenvolver ideias aos poucos. O Manga Maker reúne o acesso aos seus projetos em uma galeria simples, para que você possa dedicar mais tempo ao processo criativo.</p>
-      <a class="button" href="gallery.html">Começar a criar</a>
-    </section>
   </main>
 
   <footer>
-    <p>Manga Maker — ferramenta online de criação de desenhos e histórias em quadrinhos.</p>
-    <p><a href="help.html">Ajuda</a></p>
+    <div class="wrap footer-inner">
+      <span>Manga Maker — ferramenta online de desenho e criação de mangás.</span>
+      <span><a href="help.html">Ajuda e documentação</a> · <a href="gallery.html">Galeria</a></span>
+    </div>
   </footer>
 </body>
 </html>
