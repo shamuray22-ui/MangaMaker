@@ -1,50 +1,103 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeria de Desenhos</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4638595338489180" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="css/global-roots.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manga Maker é uma ferramenta online para criar desenhos e histórias em quadrinhos. Organize seus desenhos, crie páginas e desenvolva suas ideias em um só lugar.">
+  <meta name="theme-color" content="#f5f5f5">
+  <title>Manga Maker — Crie desenhos e histórias em quadrinhos</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4638595338489180" crossorigin="anonymous"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #252525; background: #f5f5f5; line-height: 1.6; }
+    header { background: #fff; border-bottom: 1px solid #ddd; }
+    .top, main, footer { width: min(100% - 36px, 980px); margin: 0 auto; }
+    .top { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { font-size: 21px; font-weight: 700; color: #222; text-decoration: none; }
+    nav a { color: #333; margin-left: 18px; text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    .hero { padding: 64px 0 52px; }
+    .hero h1 { max-width: 720px; margin: 0 0 16px; font-size: clamp(32px, 6vw, 52px); line-height: 1.12; }
+    .hero p { max-width: 680px; margin: 0 0 25px; font-size: 18px; color: #555; }
+    .button { display: inline-block; padding: 12px 22px; background: #222; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 700; }
+    .button:hover { background: #444; }
+    section { padding: 30px 0; border-top: 1px solid #ddd; }
+    h2 { margin: 0 0 12px; font-size: 26px; }
+    .intro { max-width: 760px; color: #555; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 22px; }
+    .feature { padding: 18px; background: #fff; border: 1px solid #e1e1e1; border-radius: 6px; }
+    .feature h3 { margin: 0 0 7px; font-size: 18px; }
+    .feature p { margin: 0; color: #555; }
+    ol { padding-left: 22px; }
+    li { margin: 8px 0; }
+    footer { padding: 25px 0 35px; color: #666; font-size: 14px; border-top: 1px solid #ddd; }
+    footer a { color: inherit; }
+    @media (max-width: 560px) { .top { align-items: flex-start; flex-direction: column; padding: 14px 0; } nav a { margin: 0 14px 0 0; } .hero { padding: 42px 0 35px; } }
+  </style>
 </head>
-
 <body>
+  <header>
+    <div class="top">
+      <a class="brand" href="index.html">Manga Maker</a>
+      <nav aria-label="Navegação principal">
+        <a href="#recursos">Recursos</a>
+        <a href="#como-usar">Como usar</a>
+        <a href="help.html">Ajuda</a>
+      </nav>
+    </div>
+  </header>
 
-    <header class="header">
-        <button class="add-button" onclick="call_create_new()"> <img src="assets/icons/add.png"> Criar desenho </button>
-        <button onclick="savejson()"> <img src="assets/icons/export.png"> Salvar Galeria </button>
-        <button onclick="loadjson()"> <img src="assets/icons/import.png"> Carregar Galeria </button> 
-        <button onclick="clearStorage()"> <img src="assets/icons/clear.png"> Limpar Galeria </button>
-        <button onclick="window.location.href='help.html'"> <img src="assets/icons/help.png"> Ajuda </button>
-    
-    </header>
+  <main>
+    <div class="hero">
+      <h1>Transforme suas ideias em desenhos e histórias em quadrinhos</h1>
+      <p>O Manga Maker é um espaço online para começar desenhos, organizar seus trabalhos e desenvolver páginas de manga. Crie um projeto, volte a ele quando quiser e construa sua própria coleção.</p>
+      <a class="button" href="gallery.html">Abrir a galeria</a>
+    </div>
 
-    <main>
-        <div class="scroll-draws">
-            <div id="drawlist">
-            </div>
-        </div>
-        <div id="createDiv">
-            <div id="options">
-                <button id="drawbtn"> <img src="assets/icons/addDraw.png"> Draw </button>
-                <button id="mangaBtn"> <img src="assets/icons/addmanga.png"> Manga</button>
-            </div>
-            <div id="optionsdown">
-                <button id="createFileBtn" onclick="createFile()">Criar</button>
-                <button id="cancelBtn" onclick="close_create_new()">Cancelar</button>
-            </div>
+    <section id="recursos">
+      <h2>O que você pode fazer</h2>
+      <p class="intro">A galeria funciona como ponto de partida para seus projetos. Nela você pode criar novos trabalhos, manter seus desenhos organizados e acessar os projetos salvos.</p>
+      <div class="features">
+        <article class="feature">
+          <h3>Criar desenhos</h3>
+          <p>Comece um novo desenho pela galeria e abra o espaço de criação para trabalhar na sua ideia.</p>
+        </article>
+        <article class="feature">
+          <h3>Desenvolver páginas de manga</h3>
+          <p>Inicie projetos no formato de manga e organize o material que fará parte da sua história.</p>
+        </article>
+        <article class="feature">
+          <h3>Organizar sua galeria</h3>
+          <p>Reúna seus trabalhos em um só lugar e retome projetos sem precisar procurar por várias páginas.</p>
+        </article>
+        <article class="feature">
+          <h3>Salvar e carregar</h3>
+          <p>Use as opções da galeria para exportar seus dados e carregar novamente uma coleção salva.</p>
+        </article>
+      </div>
+    </section>
 
-        </div>
-    </main>
-    <script src="globals/konva.min.js"></script>
-    <script src="globals/jszip.min.js"></script>
-    <script src="globals/localforage.min.js"></script>
-    <script src="globals/globalDebug.js"></script>
-    <script src="globals/globalStorage.js"></script>
-    <script src="js/gallery.js"></script>
+    <section id="como-usar">
+      <h2>Como começar</h2>
+      <ol>
+        <li>Abra a galeria pelo botão <strong>Abrir a galeria</strong>.</li>
+        <li>Escolha a opção para criar um desenho ou um projeto de manga.</li>
+        <li>Entre no editor e trabalhe no seu projeto.</li>
+        <li>Volte à galeria para acessar e organizar seus trabalhos.</li>
+      </ol>
+      <p>Se precisar de orientação, consulte a página <a href="help.html">Ajuda</a>.</p>
+    </section>
 
+    <section>
+      <h2>Um espaço para praticar e criar</h2>
+      <p class="intro">Desenhar e contar histórias envolve experimentar, revisar e desenvolver ideias aos poucos. O Manga Maker reúne o acesso aos seus projetos em uma galeria simples, para que você possa dedicar mais tempo ao processo criativo.</p>
+      <a class="button" href="gallery.html">Começar a criar</a>
+    </section>
+  </main>
+
+  <footer>
+    <p>Manga Maker — ferramenta online de criação de desenhos e histórias em quadrinhos.</p>
+    <p><a href="help.html">Ajuda</a></p>
+  </footer>
 </body>
-
 </html>
