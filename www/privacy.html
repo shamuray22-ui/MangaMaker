@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Política de Privacidade do Manga Maker: identificação do controlador, tratamento de dados, armazenamento local, anúncios e direitos previstos na LGPD.">
+  <meta name="description" content="Política de Privacidade do Manga Maker. Saiba como dados pessoais, projetos locais e informações de publicidade são tratados.">
   <meta name="theme-color" content="#f7f6f2">
   <title>Política de Privacidade — Manga Maker</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4638595338489180" crossorigin="anonymous"></script>
@@ -23,7 +23,7 @@
     h2 { margin: 0 0 8px; font-size: 21px; }
     h3 { margin: 18px 0 6px; font-size: 17px; }
     p, li { color: #555; }
-    ul, ol { padding-left: 22px; }
+    ul { padding-left: 22px; }
     li { margin: 7px 0; }
     a { color: #b94b38; }
     footer { border-top: 1px solid #e5e2da; padding: 22px 0 30px; color: #777; font-size: 13px; }
@@ -40,128 +40,127 @@
   <main class="wrap">
     <h1>Política de Privacidade</h1>
     <p class="updated">Última atualização: 25 de novembro de 2026</p>
-
     <div class="intro">
-      Este documento informa, de maneira transparente, como o Manga Maker trata dados pessoais durante a navegação e a utilização de seus recursos. Ele foi elaborado considerando especialmente a Lei nº 13.709/2018 — Lei Geral de Proteção de Dados Pessoais (LGPD) — e a Lei nº 12.965/2014 — Marco Civil da Internet. Leia também as políticas dos fornecedores externos indicados neste documento.
+      Esta Política de Privacidade descreve como o Manga Maker trata informações durante a utilização da aplicação web. Ao acessar ou utilizar o serviço, você declara estar ciente das condições aqui estabelecidas. Caso não concorde com estas condições, interrompa o uso da ferramenta.
     </div>
 
     <section>
       <h2>1. Identificação do controlador e contato</h2>
-      <p>O controlador dos dados pessoais tratados no âmbito do Manga Maker é:</p>
+      <p>O tratamento de dados pessoais sob responsabilidade da aplicação é conduzido por:</p>
       <ul>
-        <li><strong>Responsável:</strong> YURI SHAMURAY.</li>
-        <li><strong>Projeto:</strong> Manga Maker.</li>
-        <li><strong>E-mail para privacidade e proteção de dados:</strong> <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a>.</li>
+        <li><strong>Controlador:</strong> YURI SHAMURAY</li>
+        <li><strong>Projeto:</strong> Manga Maker</li>
+        <li><strong>Canal para privacidade e proteção de dados:</strong> <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a></li>
       </ul>
-      <p>Esse endereço pode ser utilizado para dúvidas sobre esta Política, solicitações relacionadas a dados pessoais e exercício dos direitos previstos na LGPD. O contato não substitui os canais próprios de fornecedores independentes, como o Google, quando a solicitação disser respeito a dados tratados diretamente por eles.</p>
+      <p>Este endereço deve ser utilizado para esclarecimentos sobre esta Política, solicitações relacionadas a dados pessoais e exercício dos direitos previstos na legislação aplicável, no âmbito do que estiver sob controle do Manga Maker. Solicitações referentes a dados tratados diretamente por fornecedores independentes, como o Google, devem observar os canais e políticas próprios desses terceiros.</p>
     </section>
 
     <section>
-      <h2>2. Abrangência e funcionamento do serviço</h2>
-      <p>O Manga Maker é uma aplicação web destinada à criação e organização de desenhos, páginas, histórias em quadrinhos e mangás. Seus recursos incluem editor, galeria e ferramentas para organizar projetos.</p>
-      <p>O serviço não exige cadastro ou criação de conta para utilizar suas funções principais. O tratamento de dados descrito aqui é dividido entre: (a) informações que permanecem no navegador do próprio usuário; (b) dados técnicos gerados ao acessar o site e tratados pela infraestrutura que o disponibiliza; e (c) dados tratados por terceiros que fornecem publicidade.</p>
+      <h2>2. Natureza do serviço e arquitetura de dados</h2>
+      <p>O Manga Maker é uma aplicação web para criação e organização de desenhos, páginas, histórias em quadrinhos e mangás, oferecendo editor, galeria e recursos de gerenciamento de projetos.</p>
+      <p>A utilização das funcionalidades principais não exige cadastro ou criação de conta. O fluxo de informações divide-se em três âmbitos:</p>
+      <ul>
+        <li><strong>Armazenamento local no navegador:</strong> dados e projetos mantidos no dispositivo do usuário.</li>
+        <li><strong>Registros técnicos de acesso:</strong> informações técnicas geradas na comunicação entre o navegador do usuário e a infraestrutura que hospeda o site.</li>
+        <li><strong>Serviços de terceiros:</strong> tecnologias integradas para exibição de anúncios, especialmente o Google AdSense.</li>
+      </ul>
     </section>
 
     <section>
       <h2>3. Dados tratados, finalidades e bases legais</h2>
-      <h3>3.1. Projetos e conteúdo criado pelo usuário</h3>
-      <p>Desenhos, imagens, páginas, capítulos, configurações e demais informações dos projetos são armazenados no próprio navegador, por meio de tecnologias de armazenamento local, incluindo IndexedDB e, conforme o recurso, armazenamento local do navegador. A biblioteca LocalForage é utilizada para acessar esse armazenamento.</p>
+      <h3>3.1. Projetos e conteúdos do usuário</h3>
+      <p>Desenhos, imagens, páginas, capítulos, configurações e demais dados de projetos são armazenados no próprio navegador do usuário por meio de tecnologias de armazenamento local, incluindo IndexedDB (acessado por meio da biblioteca LocalForage) e armazenamento local do navegador.</p>
       <ul>
-        <li><strong>Finalidade:</strong> permitir salvar, abrir, editar, organizar, importar e exportar os projetos e manter o funcionamento da galeria.</li>
-        <li><strong>Local de armazenamento:</strong> navegador e dispositivo utilizados pelo usuário.</li>
-        <li><strong>Envio ao controlador:</strong> os projetos locais não são enviados automaticamente para uma conta ou banco de dados central do Manga Maker.</li>
-        <li><strong>Base legal:</strong> quando aplicável, execução dos recursos solicitados pelo usuário e legítimo interesse relacionado à operação da ferramenta, observados os direitos e as expectativas do titular (art. 7º, V e IX, da LGPD).</li>
+        <li><strong>Finalidade:</strong> viabilizar salvar, abrir, editar, organizar, importar e exportar projetos, bem como operar a galeria local.</li>
+        <li><strong>Local de armazenamento:</strong> exclusivamente no navegador e no dispositivo utilizados pelo usuário.</li>
+        <li><strong>Envio a servidores próprios:</strong> os projetos locais não são enviados automaticamente para servidores ou bancos de dados controlados pelo Manga Maker.</li>
+        <li><strong>Base legal (LGPD):</strong> execução dos procedimentos e recursos solicitados pelo usuário e legítimo interesse do controlador na operação da ferramenta, resguardados os direitos e expectativas do titular (art. 7º, incisos V e IX, da Lei nº 13.709/2018).</li>
       </ul>
-      <p>O controlador não consegue recuperar projetos que permaneçam apenas no armazenamento local do dispositivo do usuário. Limpar os dados do site, desinstalar o navegador, trocar de dispositivo ou ocorrer falha no armazenamento pode causar perda dos projetos. A exportação de backups é responsabilidade do usuário.</p>
+      <p>Como os projetos permanecem armazenados localmente, o controlador não possui acesso a eles nem capacidade de recuperá-los. A limpeza dos dados do site ou do navegador, a troca ou perda do dispositivo, a desinstalação do navegador ou falhas de armazenamento local podem acarretar a perda definitiva dos dados não exportados.</p>
 
-      <h3>3.2. Preferências e dados técnicos de navegação</h3>
-      <p>O site pode utilizar armazenamento do navegador para manter preferências de funcionamento, como a configuração de tema. Além disso, ao acessar qualquer site, o navegador realiza requisições técnicas à infraestrutura de hospedagem, que pode receber informações como endereço IP, data e hora da requisição, endereço da página solicitada, tipo de navegador, sistema operacional e informações necessárias à entrega e segurança do conteúdo.</p>
-      <p><strong>Finalidades:</strong> disponibilizar as páginas, manter a estabilidade e segurança, diagnosticar falhas e prevenir abusos. A infraestrutura de hospedagem pode tratar esses dados de acordo com seus próprios termos e políticas. Não afirmamos que esses registros sejam inexistentes nem estabelecemos, nesta Política, um prazo de retenção controlado pelo Manga Maker.</p>
-      <p><strong>Bases legais:</strong> conforme o dado e a operação, execução do serviço solicitado, cumprimento de obrigação legal ou regulatória e legítimo interesse em manter a disponibilidade e a segurança do site (art. 7º, II, V e IX, da LGPD).</p>
-
-      <h3>3.3. Dados relacionados à publicidade</h3>
-      <p>O Manga Maker utiliza código do Google AdSense para exibir anúncios. Quando uma página com esse código é acessada, o navegador pode se comunicar diretamente com servidores do Google e de seus parceiros. Nesse contexto, esses terceiros podem receber endereço IP, URL da página, informações do navegador e do dispositivo, identificadores, dados de interação com anúncios e informações armazenadas em cookies ou tecnologias semelhantes.</p>
-      <p>Esses dados podem ser utilizados para entregar anúncios, limitar a repetição de anúncios, medir resultados, detectar tráfego inválido, prevenir fraude e, conforme as configurações aplicáveis, personalizar publicidade. O tratamento realizado pelo Google é regido também pelas políticas próprias da empresa.</p>
-      <p>Para saber mais, consulte <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Como o Google utiliza informações de sites ou apps que usam seus serviços</a>, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a> e <a href="https://support.google.com/adsense/answer/7549925" target="_blank" rel="noopener noreferrer">Como o AdSense utiliza cookies</a>.</p>
-      <p>A publicidade e as tecnologias de terceiros podem envolver tratamento de dados fora do Brasil. As condições, garantias e informações aplicáveis a esse tratamento devem ser consultadas diretamente nas políticas do fornecedor responsável.</p>
-    </section>
-
-    <section>
-      <h2>4. Armazenamento local, cookies e tecnologias semelhantes</h2>
-      <p>O Manga Maker utiliza recursos de armazenamento do navegador para manter os projetos e determinadas preferências. Esses recursos não são a mesma coisa que uma conta online: em regra, ficam vinculados ao perfil do navegador e ao dispositivo em que foram criados.</p>
-      <p>O Google AdSense e seus parceiros podem armazenar ou ler cookies e utilizar identificadores, pixels ou tecnologias semelhantes para as finalidades de publicidade descritas acima. O Manga Maker não controla os cookies definidos por esses terceiros.</p>
-      <p>O usuário pode gerenciar ou apagar dados locais e cookies nas configurações do navegador. Também pode consultar as <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">Configurações de anúncios do Google</a> para ajustar a personalização. Bloquear cookies pode limitar certas funcionalidades de publicidade, mas não garante que todos os anúncios deixem de ser exibidos.</p>
-      <p>As escolhas disponíveis dependem do navegador, da região e das configurações dos fornecedores. A exclusão dos dados do navegador pode apagar projetos que ainda não tenham sido exportados.</p>
-    </section>
-
-    <section>
-      <h2>5. Bibliotecas e recursos técnicos do site</h2>
-      <p>As bibliotecas JavaScript utilizadas pelas ferramentas do Manga Maker ficam armazenadas junto aos arquivos do próprio projeto, na pasta <strong>globals</strong>, e são carregadas a partir do próprio site. O projeto não utiliza CDN para carregar essas bibliotecas.</p>
-      <p>O código do site inclui integração com o Google AdSense para publicidade. A infraestrutura que hospeda e entrega o site também participa tecnicamente do acesso às páginas e pode tratar dados de requisição, conforme os termos do respectivo fornecedor.</p>
-    </section>
-
-    <section>
-      <h2>6. Compartilhamento e operadores</h2>
-      <p>O controlador não comercializa projetos ou dados pessoais armazenados localmente no navegador. Não há envio automático desses projetos para um banco de dados central do Manga Maker.</p>
-      <p>Determinados dados técnicos podem ser tratados pela infraestrutura de hospedagem para entregar o site. Dados relacionados à publicidade podem ser transmitidos diretamente pelo navegador ao Google e a parceiros envolvidos na veiculação de anúncios. Esses fornecedores atuam conforme seus próprios contratos, políticas e responsabilidades legais. Eles podem estar sujeitos a jurisdições e regras de transferência internacional distintas das brasileiras.</p>
-      <p>O controlador poderá ainda fornecer informações quando isso for exigido por lei, ordem judicial ou autoridade competente, ou quando necessário ao exercício regular de direitos, respeitados os limites legais.</p>
-    </section>
-
-    <section>
-      <h2>7. Prazo de conservação e eliminação</h2>
-      <p>Os projetos permanecem no armazenamento local até que o usuário os exclua, limpe os dados do site ou o próprio navegador remova esses dados. O controlador não define um prazo remoto de conservação para projetos que não recebe.</p>
-      <p>Registros técnicos e dados tratados por fornecedores externos podem ser conservados pelos períodos definidos por esses fornecedores e pela legislação aplicável. Quando dados pessoais estiverem sob controle direto do controlador e não houver fundamento legal para mantê-los, serão eliminados ou anonimizados, observadas as hipóteses legais de conservação.</p>
-    </section>
-
-    <section>
-      <h2>8. Direitos do titular de dados</h2>
-      <p>Nos termos do art. 18 da LGPD, o titular pode solicitar, conforme aplicável ao tratamento realizado:</p>
+      <h3>3.2. Preferências locais e dados técnicos de navegação</h3>
+      <p>O site pode utilizar armazenamento local para registrar preferências da interface, como o tema visual. Adicionalmente, durante a requisição das páginas, o navegador transmite dados técnicos padrão à infraestrutura de hospedagem, tais como endereço IP, data e hora do acesso, URL solicitada, agente de usuário (navegador e sistema operacional) e informações de rede necessárias à entrega do conteúdo.</p>
       <ul>
-        <li>confirmação da existência de tratamento e acesso aos dados;</li>
-        <li>correção de dados incompletos, inexatos ou desatualizados;</li>
-        <li>anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a lei;</li>
-        <li>portabilidade, observadas a regulamentação e as condições legais;</li>
-        <li>eliminação dos dados tratados com consentimento, ressalvadas as hipóteses legais de conservação;</li>
-        <li>informação sobre entidades com as quais tenha ocorrido uso compartilhado de dados;</li>
-        <li>informação sobre a possibilidade de não fornecer consentimento e suas consequências, quando o consentimento for a base utilizada; e</li>
-        <li>revogação do consentimento, quando essa for a base legal do tratamento.</li>
+        <li><strong>Finalidades:</strong> entregar a aplicação, assegurar estabilidade, segurança e disponibilidade, diagnosticar falhas técnicas e prevenir abusos.</li>
+        <li><strong>Base legal (LGPD):</strong> execução do serviço solicitado, cumprimento de obrigação legal ou regulatória e legítimo interesse na segurança e no funcionamento da aplicação (art. 7º, incisos II, V e IX, da Lei nº 13.709/2018).</li>
       </ul>
-      <p>As solicitações referentes a dados sob responsabilidade do controlador do Manga Maker podem ser encaminhadas para <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a>. Para dados tratados diretamente pelo Google ou por outro fornecedor independente, o titular também deverá utilizar os canais de privacidade desse fornecedor. O usuário pode excluir seus próprios projetos diretamente pela galeria ou pelas configurações de armazenamento do navegador.</p>
-      <p>O exercício dos direitos será atendido nos termos da LGPD, considerando a identidade do solicitante, a existência dos dados e as hipóteses legais de conservação.</p>
+      <p>O tratamento técnico realizado pela infraestrutura de hospedagem submete-se aos termos e políticas do respectivo provedor.</p>
+
+      <h3>3.3. Publicidade e serviços de terceiros (Google AdSense)</h3>
+      <p>O Manga Maker integra recursos do Google AdSense para veiculação de anúncios. Ao carregar páginas com esse recurso, o navegador do usuário pode estabelecer conexão direta com servidores do Google e de seus parceiros, permitindo o tratamento de informações como endereço IP, URL da página, características do navegador e do dispositivo, identificadores, registros de interação com anúncios e dados armazenados em cookies ou tecnologias análogas.</p>
+      <ul>
+        <li><strong>Finalidades declaradas do serviço de anúncios:</strong> veiculação, limitação de frequência e mensuração de anúncios, detecção de tráfego inválido, prevenção a fraudes e, conforme aplicável, personalização de anúncios.</li>
+        <li><strong>Base legal:</strong> conforme o tratamento específico e as configurações aplicáveis, consentimento ou legítimo interesse nos termos da legislação de proteção de dados.</li>
+      </ul>
+      <p>O tratamento realizado pelo Google e por seus parceiros ocorre de acordo com as políticas próprias desses fornecedores, podendo envolver transferência internacional de dados. Consulte diretamente:</p>
+      <ul>
+        <li><a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Como o Google utiliza informações de sites ou apps que usam seus serviços</a></li>
+        <li><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidade do Google</a></li>
+        <li><a href="https://support.google.com/adsense/answer/7549925" target="_blank" rel="noopener noreferrer">Como o AdSense utiliza cookies</a></li>
+      </ul>
     </section>
 
     <section>
-      <h2>9. Segurança da informação</h2>
-      <p>São adotadas medidas técnicas e organizacionais razoáveis e compatíveis com a natureza do serviço para manter os arquivos do site e seus recursos em funcionamento. Entretanto, nenhum sistema conectado à internet ou meio de armazenamento é absolutamente seguro.</p>
-      <p>Como os projetos ficam no dispositivo do usuário, cabe também ao usuário proteger o dispositivo, controlar o acesso ao navegador e manter cópias de segurança dos arquivos importantes. Não envie informações pessoais ou sensíveis em projetos que serão compartilhados publicamente.</p>
-      <p>Se houver incidente de segurança envolvendo dados pessoais sob responsabilidade do controlador e que possa acarretar risco ou dano relevante, serão observadas as obrigações de comunicação à autoridade e aos titulares previstas no art. 48 da LGPD e na regulamentação aplicável.</p>
+      <h2>4. Cookies e armazenamento local</h2>
+      <p>As tecnologias de armazenamento local do navegador (como Local Storage e IndexedDB) mantêm projetos e preferências vinculados ao navegador e ao dispositivo utilizados, sem equivaler a uma conta remota.</p>
+      <p>Cookies, identificadores e tecnologias semelhantes empregados pelo Google AdSense e por parceiros de publicidade são geridos segundo as regras desses terceiros, sem controle direto do Manga Maker sobre o funcionamento interno de tais cookies.</p>
+      <p>O usuário pode gerenciar ou remover dados de armazenamento local e cookies diretamente nas configurações de seu navegador, bem como ajustar preferências de anúncios por meio das <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">Configurações de anúncios do Google</a>. A restrição de cookies pode alterar a personalização de anúncios, sem necessariamente impedir a exibição de anúncios não personalizados ou contextuais.</p>
+    </section>
+
+    <section>
+      <h2>5. Recursos técnicos e bibliotecas</h2>
+      <p>As bibliotecas JavaScript empregadas pela aplicação são hospedadas diretamente no próprio servidor do projeto, sem utilização de redes de distribuição de conteúdo (CDNs) externas para o carregamento dessas bibliotecas. A veiculação de anúncios depende de scripts externos do Google AdSense, e a entrega das páginas ocorre por meio da infraestrutura de hospedagem contratada.</p>
+    </section>
+
+    <section>
+      <h2>6. Compartilhamento e transferência de dados</h2>
+      <p>O Manga Maker não comercializa projetos nem dados armazenados localmente no navegador do usuário. Não há envio automático de projetos para um banco de dados central do projeto.</p>
+      <p>Dados técnicos de acesso podem ser processados pela infraestrutura de hospedagem para viabilizar a entrega do site, e dados de publicidade podem ser transmitidos diretamente ao Google e a parceiros envolvidos na exibição de anúncios, inclusive fora do Brasil, conforme as políticas e jurisdições aplicáveis a cada terceiro.</p>
+      <p>Informações sob controle do controlador poderão ser divulgadas ou entregues quando exigido por lei, ordem judicial ou autoridade competente, ou quando necessário ao exercício regular de direitos em processo judicial, administrativo ou arbitral.</p>
+    </section>
+
+    <section>
+      <h2>7. Conservação e eliminação</h2>
+      <p>Os dados armazenados localmente permanecem no dispositivo do usuário até sua exclusão manual, limpeza dos dados do navegador ou remoção pelo próprio sistema/navegador. O controlador não estabelece prazo de retenção remoto para conteúdos que não recebe nem armazena em servidores próprios.</p>
+      <p>Registros técnicos e dados tratados por terceiros seguem os prazos de retenção fixados pelos respectivos provedores e pela legislação aplicável. Os dados pessoais eventualmente sob controle direto do controlador serão eliminados ou anonimizados quando atingida a finalidade, cessada a necessidade ou mediante solicitação cabível, ressalvadas as hipóteses legais de conservação previstas no art. 16 da LGPD.</p>
+    </section>
+
+    <section>
+      <h2>8. Direitos do titular</h2>
+      <p>Nos termos do art. 18 da LGPD, o titular de dados pessoais pode requerer, conforme a natureza do tratamento e os limites legais:</p>
+      <ul>
+        <li>Confirmação da existência de tratamento e acesso aos dados;</li>
+        <li>Correção de dados incompletos, inexatos ou desatualizados;</li>
+        <li>Anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;</li>
+        <li>Portabilidade dos dados a outro fornecedor de serviço ou produto, observada a regulamentação da ANPD e os segredos comercial e industrial;</li>
+        <li>Eliminação dos dados tratados com base no consentimento, exceto nas hipóteses legais de retenção;</li>
+        <li>Informação sobre entidades públicas e privadas com as quais o controlador realizou uso compartilhado de dados;</li>
+        <li>Informação sobre a possibilidade de não fornecer consentimento e sobre as consequências da negativa;</li>
+        <li>Revogação do consentimento, nos termos da lei.</li>
+      </ul>
+      <p>Solicitações referentes ao Manga Maker devem ser enviadas para <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a>. Para dados tratados diretamente pelo Google ou outros terceiros, o titular deve utilizar também os canais disponibilizados por esses fornecedores. A exclusão de projetos locais pode ser realizada diretamente na aplicação ou na limpeza de dados do navegador.</p>
+    </section>
+
+    <section>
+      <h2>9. Segurança</h2>
+      <p>São aplicadas medidas técnicas e organizacionais compatíveis com a natureza da aplicação para manter a disponibilidade e a integridade dos recursos sob responsabilidade do controlador. Nenhum ambiente conectado à internet ou meio de armazenamento é totalmente imune a falhas ou acessos não autorizados.</p>
+      <p>Na ocorrência de incidente de segurança que possa acarretar risco ou dano relevante aos titulares, o controlador adotará as providências e comunicações cabíveis nos termos do art. 48 da LGPD.</p>
     </section>
 
     <section>
       <h2>10. Crianças e adolescentes</h2>
-      <p>O Manga Maker não exige cadastro e não solicita intencionalmente dados pessoais para criar uma conta. Ainda assim, o site pode ser acessado por pessoas de diferentes idades, e fornecedores de publicidade podem realizar tratamentos próprios quando seus recursos são carregados.</p>
-      <p>O tratamento de dados pessoais de crianças e adolescentes deve observar seu melhor interesse e as regras do art. 14 da LGPD, além da legislação aplicável. Pais ou responsáveis que tenham dúvidas sobre dados pessoais de crianças podem entrar em contato pelo endereço informado nesta Política.</p>
+      <p>O Manga Maker não exige cadastro nem coleta intencionalmente dados pessoais para criação de contas. O serviço não é direcionado especificamente a crianças menores de 13 anos.</p>
+      <p>Quando houver acesso de crianças ou adolescentes e incidência de tratamento de dados pessoais (inclusive por meio de serviços integrados de terceiros, como publicidade), deverão ser observadas as diretrizes do art. 14 da LGPD e a legislação aplicável, priorizando o melhor interesse do menor. Caso o responsável legal tome conhecimento de tratamento indevido de dados pessoais de criança ou adolescente relacionado ao Manga Maker, poderá contatar <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a> para as providências cabíveis.</p>
     </section>
 
     <section>
-      <h2>11. Legislação aplicável</h2>
-      <p>Esta Política considera, especialmente, as seguintes normas brasileiras, sem prejuízo de outras regras aplicáveis:</p>
-      <ul>
-        <li><strong>Lei nº 13.709/2018 — Lei Geral de Proteção de Dados Pessoais (LGPD):</strong> especialmente arts. 5º, 6º, 7º, 9º, 14, 18, 46 e 48.</li>
-        <li><strong>Lei nº 12.965/2014 — Marco Civil da Internet:</strong> especialmente arts. 7º e 10, relativos à privacidade, proteção de dados e registros no uso da internet.</li>
-        <li><strong>Lei nº 8.078/1990 — Código de Defesa do Consumidor:</strong> quando aplicável à relação de consumo e à oferta do serviço.</li>
-      </ul>
-      <p>Texto oficial da LGPD: <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm" target="_blank" rel="noopener noreferrer">Lei nº 13.709/2018</a>. Texto oficial do Marco Civil: <a href="https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm" target="_blank" rel="noopener noreferrer">Lei nº 12.965/2014</a>.</p>
+      <h2>11. Alterações desta Política</h2>
+      <p>Esta Política de Privacidade poderá ser atualizada para refletir alterações na aplicação, em fornecedores integrados ou na legislação. A versão vigente será publicada nesta página com a data da última atualização. Alterações relevantes serão destacadas de forma clara na aplicação ou nesta página.</p>
     </section>
 
     <section>
-      <h2>12. Alterações desta Política</h2>
-      <p>Esta Política poderá ser atualizada para refletir alterações no funcionamento do Manga Maker, nos fornecedores utilizados ou na legislação. A versão vigente será publicada nesta página com a respectiva data de atualização. Alterações relevantes serão apresentadas de forma clara, especialmente quando afetarem finalidades ou formas de tratamento de dados.</p>
-    </section>
-
-    <section>
-      <h2>13. Contato</h2>
-      <p>Para dúvidas, solicitações ou exercício de direitos relacionados aos dados pessoais tratados sob responsabilidade do Manga Maker, entre em contato com <strong>YURI SHAMURAY</strong> pelo e-mail <a href="mailto:shamuray22@gmail.com">shamuray22@gmail.com</a>.</p>
+      <h2>12. Legislação aplicável e foro</h2>
+      <p>Este documento é regido pelas leis da República Federativa do Brasil, em especial a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais — LGPD) e a Lei nº 12.965/2014 (Marco Civil da Internet), sem prejuízo das demais normas aplicáveis. Fica eleito o foro da comarca do domicílio do titular ou do controlador, conforme as regras processuais e consumeristas aplicáveis, para dirimir questões oriundas deste documento.</p>
     </section>
   </main>
 
